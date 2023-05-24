@@ -1,0 +1,45 @@
+@font-face {
+  font-family: 'MyFont';
+  src: local('MyFont'), url(./Fonts/powdwrk5.ttf) format('truetype');
+  /* other formats include: 'woff2', 'truetype, 'opentype',
+                            'embedded-opentype', and 'svg' */
+}
+
+@font-face {
+  font-family: 'MyFont2';
+  src: local('MyFont2'), url(./Fonts/KILLEDDJ.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Chinese1';
+  src: local('Chinese1'), url(./Fonts/hanwangkantan.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Chinese2';
+  src: local('Chinese2'), url(./Fonts/jinmei-poster-calligraphy.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Chinese3';
+  src: local('Chinese3'), url(./Fonts/zhongshan-xingshu.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Chinglish1';
+  src: local('Chinglish1'), url(./Fonts/Harukaze.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Chinglish2';
+  src: local('Chinglish2'), url(./Fonts/Osake.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Chinglish3';
+  src: local('Chinglish3'), url(./Fonts/JAPANBRUSH.ttf) format('truetype');
+}
+
+* {
+  margin: 0;
+}
