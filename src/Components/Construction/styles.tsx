@@ -16,17 +16,21 @@ export const FullPageImage = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding-top: 100px;
-  border: 1px solid red;
-  box-sizing: border-box;
+  overflow: hidden;
+
+  @media (min-width: 600px)  {
+    padding-top: 100px;
+   }
 `;
 
 export const Logo = styled.img`
+  position: static;
   flex: 0 1 auto;
   max-width: 100%;
   height: min-content;
   object-fit: contain;
   margin-bottom: 50px;
+  overflow: hidden;
 
   @media (min-width: 600px)  {
     max-width: 600px;
@@ -47,8 +51,12 @@ export const Subtext = styled.p`
    color: #9e2d19;
    flex: 1 0 auto;
    font-family: "MyFont2";
-   font-size: 48px;
+   font-size: 24px;
    text-align: center;
+
+   @media (min-width: 600px)  {
+    font-size: 48px;
+   }
 `;
 
 export const VerticalBanner = styled.div`
@@ -72,6 +80,8 @@ export const VerticalBanner = styled.div`
 
 export const LogoWrapper = styled.div`
   position: relative;
+  min-width: min-content;
+  min-height: min-content;
 `;
 
 export const Character = styled.p`
