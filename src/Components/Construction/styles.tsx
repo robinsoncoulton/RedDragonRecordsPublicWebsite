@@ -19,7 +19,7 @@ export const FullPageImage = styled.div`
   overflow: hidden;
 
   @media (min-width: 600px)  {
-    padding-top: 100px;
+    padding-top: 20px;
    }
 `;
 
