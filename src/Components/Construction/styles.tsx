@@ -53,6 +53,9 @@ export const Subtext = styled.p`
    font-family: "MyFont2";
    font-size: 24px;
    text-align: center;
+   position: absolute;
+   bottom: 0;
+   padding-bottom: 25px;
 
    @media (min-width: 600px)  {
     font-size: 48px;
