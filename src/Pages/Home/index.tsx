@@ -1,17 +1,19 @@
-import React from 'react';
+import React from "react";
 
-import Construction from '../../Components/Construction';
-// import Page from '../../Components/Page';
-// import Hero from '../../Components/Hero';
+import Construction from "../../Components/Construction";
+import Page from "../../Components/Page";
+import Hero from "../../Components/Hero";
 
-const Home: React.FC = () => 
-
-<>
-  <Construction/>
-</>
-{/* <Page>
+const Home: React.FC = () => (
+  <>
+    <Page></Page>
+  </>
+);
+{
+  /* <Page>
     <h1>Home!</h1>
     <Hero/>
-</Page> */}
+</Page> */
+}
 
 export default Home;

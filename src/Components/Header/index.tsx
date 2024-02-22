@@ -1,22 +1,28 @@
-import React from 'react';
-import { StyledHeader, HeaderLogo, Title, TitleLogoContainer } from './styles';
-import Content from '../../Content';
-import Navbar from '../Navbar';
-import headerLogo from '../../Assets/portrait.png';
-import { useNavigate } from 'react-router';
+import React from "react";
+import { StyledHeader, TitleLogoContainer } from "./styles";
+import Navbar from "../Navbar";
+import { useNavigate } from "react-router";
+import { useTheme } from "../../Theme";
+import TitleBadge from "../TitleBadge";
+import LanguageSelect from "../Language";
+import ThemeToggle from "../ThemeToggle";
 
 const Header: React.FC = () => {
-    const navigate = useNavigate();
-    const handleClick = () => navigate('/');   
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const handleClick = () => navigate("/");
+  const { toggleTheme } = useTheme();
 
-    return <StyledHeader>
-        <TitleLogoContainer onClick={handleClick}>
-            <HeaderLogo src={headerLogo}/>
-            <Title>LOUD Studios</Title>
-        </TitleLogoContainer>
-        {Content.headerText}
-        <Navbar/>
+  return (
+    <StyledHeader theme={theme.theme}>
+      <Navbar />
+      <TitleLogoContainer onClick={handleClick}>
+        <TitleBadge />
+      </TitleLogoContainer>
+      <LanguageSelect />
+      <ThemeToggle handleClick={() => toggleTheme()}>Toggle Theme</ThemeToggle>
     </StyledHeader>
-}
+  );
+};
 
 export default Header;
