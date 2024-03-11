@@ -1,1 +1,3 @@
-export interface LanguageSelectProps {}
+import { ThemedElementProps } from "../../Theme/types";
+
+export interface LanguageSelectProps extends ThemedElementProps {}

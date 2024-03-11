@@ -11,3 +11,7 @@ export interface ThemeContextType {
 export interface ThemeProviderProps {
   children: React.ReactNode;
 }
+
+export interface ThemedElementProps {
+  theme: Theme;
+}

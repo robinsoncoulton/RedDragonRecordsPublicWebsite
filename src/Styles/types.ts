@@ -4,4 +4,5 @@ export interface Palette {
   accent: string;
   accentLight: string;
   text: string;
+  white: string;
 }

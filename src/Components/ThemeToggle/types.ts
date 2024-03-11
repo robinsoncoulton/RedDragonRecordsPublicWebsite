@@ -1,6 +1,10 @@
-import { ReactNode } from "react";
+import { Theme } from "../../Theme/types";
 
 export interface ThemeToggleProps {
   handleClick: () => void;
-  children: ReactNode;
+  theme: Theme;
+}
+
+export interface ElementProps {
+  theme: Theme;
 }

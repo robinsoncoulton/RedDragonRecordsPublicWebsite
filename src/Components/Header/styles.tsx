@@ -6,10 +6,14 @@ export const StyledHeader = styled.div`
   background-color: ${(props) => {
     return getColors(props.theme).background;
   }};
+
   position: relative;
   top: 0;
+  margin: 4rem 0 1rem 0;
   display: flex;
   justify-content: space-between;
+  align-items: end;
+  margin-bottom: 4rem;
 `;
 
 export const HeaderLogo = styled.img`
@@ -29,4 +33,11 @@ export const TitleLogoContainer = styled.div`
     margin-right: 20px;
   }
   align-items: center;
+`;
+
+export const LanguageThemeContainer = styled.div`
+  height: min-content;
+  width: min-content;
+  display: flex;
+  flex-direction: row;
 `;

@@ -12,7 +12,7 @@ export const useTheme = (): ThemeContextType => {
 };
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState(Theme.LIGHT);
+  const [theme, setTheme] = useState(Theme.DARK);
 
   const toggleTheme = () => {
     setTheme((prevTheme) =>
