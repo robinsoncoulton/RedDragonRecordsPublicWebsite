@@ -6,9 +6,7 @@ import supportedLanguages from "./supportedLanguages.json";
 import { NonEmptyArray } from "../../types";
 
 const LanguageSelect: React.FC<LanguageSelectProps> = ({ theme }) => {
-  const [languages, setLanguages] = useState(
-    supportedLanguages as NonEmptyArray<string>
-  );
+  const [languages] = useState(supportedLanguages as NonEmptyArray<string>);
 
   const [language, setLanguage] = useState(languages[0]);
 

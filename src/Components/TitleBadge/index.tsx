@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge, Container, Title } from "./styles";
+import { Container, Title } from "./styles";
 import { ThemedElementProps } from "../../Theme/types";
 
 const TitleBadge: React.FC<ThemedElementProps> = ({ theme }) => (
