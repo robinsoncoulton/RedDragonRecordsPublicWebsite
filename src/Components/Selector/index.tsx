@@ -4,7 +4,7 @@ import { Container, Option } from "./styles";
 import { SelectorProps } from "./types";
 
 const Selector: React.FC<SelectorProps> = ({ theme, options, onSelect }) => {
-  const [selected, setSelected] = useState<string>(options[0]);
+  const [selected] = useState<string>(options[0]);
 
   const clickHandler = (option: string) => {
     // setSelected(option);
