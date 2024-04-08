@@ -1,17 +1,15 @@
-import React from 'react';
-import {
-    createBrowserRouter,
-    RouterProvider,
-  } from "react-router-dom";  
-import { routes } from './Utils/routes'
+import React, { useState } from "react";
+import { routes } from "./Utils/routes";
+import { ThemeProvider } from "./Theme";
 
 const App: React.FC = () => {
-  
-return (
-    <React.StrictMode>
-        <RouterProvider router={createBrowserRouter(routes)} />
-    </React.StrictMode>
-    )
-}
+  const [page] = useState(routes[0]);
 
-export default App
+  return (
+    <React.StrictMode>
+      <ThemeProvider>{page.element}</ThemeProvider>
+    </React.StrictMode>
+  );
+};
+
+export default App;

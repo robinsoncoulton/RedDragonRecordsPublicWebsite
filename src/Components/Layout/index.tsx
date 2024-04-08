@@ -1,21 +1,24 @@
-import React from 'react';
-import { Background, Wrapper } from './styles';
-import Header from '../Header';
-import Footer from '../Footer';
+import React from "react";
+import { Background, Wrapper } from "./styles";
+import Header from "../Header";
+import { useTheme } from "../../Theme";
 
 interface LayoutProps {
-    children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => 
-<>
-    <Background>
-        <Wrapper>
-            <Header/>
-                { children }
-            <Footer/>
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const theme = useTheme();
+  return (
+    <>
+      <Background theme={theme.theme}>
+        <Wrapper theme={theme.theme}>
+          <Header />
+          {children}
         </Wrapper>
-    </Background>
-</>
+      </Background>
+    </>
+  );
+};
 
 export default Layout;
