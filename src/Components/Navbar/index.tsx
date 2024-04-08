@@ -4,11 +4,8 @@ import { baseRoutes } from "../../Utils/routes";
 import Selector from "../Selector";
 import { ThemedElementProps } from "../../Theme/types";
 import { NonEmptyArray } from "../../types";
-import { useNavigate } from "react-router";
 
 const Navbar: React.FC<ThemedElementProps> = ({ theme }) => {
-  const navigate = useNavigate();
-
   const getOptions = (): NonEmptyArray<string> => {
     const routes = baseRoutes.map((route) =>
       route.path === "/"
@@ -21,7 +18,7 @@ const Navbar: React.FC<ThemedElementProps> = ({ theme }) => {
   };
 
   const clickHandler = (selection: string) => {
-    navigate(`/${selection === "Home" ? "" : selection.toLowerCase()}`);
+    // navigate(`/${selection === "Home" ? "" : selection.toLowerCase()}`);
   };
 
   return (

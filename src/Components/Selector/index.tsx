@@ -7,7 +7,7 @@ const Selector: React.FC<SelectorProps> = ({ theme, options, onSelect }) => {
   const [selected, setSelected] = useState<string>(options[0]);
 
   const clickHandler = (option: string) => {
-    setSelected(option);
+    // setSelected(option);
   };
 
   useEffect(() => {
