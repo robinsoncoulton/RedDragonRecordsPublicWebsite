@@ -94,9 +94,7 @@ export const Border = styled.div`
   top: 1rem;
   border: 3px solid ${(props) => getColors(props.theme).borderOuterColor};
   width: calc(100vw - ${borderSize * 2}rem - 6px);
-  height: calc(
-    100vh - ${borderBottomSize + borderSize}.4rem
-  ); //subdivision hack
+  height: calc(100% - ${borderBottomSize + borderSize}.4rem); //subdivision hack
 `;
 
 export const InnerTop = styled(Top)`
@@ -118,7 +116,7 @@ export const InnerLeft = styled(Left)`
 export const InnerBorder = styled(Border)`
   border: 3px solid ${(props) => getColors(props.theme).borderInnerColor};
   width: calc(100vw - ${borderSize * 3}rem - 6px);
-  height: calc(100vh - ${borderBottomSize + borderSize * 2}.4rem);
+  height: calc(100% - ${borderBottomSize + borderSize * 2}.4rem);
   top: ${borderSize * 1.5}rem;
 `;
 
@@ -249,6 +247,14 @@ export const EmailTo = styled.a`
   margin-left: 1rem;
   margin-bottom: 2.5rem;
   background-color: none;
+`;
+
+export const LayoutWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 `;
 // export const Border = styled.div``;
 

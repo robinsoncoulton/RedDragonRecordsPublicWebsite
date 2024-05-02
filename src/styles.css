@@ -41,6 +41,11 @@
   src: local("Chinglish3"), url(./Fonts/JAPANBRUSH.ttf) format("truetype");
 }
 
+@font-face {
+  font-family: "Base";
+  src: local("Base"), url(./Fonts/alata-regular.ttf) format("truetype");
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -50,7 +55,7 @@
   outline: none;
   box-shadow: none;
   font-size: 16px;
-  font-family: "AkayaTelivigala-Regular";
+  font-family: "Base";
   transition: background-color 0.3s ease 0.3s, color 0.3s ease 0.3s,
     border-color 0.3s ease 0.3s;
 }

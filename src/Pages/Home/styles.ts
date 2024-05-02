@@ -22,15 +22,15 @@ export const Image = styled.img`
   objectfit: contain;
   width: 100%;
   max-width: 200px;
-  @keyframes rotation {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(359deg);
-    }
-  }
-  animation: rotation 12s infinite linear;
+  // @keyframes rotation {
+  //   from {
+  //     transform: rotate(0deg);
+  //   }
+  //   to {
+  //     transform: rotate(359deg);
+  //   }
+  // }
+  // animation: rotation 12s infinite linear;
 `;
 
 export const BorderedText = styled.p`
@@ -43,7 +43,7 @@ export const BorderedText = styled.p`
 
 export const Link = styled.a`
   text-decoration: none;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: ${({ theme }) => getColors(theme).text};
 `;
 
