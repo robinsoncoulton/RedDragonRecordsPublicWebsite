@@ -19,7 +19,6 @@ export const Container = styled.div<ThemedElementProps>`
 `;
 
 export const Option = styled.button<OptionProps>`
-  background-color: ${(props) => getColors(props.theme).background};
   color: ${(props) => getColors(props.theme).text};
   white-space: nowrap;
   box-sizing: border-box;

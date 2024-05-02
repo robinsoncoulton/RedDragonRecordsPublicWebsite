@@ -23,7 +23,7 @@ export const Body = styled.div`
   width: min-content;
   white-space: nowrap;
   padding: 1.5rem 4rem 1rem 4rem;
-  font-size: 1.5rem;
+  font-size: 1rem;
   box-sizing: border-box;
   margin-top: 1rem;
   position: absolute;

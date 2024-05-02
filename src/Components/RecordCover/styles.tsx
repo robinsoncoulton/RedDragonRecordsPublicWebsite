@@ -77,7 +77,6 @@ export const Circle = styled.div<GrooveProps>`
   height: ${({ diameter }) => diameter}rem;
   border-radius: 50%;
   ${({ color }) => (color ? `background-color: ${color};` : ``)}
-  position: absolute;
   border: 1px solid #444;
 `;
 

@@ -7,6 +7,10 @@ const Selector: React.FC<SelectorProps> = ({ theme, options, onSelect }) => {
   const [selected] = useState<string>(options[0]);
 
   const clickHandler = (option: string) => {
+    console.log(option);
+    if (option === "中文") {
+      alert("language localistaion coming soon! 中文版系統建置中!");
+    }
     // setSelected(option);
   };
 

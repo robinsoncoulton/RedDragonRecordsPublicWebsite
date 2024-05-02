@@ -40,4 +40,10 @@ export const LanguageThemeContainer = styled.div`
   width: min-content;
   display: flex;
   flex-direction: row;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  background-color: none;
 `;

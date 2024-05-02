@@ -7,7 +7,7 @@ export const Container = styled.button<ElementProps>`
   width: 2rem;
   height: 50px;
   position: relative;
-  background-color: ${(props) => getColors(props.theme).background};
+  // background-color: ${(props) => getColors(props.theme).background};
   border: none;
   direction: rtl;
   cursor: pointer;

@@ -5,4 +5,8 @@ export interface Palette {
   accentLight: string;
   text: string;
   white: string;
+  borderInnerColor: string;
+  borderCenter: string;
+  borderOuterColor: string;
+  frameColor: string;
 }

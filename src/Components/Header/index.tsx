@@ -16,10 +16,10 @@ const Header: React.FC = () => {
 
   return (
     <StyledHeader theme={theme.theme}>
-      <Navbar theme={theme.theme} />
-      <TitleLogoContainer>
-        <TitleBadge theme={theme.theme} />
-      </TitleLogoContainer>
+      {/* <Navbar theme={theme.theme} /> */}
+      {/* <TitleLogoContainer> */}
+      <TitleBadge theme={theme.theme} />
+      {/* </TitleLogoContainer> */}
       <LanguageThemeContainer>
         <LanguageSelect theme={theme.theme} />
         <ThemeToggle handleClick={toggleTheme} theme={theme.theme} />

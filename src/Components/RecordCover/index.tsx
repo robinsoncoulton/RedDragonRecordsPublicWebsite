@@ -13,6 +13,7 @@ import {
 import templeSmoke from "../../Assets/temple_smoke.png";
 import templeSmokeLive from "../../Assets/temple_smoke_live.jpeg";
 import { useTheme } from "../../Theme";
+import Record from "../Record";
 
 const RecordCover: React.FC = () => {
   const { theme } = useTheme();
@@ -21,20 +22,7 @@ const RecordCover: React.FC = () => {
     <Container>
       <BackgroundImage src={templeSmokeLive} />
       <Overlay />
-      <VinylRecord>
-        <Circle diameter={34} />
-        <Circle diameter={32} />
-        <Circle diameter={30} />
-        <Circle diameter={28} />
-        <Circle diameter={26} />
-        <Circle diameter={24} />
-        <Circle diameter={22} />
-        <Circle diameter={20} />
-        <Circle diameter={18} />
-        <Circle diameter={16} />
-        <Circle diameter={14} color={"white"} />
-        <Circle diameter={3} color={"black"} />
-      </VinylRecord>
+      <Record />
       <Sleeve src={templeSmoke} />
       <TextContainer theme={theme}>
         <StyledHeading theme={theme}>Temple Smoke</StyledHeading>
