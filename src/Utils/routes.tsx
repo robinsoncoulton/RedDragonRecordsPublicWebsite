@@ -1,29 +1,21 @@
 import Home from "../Pages/Home";
-// import Contact from "../Pages/Contact";
-// import Gallery from "../Pages/Gallery";
-// import Portfolio from "../Pages/Portfolio";
-// import Error from "../Pages/Error";
-import Construction from "../Components/Construction";
+import Artists from "../Pages/Artists";
+import Contact from "../Pages/Contact";
 
 export const baseRoutes = [
   {
-    path: "/",
-    // element: <Construction/>
+    path: "/home",
+    label: "Home",
     element: <Home />,
   },
   {
-    path: "About",
-    element: <Construction />,
+    path: "/artists",
+    label: "Artists",
+    element: <Artists />,
   },
   {
-    path: "Contact",
-    element: <Construction />,
+    path: "/contact",
+    label: "Contact",
+    element: <Contact />,
   },
-];
-export const routes = [
-  ...baseRoutes,
-  //   {
-  //     path: "*",
-  //     element: <Construction />,
-  //   },
 ];

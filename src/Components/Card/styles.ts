@@ -1,6 +1,7 @@
 import styled, { keyframes } from "styled-components";
 import { getColors } from "../../Styles/colors";
 import { CardContainerProps } from "./types";
+import { designTokens } from "../../DesignSystem";
 
 const fadeIn = keyframes`
   from {
@@ -13,32 +14,33 @@ const fadeIn = keyframes`
 
 export const Container = styled.div<CardContainerProps>`
   width: 100%;
-  height: 12rem;
-  margin: 2rem 0;
-  border: 1px solid ${(props) => getColors(props.theme).accent};
+  height: ${designTokens.size.cardHeight};
+  margin: ${designTokens.spacing.xxl} ${designTokens.spacing.none};
+  border: ${designTokens.borderWidth.thin} solid
+    ${(props) => getColors(props.theme).border};
   color: ${(props) => getColors(props.theme).text};
   display: flex;
   opacity: 0;
 
-  animation: ${fadeIn} 2s ease forwards
+  animation: ${fadeIn} 2s ${designTokens.easing.standard} forwards
     ${({ animationDelay }) => (animationDelay ? animationDelay : 0)}s;
 `;
 
 export const ImageWrapper = styled.div`
   height: 100%;
-  width: 24rem;
-  background-color: ${(props) => getColors(props.theme).accent};
+  width: ${designTokens.size.imageRailWidth};
   border: none;
   flex: 0 0 auto;
 `;
 
 export const TextWrapper = styled.div`
   display: block;
-  padding: 2rem;
+  padding: ${designTokens.spacing.xxl};
   color: ${(props) => getColors(props.theme).text};
   h2,
   p {
-    transition: color 0s ease;
+    transition: color ${designTokens.duration.instant}
+      ${designTokens.easing.standard};
   }
 `;
 

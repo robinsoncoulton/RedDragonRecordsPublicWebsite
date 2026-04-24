@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Tails, Body, Spacer } from "./styles";
-import { useTheme } from "../../Theme";
+import { useTheme } from "../../Utils/Theme";
 
 const Banner: React.FC = () => {
   const { theme } = useTheme();

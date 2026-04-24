@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { routes } from "./Utils/routes";
-import { ThemeProvider } from "./Theme";
+import React from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { ThemeProvider } from "./Utils/Theme";
+import { baseRoutes } from "./Utils/routes";
 
 const App: React.FC = () => {
-  const [page] = useState(routes[0]);
-
   return (
-    <React.StrictMode>
-      <ThemeProvider>{page.element}</ThemeProvider>
-    </React.StrictMode>
+    <ThemeProvider>
+      <Routes>
+        {baseRoutes.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+      </Routes>
+    </ThemeProvider>
   );
 };
 

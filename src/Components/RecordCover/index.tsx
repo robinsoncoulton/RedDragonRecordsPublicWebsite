@@ -12,7 +12,7 @@ import {
 } from "./styles";
 import templeSmoke from "../../Assets/temple_smoke.png";
 import templeSmokeLive from "../../Assets/temple_smoke_live.jpeg";
-import { useTheme } from "../../Theme";
+import { useTheme } from "../../Utils/Theme";
 
 const RecordCover: React.FC = () => {
   const { theme } = useTheme();

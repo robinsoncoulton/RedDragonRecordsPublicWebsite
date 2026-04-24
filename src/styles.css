@@ -1,3 +1,23 @@
+html {
+  --theme-transition-duration: 220ms;
+  --theme-transition-easing: ease;
+  --app-background: #f5f0e4;
+  --font-headline: "YoungSerif", Georgia, serif;
+  --font-subheadline: "PlayfairDisplay", "Times New Roman", serif;
+  --font-body: "LibreBaskerville", Georgia, serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background-color: var(--app-background);
+}
+
+#root {
+  background: var(--app-background);
+}
+
 @font-face {
   font-family: "MyFont";
   src: local("MyFont"), url(./Fonts/powdwrk5.ttf) format("truetype");
@@ -41,6 +61,26 @@
   src: local("Chinglish3"), url(./Fonts/JAPANBRUSH.ttf) format("truetype");
 }
 
+@font-face {
+  font-family: "YoungSerif";
+  src: local("YoungSerif"),
+    url(./Fonts/Young_Serif/YoungSerif-Regular.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "PlayfairDisplay";
+  src: local("PlayfairDisplay"),
+    url(./Fonts/Playfair_Display/static/PlayfairDisplay-Regular.ttf)
+      format("truetype");
+}
+
+@font-face {
+  font-family: "LibreBaskerville";
+  src: local("LibreBaskerville"),
+    url(./Fonts/Libre_Baskerville/static/LibreBaskerville-Regular.ttf)
+      format("truetype");
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -50,7 +90,12 @@
   outline: none;
   box-shadow: none;
   font-size: 16px;
-  font-family: "AkayaTelivigala-Regular";
-  transition: background-color 0.3s ease 0.3s, color 0.3s ease 0.3s,
-    border-color 0.3s ease 0.3s;
+  font-family: var(--font-body);
+  transition: background-color var(--theme-transition-duration)
+      var(--theme-transition-easing),
+    color var(--theme-transition-duration) var(--theme-transition-easing),
+    border-color var(--theme-transition-duration) var(--theme-transition-easing),
+    fill var(--theme-transition-duration) var(--theme-transition-easing),
+    stroke var(--theme-transition-duration) var(--theme-transition-easing),
+    box-shadow var(--theme-transition-duration) var(--theme-transition-easing);
 }

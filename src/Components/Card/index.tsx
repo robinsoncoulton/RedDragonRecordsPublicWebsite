@@ -1,7 +1,7 @@
 import React from "react";
 import { CardProps } from "./types";
 import { Container, ImageWrapper, TextWrapper, Image } from "./styles";
-import { useTheme } from "../../Theme";
+import { useTheme } from "../../Utils/Theme";
 
 const Card: React.FC<CardProps> = ({ children, src, animationDelay }) => {
   const { theme } = useTheme();

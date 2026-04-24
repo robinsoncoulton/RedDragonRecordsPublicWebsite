@@ -1,39 +1,50 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { getColors } from "./../../Styles/colors";
-import { ThemedElementProps } from "./../../Theme/types";
-import { OptionProps } from "./types";
+import { ThemedElementProps } from "../../Utils/Theme/types";
+import { HighlightProps, OptionProps } from "./types";
+import { designTokens } from "../../DesignSystem";
 
 export const Container = styled.div<ThemedElementProps>`
+  position: relative;
   height: min-content;
   width: min-content;
-  padding: 1rem 1rem 1rem 0;
+  padding: ${designTokens.spacing.sm} ${designTokens.spacing.none}
+    ${designTokens.spacing.md} ${designTokens.spacing.none};
   display: flex;
-  flex-wrap: no-wrap;
+  flex-wrap: nowrap;
+  gap: ${designTokens.spacing.lg};
+`;
 
-  button {
-    margin-right: 1rem;
-  }
-  button:last-child {
-    margin-right: 0;
-  }
+export const Highlight = styled.div<HighlightProps>`
+  position: absolute;
+  bottom: ${designTokens.spacing.none};
+  left: ${(props) => props.left}px;
+  width: ${(props) => props.width}px;
+  height: ${designTokens.borderWidth.strong};
+  border-radius: ${designTokens.radius.pill};
+  border-bottom: ${designTokens.borderWidth.strong} solid
+    ${(props) => getColors(props.theme).text};
+  transition: left ${designTokens.duration.normal} ${designTokens.easing.out},
+    width ${designTokens.duration.normal} ${designTokens.easing.out};
+  pointer-events: none;
 `;
 
 export const Option = styled.button<OptionProps>`
-  background-color: ${(props) => getColors(props.theme).background};
+  position: relative;
+  z-index: ${designTokens.zIndex.raised};
+  background: transparent;
   color: ${(props) => getColors(props.theme).text};
   white-space: nowrap;
   box-sizing: border-box;
-  border-bottom: 3px solid transparent;
-
-  ${(props) =>
-    props.selected &&
-    css`
-      border-bottom: 3px solid ${(props) => getColors(props.theme).text};
-    `}
+  border: 0;
+  padding: ${designTokens.spacing.xs} ${designTokens.spacing.none};
+  opacity: ${(props) => (props.selected ? 1 : 0.7)};
+  font-size: ${designTokens.fontSize.lg};
+  line-height: ${designTokens.lineHeight.compact};
+  transition: opacity ${designTokens.duration.fast} ${designTokens.easing.in};
 
   &:hover {
     cursor: pointer;
-    border-bottom: 3px solid ${(props) => getColors(props.theme).text};
-    transition: border-color 0.1s ease-in;
+    opacity: 1;
   }
 `;

@@ -1,5 +1,4 @@
 import React from "react";
-import { StyledPage } from "./styles";
 import Layout from "../Layout";
 
 interface PageProps {
@@ -7,13 +6,7 @@ interface PageProps {
 }
 
 const Page: React.FC<PageProps> = ({ children }) => {
-  return (
-    <>
-      <Layout>
-        <StyledPage>{children}</StyledPage>
-      </Layout>
-    </>
-  );
+  return <Layout>{children}</Layout>;
 };
 
 export default Page;

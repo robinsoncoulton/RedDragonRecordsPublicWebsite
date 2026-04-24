@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { LanguageSelectProps } from "./types";
 import Selector from "../Selector";
 import supportedLanguages from "./supportedLanguages.json";
@@ -14,11 +13,14 @@ const LanguageSelect: React.FC<LanguageSelectProps> = ({ theme }) => {
     setLanguage(selection);
   };
 
-  useEffect(() => {
-    console.log(language);
-  }, [language]);
-
-  return <Selector options={languages} onSelect={handleSelect} theme={theme} />;
+  return (
+    <Selector
+      options={languages}
+      selectedOption={language}
+      onSelect={handleSelect}
+      theme={theme}
+    />
+  );
 };
 
 export default LanguageSelect;

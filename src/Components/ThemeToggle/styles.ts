@@ -1,27 +1,28 @@
 import { getColors } from "./../../Styles/colors";
 import styled, { css } from "styled-components";
 import { ElementProps } from "./types";
-import { Theme } from "../../Theme/types";
+import { Theme } from "../../Utils/Theme/types";
+import { designTokens } from "../../DesignSystem";
 
 export const Container = styled.button<ElementProps>`
-  width: 2rem;
-  height: 50px;
+  width: ${designTokens.size.controlSm};
+  height: ${designTokens.size.controlLg};
   position: relative;
-  background-color: ${(props) => getColors(props.theme).background};
   border: none;
   direction: rtl;
   cursor: pointer;
+  padding: 0.5rem 0px 0.75rem;
 `;
 
 export const Sun = styled.div<ElementProps>`
-  width: 1.5rem;
-  height: 1.5rem;
+  width: ${designTokens.size.iconMd};
+  height: ${designTokens.size.iconMd};
   margin: 0;
   padding: 0;
-  border-radius: 15px;
+  border-radius: ${designTokens.radius.pill};
   position: absolute;
-  z-index: 1;
-  top: 1rem;
+  z-index: ${designTokens.zIndex.raised};
+  top: ${designTokens.spacing.sm};
   box-sizing: border-box;
 
   ${(props) =>
@@ -29,30 +30,36 @@ export const Sun = styled.div<ElementProps>`
     css`
       background-color: ${(props) => getColors(props.theme).background};
       right: 0;
-      box-shadow: 0px 0px 2px 2px
+      box-shadow: 0 0 2px 2px
         ${(props) => getColors(props.theme).accentLight};
-      transition: background-color 0.3s ease 0.3s, right 0.3s ease,
-        box-shadow 0.3s ease 0.5s;
+      transition: background-color var(--theme-transition-duration)
+          var(--theme-transition-easing),
+        right var(--theme-transition-duration) var(--theme-transition-easing),
+        box-shadow var(--theme-transition-duration)
+          var(--theme-transition-easing);
     `}
 
   ${(props) =>
     props.theme === Theme.DARK &&
     css`
       background-color: ${(props) => getColors(props.theme).background};
-      right: 0.5rem;
-      transition: background-color 0.3s ease, right 0.3s ease 0.3s,
-        box-shadow 0.3s ease;
+      right: ${designTokens.spacing.sm};
+      transition: background-color var(--theme-transition-duration)
+          var(--theme-transition-easing),
+        right var(--theme-transition-duration) var(--theme-transition-easing),
+        box-shadow var(--theme-transition-duration)
+          var(--theme-transition-easing);
     `}
 `;
 
 export const Moon = styled.div<ElementProps>`
-  width: 1.5rem;
-  height: 1.5rem;
+  width: ${designTokens.size.iconMd};
+  height: ${designTokens.size.iconMd};
   margin: 0;
   padding: 0;
-  border-radius: 15px;
+  border-radius: ${designTokens.radius.pill};
   background-color: ${(props) => getColors(props.theme).text};
   box-sizing: border-box;
   position: absolute;
-  top: 1rem;
+  top: ${designTokens.spacing.sm};
 `;

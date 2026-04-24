@@ -1,24 +1,26 @@
 import styled from "styled-components";
 import { getColors } from "../../Styles/colors";
 import hexToRgb from "../../Utils/hextToRgba";
+import { designTokens } from "../../DesignSystem";
 
 export const StyledNav = styled.div`
   display: flex;
   a {
-    margin-right: 5px;
+    margin-right: ${designTokens.spacing.sm};
     text-decoration: none;
     font-family: AkayaTelivigala-Regular;
-    font-size: 16pt;
-    padding-bottom: 10px;
+    font-size: ${designTokens.fontSize.xl};
+    padding-bottom: ${designTokens.spacing.md};
     height: min-content;
     color: ${(props) => getColors(props.theme).text};
     opacity: 0.8;
 
     &:hover {
-      border-bottom: 3px solid
+      border-bottom: ${designTokens.borderWidth.strong} solid
         ${(props) => hexToRgb(getColors(props.theme).text, "1")};
       opacity: 1;
-      transition: opacity 0.2s ease-in;
+      transition: opacity ${designTokens.duration.normal}
+        ${designTokens.easing.in};
     }
   }
 `;
