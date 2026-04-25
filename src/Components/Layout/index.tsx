@@ -1,9 +1,9 @@
 import React from "react";
-import { Warp } from "@paper-design/shaders-react";
+import { PaperTexture, Warp } from "@paper-design/shaders-react";
 import Footer from "../Footer";
 import PosterFrame from "../PosterFrame/PosterFrame";
 import Header from "../Header";
-import { StyledPage } from "../Page/styles";
+import { StyledPage, StyledPageContent, StyledPageTexture } from "../Page/styles";
 import { useTheme } from "../../Utils/Theme";
 import { getColors } from "../../Styles/colors";
 import {
@@ -46,30 +46,56 @@ const darkenHexColor = (hex: string, amount: number) => {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { theme } = useTheme();
   const colors = getColors(theme);
+  const warpColors = [
+    darkenHexColor(colors.backgroundAccent, 0.5),
+    darkenHexColor(colors.background, 0.7),
+    darkenHexColor(colors.background, 0.85),
+  ];
   return (
     <PosterFrame>
       <FixedTopFade aria-hidden="true" />
       <StyledPage>
-        <HeaderContainer>
-          <Header />
-        </HeaderContainer>
-        {children}
-        <Footer />
+        <StyledPageTexture aria-hidden="true">
+          <PaperTexture
+            colorBack={colors.background}
+            colorFront={colors.backgroundAccent}
+            contrast={0.12}
+            roughness={1}
+            fiber={0.05}
+            fiberSize={0.01}
+            crumples={0}
+            crumpleSize={0.01}
+            folds={0}
+            foldCount={1}
+            drops={0}
+            fade={0}
+            seed={0}
+            scale={0.5}
+            fit="cover"
+          />
+        </StyledPageTexture>
+        <StyledPageContent>
+          <HeaderContainer>
+            <Header />
+          </HeaderContainer>
+          {children}
+          <Footer />
+        </StyledPageContent>
       </StyledPage>
       <FixedBottomWarp aria-hidden="true">
-      <Warp
-  colors={["#a7e58b", "#324471", "#0b190e"]}
-  proportion={0.62}
-  softness={1}
-  distortion={0.47}
-  swirl={1}
-  swirlIterations={7.6}
-  shape="edge"
-  shapeScale={0.77}
-  speed={6.8}
-  scale={0.6}
-  rotation={180}
-/>
+        <Warp
+          colors={["#a7e58b", "#324471", "#0b190e"]}
+          proportion={0.62}
+          softness={1}
+          distortion={0.47}
+          swirl={1}
+          swirlIterations={7.6}
+          shape="edge"
+          shapeScale={0.77}
+          speed={6.8}
+          scale={0.6}
+          rotation={180}
+        />
       </FixedBottomWarp>
       <FixedBottomFade aria-hidden="true" />
     </PosterFrame>

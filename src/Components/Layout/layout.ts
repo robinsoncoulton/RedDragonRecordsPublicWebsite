@@ -88,7 +88,10 @@ export const FixedBottomFade = styled.div`
 `;
 
 export const FixedBottomWarp = styled.div`
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -400px;
   height: 500px;
   margin-top: -140px;
   pointer-events: none;
@@ -111,16 +114,21 @@ export const FixedBottomWarp = styled.div`
 `;
 
 export const FixedTopFade = styled.div`
-  position: relative;
+  position: fixed;
   left: 0;
   right: 0;
   top: 0;
-  height: 200px;
+  height: 400px;
   pointer-events: none;
   z-index: 999;
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.55) 100%
+    rgba(0, 0, 0, 0.06) 28%,
+    rgba(0, 0, 0, 0.14) 48%,
+    rgba(0, 0, 0, 0.28) 66%,
+    rgba(0, 0, 0, 0.52) 82%,
+    rgba(0, 0, 0, 0.78) 92%,
+    rgba(0, 0, 0, 0.95) 100%
   );
 `;

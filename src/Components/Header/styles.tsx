@@ -1,23 +1,44 @@
 import styled from "styled-components";
 import "../../Fonts/powdwrk5.ttf";
 import { designTokens } from "../../DesignSystem";
-import { getColors } from "../../Styles/colors";
-import hexToRgb from "../../Utils/hextToRgba";
 
 export const StyledHeader = styled.div`
-  position: relative;
-  top: ${designTokens.spacing.none};
-  margin: ${designTokens.spacing["4xl"]} ${designTokens.spacing.none}
-    ${designTokens.spacing.lg} ${designTokens.spacing.none};
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - (${designTokens.spacing["4xl"]} * 2));
+  max-width: ${designTokens.size.contentMax};
+  overflow: hidden;
   display: flex;
   align-items: center;
+  background: var(--app-background);
+  z-index: 1200;
+`;
 
-  margin: 0 ${designTokens.spacing["4xl"]} ${designTokens.spacing["4xl"]};
+export const HeaderTexture = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  > * {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+export const HeaderContent = styled.div`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 export const HeaderSide = styled.div<{ align: "left" | "right" }>`
   flex: 0 0 auto;
-  min-width: 300px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
