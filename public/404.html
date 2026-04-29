@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Red Dragon Records</title>
+    <script>
+      (function () {
+        var location = window.location;
+        var destination =
+          location.origin +
+          location.pathname +
+          location.search +
+          location.hash;
+        sessionStorage.redirect = destination;
+        window.location.replace(location.origin + "/");
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
