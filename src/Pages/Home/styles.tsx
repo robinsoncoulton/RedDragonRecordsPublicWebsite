@@ -147,13 +147,50 @@ export const PrimaryButtonArrow = styled.span<ThemedElementProps>`
 
 export const HeroPlaceholder = styled.div<ThemedElementProps>`
   min-height: 24rem;
-  border: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
   display: grid;
   place-items: center;
   color: ${({ theme }) => getColors(theme).textMuted};
   font-size: ${designTokens.fontSize.sm};
   text-transform: uppercase;
   letter-spacing: 0.1em;
+`;
+
+export const HeroLogoWrapper = styled.div`
+  position: relative;
+  min-width: min-content;
+  min-height: min-content;
+`;
+
+export const HeroLogo = styled.img`
+  max-width: min(100%, 26rem);
+  height: auto;
+  object-fit: contain;
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(359deg);
+    }
+  }
+  animation: rotation ${designTokens.duration.spin} infinite linear;
+`;
+
+export const HeroVerticalBanner = styled.div<ThemedElementProps>`
+  font-family: Chinese1;
+  font-size: ${designTokens.fontSize["5xl"]};
+  color: ${({ theme }) => getColors(theme).primary};
+  position: absolute;
+  top: 0;
+  right: ${designTokens.spacing.xl};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+`;
+
+export const HeroCharacter = styled.p`
+  margin: 0;
 `;
 
 export const ThreeCol = styled.div`

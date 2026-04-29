@@ -8,6 +8,7 @@ import { getColors } from "../../Styles/colors";
 import laney from "../../Assets/laney.png";
 import quality from "../../Assets/quality.png";
 import valves from "../../Assets/valves.png";
+import record from "../../Assets/record.png";
 import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
 import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
 import micE906 from "../../Assets/Icons/Poster/icon_poster_mic_e906.png";
@@ -26,7 +27,11 @@ import {
   GalleryItem,
   Headline,
   HeroGrid,
+  HeroCharacter,
+  HeroLogo,
+  HeroLogoWrapper,
   HeroPlaceholder,
+  HeroVerticalBanner,
   HomeShell,
   Panel,
   PrimaryButtonArrow,
@@ -164,7 +169,15 @@ const Home: React.FC = () => {
               </PrimaryButton>
             </div>
             <HeroPlaceholder theme={theme}>
-              Hero Visual Placeholder
+              <HeroLogoWrapper>
+                <HeroLogo src={record} alt="Red Dragon Records" />
+                <HeroVerticalBanner theme={theme}>
+                  <HeroCharacter>轟</HeroCharacter>
+                  <HeroCharacter>隆</HeroCharacter>
+                  <HeroCharacter>紅</HeroCharacter>
+                  <HeroCharacter>龍</HeroCharacter>
+                </HeroVerticalBanner>
+              </HeroLogoWrapper>
             </HeroPlaceholder>
           </HeroGrid>
         </Panel>
