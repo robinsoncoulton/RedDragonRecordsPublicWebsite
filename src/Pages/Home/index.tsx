@@ -1,14 +1,25 @@
 import React from "react";
 import { PaperTexture } from "@paper-design/shaders-react";
+import useEmblaCarousel from "embla-carousel-react";
+import WheelGesturesPlugin from "embla-carousel-wheel-gestures";
 import Page from "../../Components/Page";
 import { useTheme } from "../../Utils/Theme";
 import { getColors } from "../../Styles/colors";
 import laney from "../../Assets/laney.png";
 import quality from "../../Assets/quality.png";
 import valves from "../../Assets/valves.png";
-import { ReactComponent as ArtistsIcon } from "../../Assets/artists.svg";
+import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
+import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
+import micE906 from "../../Assets/Icons/Poster/icon_poster_mic_e906.png";
+import micMd421 from "../../Assets/Icons/Poster/icon_poster_mic_md421.png";
+import micNt5 from "../../Assets/Icons/Poster/icon_poster_mic_nt5.png";
+import micSm57 from "../../Assets/Icons/Poster/icon_poster_mic_sm57.png";
+import micSm58 from "../../Assets/Icons/Poster/icon_poster_mic_sm58.png";
 import {
   Body,
+  CarouselContainer,
+  CarouselSlide,
+  CarouselViewport,
   CTA,
   GalleryGrid,
   GalleryImage,
@@ -26,24 +37,27 @@ import {
   SubHeading,
   ToolsSectionBackground,
   ToolsSectionContent,
-  ToolsSectionOverlay,
+  ToolsSideFadeOverlay,
+  ToolsSectionTopTexture,
   ToolsSectionTexture,
   ThreeCol,
+  ToolIcon,
   ToolLabel,
   ToolTile,
-  ToolsGrid,
-  ToolAssetIcon,
+  ViewFullGearLink,
 } from "./styles";
 
 const services = ["Recording", "Mixing", "Production", "Session Work"];
-const tools = [
-  "U67 Microphone",
-  "Studer A800",
-  "API 1608",
-  "Marshall JMP",
-  "Gibson Les Paul",
-];
 const gallery = [laney, quality, valves, quality];
+const toolStickers = [
+  { name: "AKG C414 XLS", icon: micC414 },
+  { name: "Shure Beta 52A", icon: micBeta52a },
+  { name: "Sennheiser e906", icon: micE906 },
+  { name: "Sennheiser MD421-2", icon: micMd421 },
+  { name: "Rode NT5", icon: micNt5 },
+  { name: "Shure SM57", icon: micSm57 },
+  { name: "Shure SM58", icon: micSm58 },
+];
 const brightenHexColor = (hex: string, amount: number) => {
   const normalized = hex.replace("#", "");
   const expanded =
@@ -73,9 +87,53 @@ const brightenHexColor = (hex: string, amount: number) => {
 
 const Home: React.FC = () => {
   const { theme } = useTheme();
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, align: "start", dragFree: true, skipSnaps: true },
+    [WheelGesturesPlugin({ forceWheelAxis: "x" })]
+  );
+  const autoplayRef = React.useRef<number | null>(null);
+  const resetRef = React.useRef<number | null>(null);
+  const clearAutoplay = React.useCallback(() => {
+    if (autoplayRef.current) {
+      window.clearInterval(autoplayRef.current);
+      autoplayRef.current = null;
+    }
+    if (resetRef.current) {
+      window.clearTimeout(resetRef.current);
+      resetRef.current = null;
+    }
+  }, []);
+  const startAutoplay = React.useCallback(() => {
+    if (!emblaApi) {
+      return;
+    }
+    clearAutoplay();
+    autoplayRef.current = window.setInterval(() => {
+      emblaApi.scrollNext();
+    }, 3000);
+  }, [emblaApi, clearAutoplay]);
+  const pauseAndResumeAutoplay = React.useCallback(() => {
+    clearAutoplay();
+    resetRef.current = window.setTimeout(() => {
+      startAutoplay();
+    }, 3500);
+  }, [clearAutoplay, startAutoplay]);
+
+  React.useEffect(() => {
+    if (!emblaApi) {
+      return;
+    }
+    emblaApi.on("pointerDown", pauseAndResumeAutoplay);
+    startAutoplay();
+    return () => {
+      emblaApi.off("pointerDown", pauseAndResumeAutoplay);
+      clearAutoplay();
+    };
+  }, [emblaApi, clearAutoplay, pauseAndResumeAutoplay, startAutoplay]);
+
   const colors = getColors(theme);
   const toolsBackgroundColor = colors.background;
-  const toolsDetailColor = brightenHexColor(colors.danger, 1);
+  const toolsDetailColor = brightenHexColor(colors.danger, 0.35);
   return (
     <Page>
       <HomeShell theme={theme}>
@@ -144,18 +202,18 @@ const Home: React.FC = () => {
         </Panel>
 
         <Panel theme={theme} bordered noPadding>
-          <ToolsSectionBackground $overlayColor={toolsBackgroundColor}>
+          <ToolsSectionBackground $topColor={toolsBackgroundColor}>
             <ToolsSectionTexture aria-hidden="true">
               <PaperTexture
                 colorBack={toolsBackgroundColor}
                 colorFront={toolsDetailColor}
-                contrast={0.12}
+                contrast={0.06}
                 roughness={1}
-                fiber={0.05}
+                fiber={0.1}
                 fiberSize={0.01}
-                crumples={0}
+                crumples={0.08}
                 crumpleSize={0.01}
-                folds={0}
+                folds={0.04}
                 foldCount={1}
                 drops={0}
                 fade={0}
@@ -164,17 +222,46 @@ const Home: React.FC = () => {
                 fit="cover"
               />
             </ToolsSectionTexture>
-            <ToolsSectionOverlay $overlayColor={toolsBackgroundColor} />
+            <ToolsSectionTopTexture aria-hidden="true">
+              <PaperTexture
+                colorBack={colors.background}
+                colorFront={colors.danger}
+                contrast={0.04}
+                roughness={1}
+                fiber={0.16}
+                fiberSize={0.016}
+                crumples={0.14}
+                crumpleSize={0.016}
+                folds={0.06}
+                foldCount={1.2}
+                drops={0.03}
+                fade={0}
+                seed={2}
+                scale={0.65}
+                fit="cover"
+              />
+            </ToolsSectionTopTexture>
             <ToolsSectionContent>
-              <SubHeading theme={theme}>Tools Of The Craft</SubHeading>
-              <ToolsGrid>
-                {tools.map((tool) => (
-                  <ToolTile key={tool} theme={theme}>
-                    <HeroPlaceholder theme={theme}>Asset</HeroPlaceholder>
-                    <ToolLabel>{tool}</ToolLabel>
-                  </ToolTile>
-                ))}
-              </ToolsGrid>
+              <ToolsSideFadeOverlay />
+              <CarouselViewport ref={emblaRef} onWheel={pauseAndResumeAutoplay}>
+                <CarouselContainer>
+                  {toolStickers.map(({ name, icon }, index) => (
+                    <CarouselSlide
+                      key={name}
+                      theme={theme}
+                      $showSeparator
+                    >
+                      <ToolTile theme={theme}>
+                        <ToolIcon src={icon} alt={name} />
+                        <ToolLabel>{name}</ToolLabel>
+                      </ToolTile>
+                    </CarouselSlide>
+                  ))}
+                </CarouselContainer>
+              </CarouselViewport>
+                <ViewFullGearLink to="/equipment" theme={theme} borderless>
+                  View Full Gear List →
+                </ViewFullGearLink>
             </ToolsSectionContent>
           </ToolsSectionBackground>
         </Panel>
@@ -182,7 +269,7 @@ const Home: React.FC = () => {
         <CTA theme={theme}>
           <SubHeading theme={theme}>Enter The Studio</SubHeading>
           <Body theme={theme}>
-            Let&apos;s make something timeless. Temporary call-to-action copy.
+            Make something authentic.
           </Body>
           <PrimaryButton theme={theme}>Get In Touch →</PrimaryButton>
         </CTA>

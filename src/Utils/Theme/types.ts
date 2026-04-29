@@ -14,4 +14,5 @@ export interface ThemeProviderProps {
 
 export interface ThemedElementProps {
   theme: Theme;
+  borderless?: boolean;
 }

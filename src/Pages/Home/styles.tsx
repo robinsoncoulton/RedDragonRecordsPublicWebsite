@@ -1,10 +1,11 @@
 import styled, { css } from "styled-components";
+import { Link } from "react-router-dom";
 import { designTokens, media } from "../../DesignSystem";
 import { getColors } from "../../Styles/colors";
 import { ThemedElementProps } from "../../Utils/Theme/types";
 
 interface ToolsSectionBackgroundProps {
-  $overlayColor: string;
+  $topColor: string;
 }
 
 interface PanelProps extends ThemedElementProps {
@@ -151,7 +152,8 @@ export const GalleryGrid = styled.div`
 export const GalleryItem = styled.div<ThemedElementProps>`
   border: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
   min-height: 8rem;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
 `;
 
 export const GalleryImage = styled.img`
@@ -160,25 +162,19 @@ export const GalleryImage = styled.img`
   object-fit: cover;
 `;
 
-export const ToolsGrid = styled.div`
-  display: grid;
-  gap: ${designTokens.spacing.md};
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  ${media.md} {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-`;
-
 export const ToolsSectionBackground = styled.div<ToolsSectionBackgroundProps>`
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
+  margin: 0 2px;
+  background: linear-gradient(180deg, ${({ $topColor }) => $topColor} 0%, #000000 100%);
 `;
 
 export const ToolsSectionTexture = styled.div`
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.1;
+  opacity: 0.08;
   z-index: 0;
   > * {
     width: 100%;
@@ -186,17 +182,18 @@ export const ToolsSectionTexture = styled.div`
   }
 `;
 
-export const ToolsSectionOverlay = styled.div<ToolsSectionBackgroundProps>`
+export const ToolsSectionTopTexture = styled.div`
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background: linear-gradient(
-    0deg,
-    ${({ $overlayColor }) => `${$overlayColor}03`} 0%,
-    ${({ $overlayColor }) => `${$overlayColor}26`} 42%,
-    ${({ $overlayColor }) => `${$overlayColor}4d`} 100%
-  );
+  opacity: 0.25;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  > * {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 export const ToolsSectionContent = styled.div`
@@ -204,16 +201,121 @@ export const ToolsSectionContent = styled.div`
   z-index: 2;
 `;
 
+export const ToolsSideFadeOverlay = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0) 10%,
+    rgba(0, 0, 0, 0) 90%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+`;
+
+
 export const ToolTile = styled.div<ThemedElementProps>`
   padding: ${designTokens.spacing.lg};
+  min-height: 14rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   text-align: center;
 `;
 
 export const ToolLabel = styled.p`
-  margin-top: ${designTokens.spacing.sm};
-  font-size: ${designTokens.fontSize.sm};
+  margin-top: ${designTokens.spacing.md};
+  font-size: ${designTokens.fontSize.md};
   text-transform: uppercase;
   letter-spacing: 0.06em;
+`;
+
+export const ToolIcon = styled.img`
+  width: 300px;
+  max-width: 100%;
+  height: 300px;
+  max-height: 100%;
+  object-fit: contain;
+  background: transparent;
+`;
+
+export const ToolCategory = styled.p<ThemedElementProps>`
+  color: ${({ theme }) => getColors(theme).primary};
+  font-size: ${designTokens.fontSize.sm};
+  margin-bottom: ${designTokens.spacing.md};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  overflow: visible;
+`;
+
+export const CarouselViewport = styled.div`
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: visible;
+  cursor: grab;
+  touch-action: pan-y;
+`;
+
+export const CarouselContainer = styled.div`
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  display: flex;
+  margin-left: -${designTokens.spacing.md};
+  padding-bottom: ${designTokens.spacing["3xl"]};
+  transition-timing-function: ease-in-out;
+`;
+
+export const CarouselSlide = styled.div<ThemedElementProps & { $showSeparator: boolean }>`
+  min-width: 0;
+  flex: 0 0 90%;
+  padding-left: ${designTokens.spacing.md};
+  position: relative;
+  ${({ $showSeparator, theme }) =>
+    $showSeparator
+      ? css`
+          &::after {
+            content: "";
+            position: absolute;
+            bottom: ${designTokens.spacing.lg};
+            right: calc(-${designTokens.spacing.md} / 2);
+            transform: translate(50%, -50%);
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 999px;
+            background: ${getColors(theme).danger};
+            box-shadow: 0 0 5rem ${`${getColors(theme).danger}99`};
+          }
+        `
+      : ""}
+  ${media.md} {
+    flex: 0 0 48%;
+  }
+  ${media.lg} {
+    flex: 0 0 32%;
+  }
+`;
+
+
+export const ViewFullGearLink = styled(Link)<ThemedElementProps>`
+  border: ${({ borderless, theme }) => borderless ? "none" : `${designTokens.borderWidth.thin} solid ${getColors(theme).primary}`};
+  color: ${({ theme }) => getColors(theme).primary};
+  padding: ${designTokens.spacing.sm} ${designTokens.spacing.lg};
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  position: absolute;
+  bottom: ${designTokens.spacing.sm};
+  right: ${designTokens.spacing.sm};
+  white-space: nowrap;
+  z-index: 3;
 `;
 
 export const ToolAssetIcon = styled.div<ThemedElementProps>`

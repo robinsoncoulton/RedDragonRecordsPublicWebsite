@@ -1,6 +1,7 @@
 import Home from "../Pages/Home";
 import Artists from "../Pages/Artists";
 import Contact from "../Pages/Contact";
+import Equipment from "../Pages/Equipment";
 
 export const baseRoutes = [
   {
@@ -17,5 +18,10 @@ export const baseRoutes = [
     path: "/contact",
     label: "Contact",
     element: <Contact />,
+  },
+  {
+    path: "/equipment",
+    label: "Equipment",
+    element: <Equipment />,
   },
 ];
