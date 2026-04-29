@@ -67,9 +67,10 @@ export const CornerBottomRight = styled(Corner)`
 
 export const HeaderContainer = styled.div`
   position: relative;
-  z-index: 1;
+  z-index: 2001;
   display: flex;
   justify-content: center;
+  width: 100%;
 `;
 
 export const FixedBottomFade = styled.div`
@@ -118,17 +119,20 @@ export const FixedTopFade = styled.div`
   left: 0;
   right: 0;
   top: 0;
-  height: 400px;
+  height: 600px;
   pointer-events: none;
-  z-index: 999;
+  z-index: 2000;
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.06) 28%,
-    rgba(0, 0, 0, 0.14) 48%,
-    rgba(0, 0, 0, 0.28) 66%,
-    rgba(0, 0, 0, 0.52) 82%,
-    rgba(0, 0, 0, 0.78) 92%,
+    rgba(0, 0, 0, 0.01) 36%,
+    rgba(0, 0, 0, 0.04) 52%,
+    rgba(0, 0, 0, 0.1) 66%,
+    rgba(0, 0, 0, 0.22) 76%,
+    rgba(0, 0, 0, 0.4) 84%,
+    rgba(0, 0, 0, 0.58) 90%,
+    rgba(0, 0, 0, 0.74) 94%,
+    rgba(0, 0, 0, 0.88) 98%,
     rgba(0, 0, 0, 0.95) 100%
   );
 `;

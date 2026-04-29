@@ -1,5 +1,6 @@
 import React from "react";
 import Page from "../../Components/Page";
+import ComingSoon from "../ComingSoon";
 import { useTheme } from "../../Utils/Theme";
 import {
   ArtistCopy,
@@ -100,8 +101,9 @@ type TransitionState = {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const wrapIndex = (value: number, length: number) => ((value % length) + length) % length;
+const SHOW_ARTISTS_SHOWCASE = false;
 
-const Artists: React.FC = () => {
+const ArtistsShowcase: React.FC = () => {
   const { theme } = useTheme();
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [transition, setTransition] = React.useState<TransitionState | null>(null);
@@ -276,6 +278,17 @@ const Artists: React.FC = () => {
       </ArtistsShell>
     </Page>
   );
+};
+
+const Artists: React.FC = () => {
+  if (!SHOW_ARTISTS_SHOWCASE) {
+    return (
+      <Page>
+        <ComingSoon />
+      </Page>
+    );
+  }
+  return <ArtistsShowcase />;
 };
 
 export default Artists;

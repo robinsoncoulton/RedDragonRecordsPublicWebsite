@@ -10,15 +10,12 @@ import { ThemedElementProps } from "../../Utils/Theme/types";
 
 export const FullPageImage = styled.div<ThemedElementProps>`
   width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
+
 
   ${media.sm} {
     padding-top: ${designTokens.spacing.xl};
@@ -55,7 +52,6 @@ export const Subtext = styled.p<ThemedElementProps>`
   font-family: "MyFont2";
   font-size: ${designTokens.fontSize["2xl"]};
   text-align: center;
-  position: absolute;
   bottom: 0;
   padding-bottom: ${designTokens.spacing.xl};
 

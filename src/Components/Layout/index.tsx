@@ -46,14 +46,13 @@ const darkenHexColor = (hex: string, amount: number) => {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { theme } = useTheme();
   const colors = getColors(theme);
-  const warpColors = [
-    darkenHexColor(colors.backgroundAccent, 0.5),
-    darkenHexColor(colors.background, 0.7),
-    darkenHexColor(colors.background, 0.85),
-  ];
   return (
     <PosterFrame>
       <FixedTopFade aria-hidden="true" />
+      <FixedTopFade aria-hidden="true" />
+      <HeaderContainer>
+        <Header />
+      </HeaderContainer>
       <StyledPage>
         <StyledPageTexture aria-hidden="true">
           <PaperTexture
@@ -75,9 +74,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           />
         </StyledPageTexture>
         <StyledPageContent>
-          <HeaderContainer>
-            <Header />
-          </HeaderContainer>
           {children}
           <Footer />
         </StyledPageContent>

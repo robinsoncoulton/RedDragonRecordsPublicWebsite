@@ -31,17 +31,17 @@ export const FooterRight = styled.div`
   white-space: nowrap;
 `;
 
-export const FooterIcon = styled.button`
+export const FooterIcon = styled.a`
   color: var(--frame-inner-color);
   width: 2.5rem;
   height: 2.5rem;
   padding: ${designTokens.spacing.sm};
   background: transparent;
-  border: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
   transition: color var(--theme-transition-duration) var(--theme-transition-easing);
   &:hover {
     color: var(--footer-icon-hover-color, #ffffff);

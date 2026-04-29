@@ -20,6 +20,10 @@ const Navbar: React.FC<ThemedElementProps> = ({ theme }) => {
     baseRoutes[0].label;
 
   const clickHandler = (selection: string) => {
+    if (selection === "Contact") {
+      window.location.assign("mailto:contact@reddragonrecords.tw");
+      return;
+    }
     const nextPath = baseRoutes.find((route) => route.label === selection)?.path;
     if (!nextPath || nextPath === location.pathname) return;
     navigate(nextPath);

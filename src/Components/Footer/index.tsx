@@ -15,23 +15,42 @@ import {
 } from "./styles";
 
 const currentYear = new Date().getFullYear();
-const handleFooterIconClick = () => undefined;
 
 const Footer: React.FC = () => {
   const { theme } = useTheme();
   return (
     <StyledFooter theme={theme}>
       <FooterLeft>
-        <FooterIcon aria-label="Instagram" onClick={handleFooterIconClick}>
+        <FooterIcon
+          aria-label="Instagram"
+          href="https://www.instagram.com/reddragonrecordstaiwan"
+          target="_blank"
+          rel="noreferrer"
+        >
           <InstagramIcon />
         </FooterIcon>
-        <FooterIcon aria-label="YouTube" onClick={handleFooterIconClick}>
+        <FooterIcon
+          aria-label="YouTube"
+          href="https://www.youtube.com/watch?v=WpkJLRaLlHA&list=PLC5DK5U_EYSaT4YBBiikV7fklgAvtt2xJ"
+          target="_blank"
+          rel="noreferrer"
+        >
           <YouTubeIcon />
         </FooterIcon>
-        <FooterIcon aria-label="Spotify" onClick={handleFooterIconClick}>
+        <FooterIcon
+          aria-label="Spotify"
+          href="https://open.spotify.com/album/69jva0Nui1EfyRH1KwGl8J?si=MDUGbR80Q9GZsp3Sz7CSIg"
+          target="_blank"
+          rel="noreferrer"
+        >
           <SpotifyIcon />
         </FooterIcon>
-        <FooterIcon aria-label="Facebook" onClick={handleFooterIconClick}>
+        <FooterIcon
+          aria-label="Facebook"
+          href="https://www.facebook.com/profile.php?id=100092575400299"
+          target="_blank"
+          rel="noreferrer"
+        >
           <FacebookIcon />
         </FooterIcon>
       </FooterLeft>

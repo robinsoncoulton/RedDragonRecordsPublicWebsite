@@ -1,6 +1,6 @@
 .poster-frame {
   --frame-outer-color: rgba(107, 35, 27, 0.78);
-  min-height: 100vh;
+  /* min-height: 100vh; */
   position: relative;
   box-sizing: border-box;
   overflow: hidden;

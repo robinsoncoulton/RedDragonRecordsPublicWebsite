@@ -92,10 +92,57 @@ export const PrimaryButton = styled.button<ThemedElementProps>`
   border: ${designTokens.borderWidth.thin} solid
     ${({ theme }) => getColors(theme).primary};
   color: ${({ theme }) => getColors(theme).primary};
-  padding: ${designTokens.spacing.md} ${designTokens.spacing.xl};
+  background: ${({ theme }) => getColors(theme).background};
+  border-radius: ${designTokens.radius.md};
+  position: relative;
+  overflow: hidden;
+  padding: ${designTokens.spacing.md} ${designTokens.spacing["4xl"]}
+    ${designTokens.spacing.md} ${designTokens.spacing.xl};
+  min-width: 14rem;
   font-size: ${designTokens.fontSize.md};
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.3s cubic-bezier(0.9, 0, 0.1, 1);
+  &:hover {
+    color: ${({ theme }) => getColors(theme).background};
+  }
+`;
+
+export const PrimaryButtonText = styled.span`
+  position: relative;
+  z-index: 3;
+`;
+
+export const PrimaryButtonFill = styled.span<ThemedElementProps>`
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3.25rem;
+  background: ${({ theme }) => getColors(theme).primary};
+  border-radius: ${designTokens.radius.md} ${designTokens.radius.md}
+    ${designTokens.radius.md} 0;
+  z-index: 1;
+  transition: width 0.3s cubic-bezier(0.9, 0, 0.1, 1),
+    border-radius 0.3s cubic-bezier(0.9, 0, 0.1, 1);
+  ${PrimaryButton}:hover & {
+    width: 100%;
+    border-radius: ${designTokens.radius.md};
+  }
+`;
+
+export const PrimaryButtonArrow = styled.span<ThemedElementProps>`
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3.25rem;
+  color: ${({ theme }) => getColors(theme).background};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
 `;
 
 export const HeroPlaceholder = styled.div<ThemedElementProps>`

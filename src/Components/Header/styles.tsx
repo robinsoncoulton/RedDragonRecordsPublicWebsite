@@ -2,7 +2,19 @@ import styled from "styled-components";
 import "../../Fonts/powdwrk5.ttf";
 import { designTokens } from "../../DesignSystem";
 
-export const StyledHeader = styled.div`
+export const StyledHeader = styled.div<{
+  $isPastThreshold: boolean;
+  $forceOpaque: boolean;
+}>`
+  @property --header-fade-start {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 0%;
+  }
+  --header-fade-start: ${({ $isPastThreshold, $forceOpaque }) =>
+    $isPastThreshold && !$forceOpaque ? "0%" : "100%"};
+  --header-fade-duration: ${({ $isPastThreshold, $forceOpaque }) =>
+    !$isPastThreshold || $forceOpaque ? "0.14s" : "0.35s"};
   position: fixed;
   top: 0;
   left: 50%;
@@ -12,19 +24,23 @@ export const StyledHeader = styled.div`
   overflow: hidden;
   display: flex;
   align-items: center;
-  background: var(--app-background);
-  z-index: 1200;
-`;
-
-export const HeaderTexture = styled.div`
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.45;
-  > * {
-    width: 100%;
-    height: 100%;
+  z-index: 2002;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) var(--header-fade-start),
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) var(--header-fade-start),
+    rgba(0, 0, 0, 0) 100%
+  );
+  transition: --header-fade-start var(--header-fade-duration) ease-in-out;
+  :hover {
+    --header-fade-start: ${({ $isPastThreshold, $forceOpaque }) =>
+      $isPastThreshold && !$forceOpaque ? "90%" : "100%"};
   }
 `;
 

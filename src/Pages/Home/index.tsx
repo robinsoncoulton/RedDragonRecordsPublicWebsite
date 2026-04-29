@@ -29,7 +29,10 @@ import {
   HeroPlaceholder,
   HomeShell,
   Panel,
+  PrimaryButtonArrow,
   PrimaryButton,
+  PrimaryButtonFill,
+  PrimaryButtonText,
   ServiceIndex,
   ServiceName,
   ServiceRow,
@@ -48,7 +51,7 @@ import {
 } from "./styles";
 
 const services = ["Recording", "Mixing", "Production", "Session Work"];
-const gallery = [laney, quality, valves, quality];
+const gallery = [laney, quality, valves];
 const toolStickers = [
   { name: "AKG C414 XLS", icon: micC414 },
   { name: "Shure Beta 52A", icon: micBeta52a },
@@ -87,6 +90,9 @@ const brightenHexColor = (hex: string, amount: number) => {
 
 const Home: React.FC = () => {
   const { theme } = useTheme();
+  const openContactMail = () => {
+    window.location.assign("mailto:contact@reddragonrecords.tw");
+  };
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: "start", dragFree: true, skipSnaps: true },
     [WheelGesturesPlugin({ forceWheelAxis: "x" })]
@@ -140,7 +146,6 @@ const Home: React.FC = () => {
         <Panel theme={theme} borderBottomOnly>
           <HeroGrid>
             <div>
-              
               <Headline>
                 <Headline>RED</Headline> 
                 <Headline>DRAGON</Headline> 
@@ -150,10 +155,13 @@ const Home: React.FC = () => {
                 Tainan Record Company
               </SubHeading>
               <Body theme={theme}>
-                Analog warmth. Modern precision. This is temporary wireframe copy
-                to block out the hero structure from your reference.
+                Analog methadologies. Music made by humans. Love for the craft.
               </Body>
-              <PrimaryButton theme={theme}>Enter The Studio →</PrimaryButton>
+              <PrimaryButton theme={theme} onClick={openContactMail}>
+                <PrimaryButtonText>Enter The Studio</PrimaryButtonText>
+                <PrimaryButtonFill theme={theme} />
+                <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
+              </PrimaryButton>
             </div>
             <HeroPlaceholder theme={theme}>
               Hero Visual Placeholder
@@ -175,19 +183,17 @@ const Home: React.FC = () => {
               </ServicesList>
             </div>
             <div>
-              <SubHeading theme={theme}>Built For Artists. Rooted In Sound.</SubHeading>
+              <SubHeading theme={theme}>Created By Music Lovers. Built on the shoulders of giants</SubHeading>
               <Body theme={theme}>
-                Red Dragon Records is a recording studio and creative base. This
-                temporary copy maps your target layout and hierarchy while we
-                refine final messaging.
+                Red Dragon Records is a recording studio and creative base. Cement your creative ambitions into a permanent realisation.
               </Body>
             </div>
-            <div>
+            {/* <div>
               <SubHeading theme={theme}>Sound. Attitude. Art.</SubHeading>
               <Body theme={theme}>
-                Placeholder bilingual tag line area and supporting callouts.
+                Bespoke Recording Services.
               </Body>
-            </div>
+            </div> */}
           </ThreeCol>
         </Panel>
 
@@ -271,7 +277,11 @@ const Home: React.FC = () => {
           <Body theme={theme}>
             Make something authentic.
           </Body>
-          <PrimaryButton theme={theme}>Get In Touch →</PrimaryButton>
+          <PrimaryButton theme={theme} onClick={openContactMail}>
+            <PrimaryButtonText>Get In Touch</PrimaryButtonText>
+            <PrimaryButtonFill theme={theme} />
+            <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
+          </PrimaryButton>
         </CTA>
       </HomeShell>
     </Page>
