@@ -6,18 +6,6 @@
   overflow: hidden;
 }
 
-.poster-frame__texture {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.poster-frame__texture > * {
-  width: 100%;
-  height: 100%;
-}
-
 .poster-frame__inner {
   min-height: calc(100vh - 48px);
   position: relative;
@@ -40,4 +28,15 @@
   .poster-frame__content {
     min-height: calc(100vh - 36px);
   }
+}
+
+.poster-frame__texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.poster-frame__texture > * {
+  width: 100%;
+  height: 100%;
 }
