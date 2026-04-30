@@ -18,32 +18,6 @@ interface LayoutProps {
   children?: React.ReactNode;
 }
 
-const darkenHexColor = (hex: string, amount: number) => {
-  const normalized = hex.replace("#", "");
-  const expanded =
-    normalized.length === 3
-      ? normalized
-          .split("")
-          .map((char) => `${char}${char}`)
-          .join("")
-      : normalized;
-  if (expanded.length !== 6) {
-    return hex;
-  }
-  const parsed = Number.parseInt(expanded, 16);
-  if (Number.isNaN(parsed)) {
-    return hex;
-  }
-  const red = (parsed >> 16) & 255;
-  const green = (parsed >> 8) & 255;
-  const blue = parsed & 255;
-  const darken = (channel: number) => Math.max(0, Math.round(channel * (1 - amount)));
-  const nextHex = [darken(red), darken(green), darken(blue)]
-    .map((channel) => channel.toString(16).padStart(2, "0"))
-    .join("");
-  return `#${nextHex}`;
-};
-
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { theme } = useTheme();
   const colors = getColors(theme);
