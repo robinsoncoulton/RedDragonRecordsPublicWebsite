@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import "../../Fonts/powdwrk5.ttf";
 import { designTokens } from "../../DesignSystem";
+import { Theme } from "../../Utils/Theme/types";
+import { getColors } from "../../Styles/colors";
+
+const iosNotchBufferBackground = getColors(Theme.DARK).background;
 
 export const StyledHeader = styled.div<{
   $isPastThreshold: boolean;
@@ -94,4 +98,13 @@ export const LanguageThemeContainer = styled.div`
   flex-direction: row;
   align-items: center;
   gap: ${designTokens.spacing.sm};
+`;
+
+export const IosNotchBuffer = styled.div`
+  width: 100%;
+  background: ${iosNotchBufferBackground};
+  top: -500px;
+  position: fixed;
+  z-index: 99999;
+  height: 500px;
 `;
