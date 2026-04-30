@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import "../../Fonts/powdwrk5.ttf";
 import { designTokens } from "../../DesignSystem";
+import { getColors } from "../../Styles/colors";
 
 export const StyledHeader = styled.div<{
   $isPastThreshold: boolean;
@@ -92,4 +93,13 @@ export const LanguageThemeContainer = styled.div`
   flex-direction: row;
   align-items: center;
   gap: ${designTokens.spacing.sm};
+`;
+
+export const IosTopBuffer = styled.div`
+  position: fixed;
+  top: -${designTokens.spacing["4xl"]};
+  left: 0;
+  width: 100%;
+  height: ${designTokens.spacing["4xl"]};
+  background: ${({ theme }) => getColors(theme).background};
 `;
