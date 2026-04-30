@@ -22,3 +22,14 @@ export const Wrapper = styled.div`
   border: ${designTokens.borderWidth.strong} solid
     ${(props) => getColors(props.theme).accent};
 `;
+
+export const IosNotchBuffer = styled.div`
+  height: env(safe-area-inset-top);
+  width: 100%;
+  // background: ${(props) => getColors(props.theme).danger};
+  background: red;
+  top: -500px;
+  position: fixed;
+  z-index: 99999;
+  height: 500px;
+`;

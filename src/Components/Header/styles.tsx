@@ -99,12 +99,3 @@ export const LanguageThemeContainer = styled.div`
   align-items: center;
   gap: ${designTokens.spacing.sm};
 `;
-
-export const IosNotchBuffer = styled.div`
-  width: 100%;
-  background: ${iosNotchBufferBackground};
-  top: -500px;
-  position: fixed;
-  z-index: 99999;
-  height: 500px;
-`;

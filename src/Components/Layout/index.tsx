@@ -13,6 +13,7 @@ import {
   HeaderContainer,
   HeaderTopBackdrop,
 } from "./layout";
+import { IosNotchBuffer } from "./styles";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -23,6 +24,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const colors = getColors(theme);
   return (
     <PosterFrame>
+
+      <IosNotchBuffer theme={theme} />
       <FixedTopFade aria-hidden="true" />
       <FixedTopFade aria-hidden="true" />
       <HeaderContainer>

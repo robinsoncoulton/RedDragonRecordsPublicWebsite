@@ -2,7 +2,6 @@ import React from "react";
 import {
   HeaderContent,
   HeaderSide,
-  IosNotchBuffer,
   LanguageThemeContainer,
   StyledHeader,
   TitleLogoContainer,
@@ -60,7 +59,6 @@ const Header: React.FC = () => {
 
   return (
     <StyledHeader $isPastThreshold={isPastThreshold} $forceOpaque={forceOpaque}>
-      <IosNotchBuffer />
         <HeaderContent>
           <HeaderSide align="left">
             <Navbar theme={theme} />
