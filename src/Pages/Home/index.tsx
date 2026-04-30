@@ -196,7 +196,7 @@ const Home: React.FC = () => {
               </ServicesList>
             </div>
             <div>
-              <SubHeading theme={theme}>Created By Music Lovers. Built on the shoulders of giants</SubHeading>
+              <SubHeading theme={theme}>Created By Music Lovers. Built on the shoulders of giants.</SubHeading>
               <Body theme={theme}>
                 Red Dragon Records is a recording studio and creative base. Cement your creative ambitions into a permanent realisation.
               </Body>
