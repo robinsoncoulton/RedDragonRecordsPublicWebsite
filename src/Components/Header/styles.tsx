@@ -1,10 +1,6 @@
 import styled from "styled-components";
 import "../../Fonts/powdwrk5.ttf";
 import { designTokens } from "../../DesignSystem";
-import { Theme } from "../../Utils/Theme/types";
-import { getColors } from "../../Styles/colors";
-
-const iosNotchBufferBackground = getColors(Theme.DARK).background;
 
 export const StyledHeader = styled.div<{
   $isPastThreshold: boolean;
