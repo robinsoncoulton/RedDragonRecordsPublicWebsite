@@ -2,7 +2,6 @@ import React from "react";
 import {
   HeaderContent,
   HeaderSide,
-  IosTopBuffer,
   LanguageThemeContainer,
   StyledHeader,
   TitleLogoContainer,
@@ -59,8 +58,7 @@ const Header: React.FC = () => {
   }, []);
 
   return (
-    <>
-      <IosTopBuffer aria-hidden="true" /><StyledHeader $isPastThreshold={isPastThreshold} $forceOpaque={forceOpaque}>
+    <StyledHeader $isPastThreshold={isPastThreshold} $forceOpaque={forceOpaque}>
         <HeaderContent>
           <HeaderSide align="left">
             <Navbar theme={theme} />
@@ -75,8 +73,7 @@ const Header: React.FC = () => {
             </LanguageThemeContainer>
           </HeaderSide>
         </HeaderContent>
-      </StyledHeader>
-    </>
+    </StyledHeader>
   );
 };
 

@@ -65,9 +65,21 @@ export const CornerBottomRight = styled(Corner)`
   transform: rotate(180deg);
 `;
 
+export const HeaderTopBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: calc(env(safe-area-inset-top, 0px) + 4.75rem);
+  background: #000;
+  pointer-events: none;
+  z-index: 2001;
+`;
+
 export const HeaderContainer = styled.div`
   position: relative;
-  z-index: 2001;
+  z-index: 2002;
   display: flex;
   justify-content: center;
   width: 100%;

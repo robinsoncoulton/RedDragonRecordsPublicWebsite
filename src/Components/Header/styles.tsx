@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import "../../Fonts/powdwrk5.ttf";
 import { designTokens } from "../../DesignSystem";
-import { getColors } from "../../Styles/colors";
 
 export const StyledHeader = styled.div<{
   $isPastThreshold: boolean;
@@ -22,10 +21,12 @@ export const StyledHeader = styled.div<{
   transform: translateX(-50%);
   width: calc(100% - (${designTokens.spacing["4xl"]} * 2));
   max-width: ${designTokens.size.contentMax};
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
   overflow: hidden;
   display: flex;
   align-items: center;
-  z-index: 2002;
+  z-index: 2003;
   -webkit-mask-image: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 1) 0%,
@@ -93,13 +94,4 @@ export const LanguageThemeContainer = styled.div`
   flex-direction: row;
   align-items: center;
   gap: ${designTokens.spacing.sm};
-`;
-
-export const IosTopBuffer = styled.div`
-  position: fixed;
-  top: -${designTokens.spacing["4xl"]};
-  left: 0;
-  width: 100%;
-  height: ${designTokens.spacing["4xl"]};
-  background: ${({ theme }) => getColors(theme).background};
 `;

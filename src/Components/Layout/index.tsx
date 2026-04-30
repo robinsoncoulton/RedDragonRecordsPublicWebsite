@@ -11,6 +11,7 @@ import {
   FixedBottomWarp,
   FixedTopFade,
   HeaderContainer,
+  HeaderTopBackdrop,
 } from "./layout";
 
 interface LayoutProps {
@@ -51,6 +52,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <FixedTopFade aria-hidden="true" />
       <FixedTopFade aria-hidden="true" />
       <HeaderContainer>
+        <HeaderTopBackdrop aria-hidden="true" />
         <Header />
       </HeaderContainer>
       <StyledPage>
