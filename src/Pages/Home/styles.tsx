@@ -146,34 +146,22 @@ export const PrimaryButtonArrow = styled.span<ThemedElementProps>`
 `;
 
 export const HeroPlaceholder = styled.div<ThemedElementProps>`
+  position: relative;
   min-height: 24rem;
   display: grid;
   place-items: center;
+  width: 100%;
   color: ${({ theme }) => getColors(theme).textMuted};
   font-size: ${designTokens.fontSize.sm};
   text-transform: uppercase;
   letter-spacing: 0.1em;
 `;
 
-export const HeroLogoWrapper = styled.div`
-  position: relative;
-  min-width: min-content;
-  min-height: min-content;
-`;
-
 export const HeroLogo = styled.img`
-  max-width: min(100%, 26rem);
-  height: auto;
-  object-fit: contain;
-  @keyframes rotation {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(359deg);
-    }
-  }
-  animation: rotation ${designTokens.duration.spin} infinite linear;
+  position: absolute;
+  bottom: -61px;
+  right: -100px;
+  height: 128%;
 `;
 
 export const HeroVerticalBanner = styled.div<ThemedElementProps>`
@@ -181,8 +169,8 @@ export const HeroVerticalBanner = styled.div<ThemedElementProps>`
   font-size: ${designTokens.fontSize["5xl"]};
   color: ${({ theme }) => getColors(theme).primary};
   position: absolute;
-  top: 0;
-  right: ${designTokens.spacing.xl};
+  top: ${designTokens.spacing.lg};
+  right: ${designTokens.spacing.md};
   display: flex;
   flex-direction: column;
   align-items: center;
