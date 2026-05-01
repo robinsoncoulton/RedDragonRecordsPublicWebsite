@@ -90,6 +90,7 @@ export const NorenContainer = styled.div`
   left: 0;
   right: 0;
   overflow: visible;
+  margin-bottom: -22px;
 `;
 
 export const FixedBottomFade = styled.div`

@@ -226,6 +226,9 @@ const Noren: React.FC<NorenProps> = ({
               <NorenPanel
                 key={`noren-panel-${index}`}
                 onMouseEnter={() => triggerAnimation(index)}
+                onPointerEnter={() => triggerAnimation(index)}
+                onTouchStart={() => triggerAnimation(index)}
+                onFocus={() => triggerAnimation(index)}
               >
                 <NorenWraps>
                   <NorenWrap $wrapGradient={wrapGradient} />

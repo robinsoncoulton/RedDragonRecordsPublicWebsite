@@ -4,13 +4,14 @@ import { designTokens } from "../../DesignSystem";
 export const StyledPage = styled.div`
   width: 100%;
   position: relative;
-  z-index: 2;
+  z-index: -1;
   height: 100%;
   min-height: 100%;
   max-width: ${designTokens.size.contentMax};
   margin: 0 auto ${designTokens.spacing["6xl"]};
   box-sizing: border-box;
   padding: ${designTokens.spacing.md};
+  box-shadow: 0px -264px 41px -115px #333;
   &::before {
     content: "";
     position: absolute;

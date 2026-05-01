@@ -167,6 +167,10 @@ export const PrimaryButton = styled.button<ThemedElementProps>`
   }
 `;
 
+export const ButtonContainer = styled.div`
+  margin-top: ${designTokens.spacing["6xl"]};
+`;
+
 export const PrimaryButtonText = styled.span`
   position: relative;
   z-index: 3;

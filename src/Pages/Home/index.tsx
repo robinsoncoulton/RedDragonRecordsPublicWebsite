@@ -57,6 +57,7 @@ import {
   ToolLabel,
   ToolTile,
   ViewFullGearLink,
+  ButtonContainer,
 } from "./styles";
 
 const services = ["Recording", "Mixing", "Production", "Session Work"];
@@ -193,11 +194,13 @@ const Home: React.FC = () => {
               <Body theme={theme}>
                 Analog methadologies. Music made by humans. Love for the craft.
               </Body>
-              <PrimaryButton theme={theme} onClick={openContactMail}>
-                <PrimaryButtonText>Enter The Studio</PrimaryButtonText>
-                <PrimaryButtonFill theme={theme} />
-                <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
-              </PrimaryButton>
+              <ButtonContainer>
+                <PrimaryButton theme={theme} onClick={openContactMail}>
+                  <PrimaryButtonText>Enter The Studio</PrimaryButtonText>
+                  <PrimaryButtonFill theme={theme} />
+                  <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
+                </PrimaryButton>
+              </ButtonContainer>
             </HeroCopy>
             <HeroPlaceholder theme={theme}>
               <HeroLogo src={heroArtists} alt="Red Dragon Records artists" />
