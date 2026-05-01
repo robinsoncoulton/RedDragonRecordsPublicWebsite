@@ -24,12 +24,13 @@ export const Wrapper = styled.div`
 `;
 
 export const IosNotchBuffer = styled.div`
-  height: env(safe-area-inset-top);
-  width: 100%;
-  // background: ${(props) => getColors(props.theme).danger};
-  background: red;
-  top: -500px;
   position: fixed;
-  z-index: 99999;
-  height: 500px;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: env(safe-area-inset-top, 0px);
+  background: black;
+  pointer-events: none;
+  z-index: 1990;
 `;

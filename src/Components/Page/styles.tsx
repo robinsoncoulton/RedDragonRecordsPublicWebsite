@@ -8,10 +8,9 @@ export const StyledPage = styled.div`
   height: 100%;
   min-height: 100%;
   max-width: ${designTokens.size.contentMax};
-  margin: 200px auto 300px;
+  margin: 0 auto ${designTokens.spacing["6xl"]};
   box-sizing: border-box;
   padding: ${designTokens.spacing.md};
-  overflow: hidden;
   &::before {
     content: "";
     position: absolute;

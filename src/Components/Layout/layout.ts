@@ -85,6 +85,11 @@ export const HeaderContainer = styled.div`
   width: 100%;
 `;
 
+export const NorenContainer = styled.div`
+  left: 0;
+  right: 0;
+`;
+
 export const FixedBottomFade = styled.div`
   position: fixed;
   left: 0;

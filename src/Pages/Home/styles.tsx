@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { Link } from "react-router-dom";
 import { designTokens, media } from "../../DesignSystem";
 import { getColors } from "../../Styles/colors";
@@ -18,6 +18,20 @@ interface SubHeadingProps extends ThemedElementProps {
   borderTop?: boolean;
 }
 
+const headlineWipe = keyframes`
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0% 0 0);
+    opacity: 1;
+  }
+`;
+
 export const HomeShell = styled.div<ThemedElementProps>`
   display: flex;
   flex-direction: column;
@@ -25,7 +39,7 @@ export const HomeShell = styled.div<ThemedElementProps>`
   color: ${({ theme }) => getColors(theme).text};
 `;
 
-export const Panel = styled.section<PanelProps>`
+export const  Panel = styled.section<PanelProps>`
   ${({ noPadding }) =>
     noPadding
       ? css`
@@ -49,6 +63,11 @@ export const Panel = styled.section<PanelProps>`
       : ""}
 `;
 
+export const ServicesPanelShell = styled.div`
+  position: relative;
+  padding: ${designTokens.spacing["5xl"]};
+`;
+
 export const HeroGrid = styled.div`
   display: grid;
   gap: ${designTokens.spacing.xl};
@@ -62,6 +81,28 @@ export const Headline = styled.h1`
   font-size: ${designTokens.fontSize["6xl"]};
   line-height: ${designTokens.lineHeight.tight};
   margin-bottom: ${designTokens.spacing.md};
+`;
+
+export const HeadlineStack = styled(Headline)`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+interface HeadlineWipeLineProps {
+  $delayMs: number;
+}
+
+export const HeadlineWipeLine = styled.span<HeadlineWipeLineProps>`
+  display: block;
+  width: fit-content;
+  will-change: clip-path, opacity;
+  animation-name: ${headlineWipe};
+  animation-duration: 0.65s;
+  animation-timing-function: cubic-bezier(0.2, 0.85, 0.2, 1);
+  animation-delay: ${({ $delayMs }) => `${$delayMs}ms`};
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
 `;
 
 export const SubHeading = styled.h2<SubHeadingProps>`
@@ -182,6 +223,8 @@ export const HeroCharacter = styled.p`
 `;
 
 export const ThreeCol = styled.div`
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: ${designTokens.spacing.xl};
   ${media.lg} {
@@ -210,28 +253,6 @@ export const ServiceIndex = styled.span<ThemedElementProps>`
 
 export const ServiceName = styled.span`
   font-size: ${designTokens.fontSize.xl};
-`;
-
-export const GalleryGrid = styled.div`
-  display: grid;
-  gap: ${designTokens.spacing.md};
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  ${media.md} {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-`;
-
-export const GalleryItem = styled.div<ThemedElementProps>`
-  border: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
-  min-height: 8rem;
-  overflow-x: hidden;
-  overflow-y: visible;
-`;
-
-export const GalleryImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 `;
 
 export const ToolsSectionBackground = styled.div<ToolsSectionBackgroundProps>`
@@ -415,6 +436,6 @@ export const ToolAssetIcon = styled.div<ThemedElementProps>`
 `;
 
 export const CTA = styled.div<ThemedElementProps>`
-  padding: ${designTokens.spacing.xxl};
+  padding: ${designTokens.spacing["5xl"]};
   text-align: center;
 `;

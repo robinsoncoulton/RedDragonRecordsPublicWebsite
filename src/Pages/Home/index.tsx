@@ -5,9 +5,6 @@ import WheelGesturesPlugin from "embla-carousel-wheel-gestures";
 import Page from "../../Components/Page";
 import { useTheme } from "../../Utils/Theme";
 import { getColors } from "../../Styles/colors";
-import laney from "../../Assets/laney.png";
-import quality from "../../Assets/quality.png";
-import valves from "../../Assets/valves.png";
 import heroArtists from "../../Assets/hero_artists.png";
 import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
 import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
@@ -22,10 +19,8 @@ import {
   CarouselSlide,
   CarouselViewport,
   CTA,
-  GalleryGrid,
-  GalleryImage,
-  GalleryItem,
-  Headline,
+  HeadlineStack,
+  HeadlineWipeLine,
   HeroGrid,
   HeroLogo,
   HeroPlaceholder,
@@ -36,6 +31,7 @@ import {
   PrimaryButtonFill,
   PrimaryButtonText,
   ServiceIndex,
+  ServicesPanelShell,
   ServiceName,
   ServiceRow,
   ServicesList,
@@ -53,7 +49,6 @@ import {
 } from "./styles";
 
 const services = ["Recording", "Mixing", "Production", "Session Work"];
-const gallery = [laney, quality, valves];
 const toolStickers = [
   { name: "AKG C414 XLS", icon: micC414 },
   { name: "Shure Beta 52A", icon: micBeta52a },
@@ -148,11 +143,11 @@ const Home: React.FC = () => {
         <Panel theme={theme} borderBottomOnly>
           <HeroGrid>
             <div>
-              <Headline>
-                <Headline>RED</Headline> 
-                <Headline>DRAGON</Headline> 
-                <Headline>RECORDS</Headline>
-              </Headline>
+              <HeadlineStack>
+                <HeadlineWipeLine $delayMs={0}>RED</HeadlineWipeLine>
+                <HeadlineWipeLine $delayMs={180}>DRAGON</HeadlineWipeLine>
+                <HeadlineWipeLine $delayMs={360}>RECORDS</HeadlineWipeLine>
+              </HeadlineStack>
               <SubHeading theme={theme} borderTop>
                 Tainan Record Company
               </SubHeading>
@@ -171,42 +166,28 @@ const Home: React.FC = () => {
           </HeroGrid>
         </Panel>
 
-        <Panel theme={theme} borderBottomOnly>
-          <ThreeCol>
-            <div>
-              <SubHeading theme={theme}>Services</SubHeading>
-              <ServicesList>
-                {services.map((service, index) => (
-                  <ServiceRow key={service} theme={theme}>
-                    <ServiceIndex theme={theme}>{`0${index + 1}`}</ServiceIndex>
-                    <ServiceName>{service}</ServiceName>
-                  </ServiceRow>
-                ))}
-              </ServicesList>
-            </div>
-            <div>
-              <SubHeading theme={theme}>Created By Music Lovers. Built on the shoulders of giants.</SubHeading>
-              <Body theme={theme}>
-                Red Dragon Records is a recording studio and creative base. Cement your creative ambitions into a permanent realisation.
-              </Body>
-            </div>
-            {/* <div>
-              <SubHeading theme={theme}>Sound. Attitude. Art.</SubHeading>
-              <Body theme={theme}>
-                Bespoke Recording Services.
-              </Body>
-            </div> */}
-          </ThreeCol>
-        </Panel>
-
-        <Panel theme={theme}>
-          <GalleryGrid>
-            {gallery.map((source, index) => (
-              <GalleryItem key={`${source}-${index}`} theme={theme}>
-                <GalleryImage src={source} alt="Studio placeholder" />
-              </GalleryItem>
-            ))}
-          </GalleryGrid>
+        <Panel theme={theme} borderBottomOnly noPadding>
+          <ServicesPanelShell>
+            <ThreeCol>
+              <div>
+                <SubHeading theme={theme}>Services</SubHeading>
+                <ServicesList>
+                  {services.map((service, index) => (
+                    <ServiceRow key={service} theme={theme}>
+                      <ServiceIndex theme={theme}>{`0${index + 1}`}</ServiceIndex>
+                      <ServiceName>{service}</ServiceName>
+                    </ServiceRow>
+                  ))}
+                </ServicesList>
+              </div>
+              <div>
+                <SubHeading theme={theme}>Created By Music Lovers. Built on the shoulders of giants.</SubHeading>
+                <Body theme={theme}>
+                  Red Dragon Records is a recording studio and creative base. Cement your creative ambitions into a permanent realisation.
+                </Body>
+              </div>
+            </ThreeCol>
+          </ServicesPanelShell>
         </Panel>
 
         <Panel theme={theme} bordered noPadding>

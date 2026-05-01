@@ -12,8 +12,10 @@ import {
   FixedTopFade,
   HeaderContainer,
   HeaderTopBackdrop,
+  NorenContainer,
 } from "./layout";
 import { IosNotchBuffer } from "./styles";
+import Noren from "../ServicesNoren";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -24,14 +26,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const colors = getColors(theme);
   return (
     <PosterFrame>
-
       <IosNotchBuffer theme={theme} />
       <FixedTopFade aria-hidden="true" />
       <FixedTopFade aria-hidden="true" />
       <HeaderContainer>
-        <HeaderTopBackdrop aria-hidden="true" />
         <Header />
       </HeaderContainer>
+      <NorenContainer>
+        <Noren color={colors.brandDarkest} height={200} width={100} labels={["轟", "隆", "紅", "龍", "音", "樂", "製", "作", "工", "作", "室"]}/>
+      </NorenContainer>
       <StyledPage>
         <StyledPageTexture aria-hidden="true">
           <PaperTexture

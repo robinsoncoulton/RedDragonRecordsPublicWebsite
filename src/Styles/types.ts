@@ -17,4 +17,11 @@ export interface Palette {
   warning: string;
   danger: string;
   info: string;
+  brandRed: string;
+  brandDark: string;
+  brandHighlight: string;
+  brandHighlightLight: string;
+  brandLowlight: string;
+  brandDarkest: string;
+  brandDarkHighlight: string;
 }
