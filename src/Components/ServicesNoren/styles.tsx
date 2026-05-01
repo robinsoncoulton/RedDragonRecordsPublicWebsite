@@ -29,17 +29,22 @@ interface NorenScaleContentProps {
 }
 
 export const NorenScaleFrame = styled.div<NorenScaleFrameProps>`
+  position: relative;
   width: 100%;
   display: block;
   height: ${({ $scale, $naturalHeightPx, $scaledHeightPx }) =>
     `${Math.round(($scale >= 1 ? $naturalHeightPx : $scaledHeightPx) || 0)}px`};
+  overflow: visible;
 `;
 
 export const NorenScaleContent = styled.div<NorenScaleContentProps>`
+  position: absolute;
+  left: 50%;
+  top: 0;
   width: max-content;
-  margin: 0 auto;
+  margin: 0;
   transform-origin: top center;
-  transform: scale(${({ $scale }) => $scale});
+  transform: translateX(-50%) scale(${({ $scale }) => $scale});
 `;
 
 export const NorenContainer = styled.div<NorenContainerProps>`
