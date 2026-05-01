@@ -11,7 +11,6 @@ import {
   FixedBottomWarp,
   FixedTopFade,
   HeaderContainer,
-  HeaderTopBackdrop,
   NorenContainer,
 } from "./layout";
 import { IosNotchBuffer } from "./styles";

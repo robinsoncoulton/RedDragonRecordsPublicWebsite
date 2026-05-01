@@ -5,6 +5,8 @@ import {
   NorenPanel,
   NorenPole,
   NorenRow,
+  NorenScaleContent,
+  NorenScaleFrame,
   NorenWrap,
   NorenWraps,
 } from "./styles";
@@ -56,8 +58,13 @@ const Noren: React.FC<NorenProps> = ({
 }) => {
   const rowRef = React.useRef<HTMLDivElement | null>(null);
   const probeRef = React.useRef<HTMLDivElement | null>(null);
+  const scaleFrameRef = React.useRef<HTMLDivElement | null>(null);
+  const scaleContentRef = React.useRef<HTMLDivElement | null>(null);
   const gap = 2;
   const [autoFlagCount, setAutoFlagCount] = React.useState(1);
+  const [scale, setScale] = React.useState(1);
+  const [naturalHeightPx, setNaturalHeightPx] = React.useState(0);
+  const [scaledHeightPx, setScaledHeightPx] = React.useState(0);
   const hasLabels = Boolean(labels && labels.length);
   const resolvedFlagCount = hasLabels
     ? labels!.length
@@ -127,6 +134,38 @@ const Noren: React.FC<NorenProps> = ({
     []
   );
 
+  React.useLayoutEffect(() => {
+    const frame = scaleFrameRef.current;
+    const content = scaleContentRef.current;
+    if (!frame || !content) return;
+    const syncScale = () => {
+      const naturalWidth = content.offsetWidth;
+      const naturalHeight = content.offsetHeight;
+      if (!naturalWidth || !naturalHeight) return;
+      setNaturalHeightPx((previous) =>
+        previous === naturalHeight ? previous : naturalHeight
+      );
+      const availableWidth = frame.clientWidth;
+      const nextScale = Math.min(1, availableWidth / naturalWidth);
+      setScale((previous) =>
+        Math.abs(previous - nextScale) < 0.001 ? previous : nextScale
+      );
+      const nextScaledHeight = Math.round(naturalHeight * nextScale);
+      setScaledHeightPx((previous) =>
+        previous === nextScaledHeight ? previous : nextScaledHeight
+      );
+    };
+    syncScale();
+    const observer = new ResizeObserver(syncScale);
+    observer.observe(frame);
+    observer.observe(content);
+    window.addEventListener("resize", syncScale);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", syncScale);
+    };
+  }, [resolvedFlagCount, width, height, labels]);
+
   const triggerAnimation = (index: number) => {
     setIsGusting((previous) =>
       previous.map((active, currentIndex) =>
@@ -156,46 +195,58 @@ const Noren: React.FC<NorenProps> = ({
   )} 100%)`;
 
   return (
-    <NorenContainer $clothWidth={widthValue} $clothHeight={heightValue}>
-      <NorenPole />
-      <NorenRow ref={rowRef}>
-        <NorenPanel
-          ref={probeRef}
-          aria-hidden
-          style={{ position: "absolute", visibility: "hidden", pointerEvents: "none" }}
-        >
-          <NorenWraps>
-            <NorenWrap $wrapGradient={wrapGradient} />
-            <NorenWrap $wrapGradient={wrapGradient} />
-            <NorenWrap $wrapGradient={wrapGradient} />
-          </NorenWraps>
-          <NorenCloth
-            $isGusting={false}
-            $phaseDelayMs={0}
-            $baseColor={color}
-            $shadeColor={shadeColor}
-          />
-        </NorenPanel>
-        {Array.from({ length: resolvedFlagCount }, (_, index) => (
-          <NorenPanel key={`noren-panel-${index}`} onMouseEnter={() => triggerAnimation(index)}>
-            <NorenWraps>
-              <NorenWrap $wrapGradient={wrapGradient} />
-              <NorenWrap $wrapGradient={wrapGradient} />
-              <NorenWrap $wrapGradient={wrapGradient} />
-            </NorenWraps>
-            <NorenCloth
-              key={`noren-cloth-${index}`}
-              $isGusting={isGusting[index]}
-              $phaseDelayMs={phaseDelays[index] ?? 0}
-              $baseColor={color}
-              $shadeColor={shadeColor}
+    <NorenScaleFrame
+      ref={scaleFrameRef}
+      $naturalHeightPx={naturalHeightPx}
+      $scaledHeightPx={scaledHeightPx}
+      $scale={scale}
+    >
+      <NorenScaleContent ref={scaleContentRef} $scale={scale}>
+        <NorenContainer $clothWidth={widthValue} $clothHeight={heightValue}>
+          <NorenPole />
+          <NorenRow ref={rowRef}>
+            <NorenPanel
+              ref={probeRef}
+              aria-hidden
+              style={{ position: "absolute", visibility: "hidden", pointerEvents: "none" }}
             >
-              {labels?.[index] ?? ""}
-            </NorenCloth>
-          </NorenPanel>
-        ))}
-      </NorenRow>
-    </NorenContainer>
+              <NorenWraps>
+                <NorenWrap $wrapGradient={wrapGradient} />
+                <NorenWrap $wrapGradient={wrapGradient} />
+                <NorenWrap $wrapGradient={wrapGradient} />
+              </NorenWraps>
+              <NorenCloth
+                $isGusting={false}
+                $phaseDelayMs={0}
+                $baseColor={color}
+                $shadeColor={shadeColor}
+              />
+            </NorenPanel>
+            {Array.from({ length: resolvedFlagCount }, (_, index) => (
+              <NorenPanel
+                key={`noren-panel-${index}`}
+                onMouseEnter={() => triggerAnimation(index)}
+              >
+                <NorenWraps>
+                  <NorenWrap $wrapGradient={wrapGradient} />
+                  <NorenWrap $wrapGradient={wrapGradient} />
+                  <NorenWrap $wrapGradient={wrapGradient} />
+                </NorenWraps>
+                <NorenCloth
+                  key={`noren-cloth-${index}`}
+                  $isGusting={isGusting[index]}
+                  $phaseDelayMs={phaseDelays[index] ?? 0}
+                  $baseColor={color}
+                  $shadeColor={shadeColor}
+                >
+                  {labels?.[index] ?? ""}
+                </NorenCloth>
+              </NorenPanel>
+            ))}
+          </NorenRow>
+        </NorenContainer>
+      </NorenScaleContent>
+    </NorenScaleFrame>
   );
 };
 

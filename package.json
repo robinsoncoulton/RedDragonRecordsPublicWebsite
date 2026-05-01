@@ -30,9 +30,19 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix --max-warnings=0"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -53,6 +63,16 @@
     ]
   },
   "devDependencies": {
-    "@formatjs/ts-transformer": "^3.13.12"
+    "@formatjs/ts-transformer": "^3.13.12",
+    "@storybook/addon-a11y": "^10.3.6",
+    "@storybook/addon-docs": "^10.3.6",
+    "@storybook/addon-onboarding": "^10.3.6",
+    "@storybook/preset-create-react-app": "^10.3.6",
+    "@storybook/react": "^10.3.6",
+    "@storybook/react-webpack5": "^10.3.6",
+    "eslint": "^8.57.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "storybook": "^10.3.6"
   }
 }

@@ -1,0 +1,45 @@
+.poster-frame {
+  --frame-outer-color: rgba(107, 35, 27, 0.78);
+  /* min-height: 100vh; */
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.poster-frame__inner {
+  min-height: calc(100vh - 48px);
+  position: relative;
+  z-index: 1;
+}
+
+.poster-frame__content {
+  position: relative;
+  z-index: 2;
+  min-height: calc(100vh - 48px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+
+  .poster-frame__inner {
+    min-height: calc(100vh - 36px);
+  }
+
+  .poster-frame__content {
+    min-height: calc(100vh - 36px);
+  }
+}
+
+.poster-frame__texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.poster-frame__texture > * {
+  width: 100%;
+  height: 100%;
+}
+
+
+/*# sourceMappingURL=Components-Header-Header-stories.cd0ee6b7.chunk.css.map*/

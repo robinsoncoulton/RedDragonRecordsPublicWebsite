@@ -1,2 +1,2 @@
-export { designTokens, media } from "./tokens";
+export { designTokens, media, layoutBreakpoint, layoutMedia } from "./tokens";
 export { minimalPalettes, getPaletteForTheme } from "./palettes";

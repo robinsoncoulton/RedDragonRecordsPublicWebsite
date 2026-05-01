@@ -51,7 +51,7 @@ export const equipmentByCategory: EquipmentCategoryDTO[] = [
       "1073 EQ Golden Age Project EQ73mk 2",
       "Lexicon Reverb",
       "TC Electronic Digital Delay Processor",
-      "Akai Reel to Reel tape machine",
+      "Akai X-1000 Reel to Reel tape machine",
       "Palmer DiCappo Reamplification box",
       "Yamaha HS-8 Studio Monitors",
       "M-Audio 49key Midi Controller",
@@ -99,6 +99,7 @@ export const equipmentByCategory: EquipmentCategoryDTO[] = [
       "Custom Audio Electronics MC404 Wah",
       "Sans-Amp Bass Driver",
       "Digitech Whammy DT",
+      "Stone Deaf Parametric EQ Distortion"
     ],
   },
 ];

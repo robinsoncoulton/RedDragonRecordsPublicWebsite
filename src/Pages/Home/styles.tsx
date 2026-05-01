@@ -1,4 +1,4 @@
-import styled, { css, keyframes } from "styled-components";
+import styled, { css } from "styled-components";
 import { Link } from "react-router-dom";
 import { designTokens, media } from "../../DesignSystem";
 import { getColors } from "../../Styles/colors";
@@ -17,20 +17,6 @@ interface PanelProps extends ThemedElementProps {
 interface SubHeadingProps extends ThemedElementProps {
   borderTop?: boolean;
 }
-
-const headlineWipe = keyframes`
-  0% {
-    clip-path: inset(0 100% 0 0);
-    opacity: 0;
-  }
-  8% {
-    opacity: 1;
-  }
-  100% {
-    clip-path: inset(0 0% 0 0);
-    opacity: 1;
-  }
-`;
 
 export const HomeShell = styled.div<ThemedElementProps>`
   display: flex;
@@ -69,11 +55,64 @@ export const ServicesPanelShell = styled.div`
 `;
 
 export const HeroGrid = styled.div`
+  position: relative;
+  isolation: isolate;
   display: grid;
   gap: ${designTokens.spacing.xl};
   ${media.lg} {
     grid-template-columns: 0.8fr 1.2fr;
+    &::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      top: 1px;
+      bottom: 0;
+      width: clamp(4rem, 500px, 500px);
+      background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.65) 35%,
+        rgba(0, 0, 0, 0.2) 70%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      z-index: 2;
+      pointer-events: none;
+    }
   }
+`;
+
+export const HeroCopy = styled.div`
+  position: relative;
+  padding: ${designTokens.spacing.xl};
+  > * {
+    position: relative;
+    z-index: 4;
+  }
+  text-shadow:
+    -3px 0 0 #000,
+    3px 0 0 #000,
+    0 -3px 0 #000,
+    0 3px 0 #000,
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+    2px 2px 0 #000,
+    -3px -1px 0 #000,
+    -3px 1px 0 #000,
+    3px -1px 0 #000,
+    3px 1px 0 #000,
+    -1px -3px 0 #000,
+    1px -3px 0 #000,
+    -1px 3px 0 #000,
+    1px 3px 0 #000;
+`;
+
+export const HeroDivider = styled.div<ThemedElementProps>`
+  height: ${designTokens.borderWidth.thin};
+  background: ${({ theme }) => getColors(theme).subheadingBorder};
+  margin-bottom: ${designTokens.spacing.sm};
+  position: relative;
+  z-index: 0;
 `;
 
 export const Headline = styled.h1`
@@ -81,28 +120,6 @@ export const Headline = styled.h1`
   font-size: ${designTokens.fontSize["6xl"]};
   line-height: ${designTokens.lineHeight.tight};
   margin-bottom: ${designTokens.spacing.md};
-`;
-
-export const HeadlineStack = styled(Headline)`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-`;
-
-interface HeadlineWipeLineProps {
-  $delayMs: number;
-}
-
-export const HeadlineWipeLine = styled.span<HeadlineWipeLineProps>`
-  display: block;
-  width: fit-content;
-  will-change: clip-path, opacity;
-  animation-name: ${headlineWipe};
-  animation-duration: 0.65s;
-  animation-timing-function: cubic-bezier(0.2, 0.85, 0.2, 1);
-  animation-delay: ${({ $delayMs }) => `${$delayMs}ms`};
-  animation-fill-mode: both;
-  animation-iteration-count: 1;
 `;
 
 export const SubHeading = styled.h2<SubHeadingProps>`
@@ -188,6 +205,7 @@ export const PrimaryButtonArrow = styled.span<ThemedElementProps>`
 
 export const HeroPlaceholder = styled.div<ThemedElementProps>`
   position: relative;
+  z-index: 1;
   min-height: 24rem;
   display: grid;
   place-items: center;
@@ -200,6 +218,7 @@ export const HeroPlaceholder = styled.div<ThemedElementProps>`
 
 export const HeroLogo = styled.img`
   position: absolute;
+  z-index: 1;
   bottom: -61px;
   right: -100px;
   height: 128%;

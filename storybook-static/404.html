@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Red Dragon Records</title>
+    <script>
+      (function () {
+        var l = window.location;
+        var path = l.pathname
+          .replace(/^\//, "")
+          .replace(/&/g, "~and~");
+        var query = l.search ? l.search.slice(1).replace(/&/g, "~and~") : "";
+        var redirect = l.origin + "/?/" + path;
+        if (query) {
+          redirect += "&" + query;
+        }
+        redirect += l.hash || "";
+        l.replace(redirect);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

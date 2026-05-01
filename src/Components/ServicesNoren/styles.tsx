@@ -18,8 +18,33 @@ interface NorenContainerProps {
   $clothHeight: string;
 }
 
+interface NorenScaleFrameProps {
+  $naturalHeightPx: number;
+  $scaledHeightPx: number;
+  $scale: number;
+}
+
+interface NorenScaleContentProps {
+  $scale: number;
+}
+
+export const NorenScaleFrame = styled.div<NorenScaleFrameProps>`
+  width: 100%;
+  display: block;
+  height: ${({ $scale, $naturalHeightPx, $scaledHeightPx }) =>
+    `${Math.round(($scale >= 1 ? $naturalHeightPx : $scaledHeightPx) || 0)}px`};
+`;
+
+export const NorenScaleContent = styled.div<NorenScaleContentProps>`
+  width: max-content;
+  margin: 0 auto;
+  transform-origin: top center;
+  transform: scale(${({ $scale }) => $scale});
+`;
+
 export const NorenContainer = styled.div<NorenContainerProps>`
   position: relative;
+  width: max-content;
   --noren-cloth-width: ${({ $clothWidth }) => $clothWidth};
   --noren-cloth-height: ${({ $clothHeight }) => $clothHeight};
   --noren-strap-size: 20px;

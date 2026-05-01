@@ -1,40 +1,18 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
-import { baseRoutes } from "../../Utils/routes";
 import Selector from "../Selector";
 import { ThemedElementProps } from "../../Utils/Theme/types";
-import { NonEmptyArray } from "../../types";
+import { useRouteNavigation } from "./useRouteNavigation";
 
 const Navbar: React.FC<ThemedElementProps> = ({ theme }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const getOptions = (): NonEmptyArray<string> => {
-    if (baseRoutes.length === 0) throw new Error("no routes found!");
-    return baseRoutes.map((route) => route.label) as NonEmptyArray<string>;
-  };
-
-  const selectedOption =
-    baseRoutes.find((route) => route.path === location.pathname)?.label ??
-    baseRoutes[0].label;
-
-  const clickHandler = (selection: string) => {
-    if (selection === "Contact") {
-      window.location.assign("mailto:contact@reddragonrecords.tw");
-      return;
-    }
-    const nextPath = baseRoutes.find((route) => route.label === selection)?.path;
-    if (!nextPath || nextPath === location.pathname) return;
-    navigate(nextPath);
-  };
+  const { options, selectedOption, onSelect } = useRouteNavigation();
 
   return (
     <Selector
       theme={theme}
-      options={getOptions()}
+      options={options}
       selectedOption={selectedOption}
-      onSelect={clickHandler}
+      onSelect={onSelect}
     />
   );
 };

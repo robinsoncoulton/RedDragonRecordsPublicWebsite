@@ -13,14 +13,25 @@ import micMd421 from "../../Assets/Icons/Poster/icon_poster_mic_md421.png";
 import micNt5 from "../../Assets/Icons/Poster/icon_poster_mic_nt5.png";
 import micSm57 from "../../Assets/Icons/Poster/icon_poster_mic_sm57.png";
 import micSm58 from "../../Assets/Icons/Poster/icon_poster_mic_sm58.png";
+import gearBlackstar from "../../Assets/Icons/Poster/icon_poster_gear_blackstar.png";
+import gearGibsonSg from "../../Assets/Icons/Poster/icon_poster_gear_gibson_sg.png";
+import gearGodin from "../../Assets/Icons/Poster/icon_poster_gear_godin.png";
+import gearJazzmaster from "../../Assets/Icons/Poster/icon_poster_gear_jazzmaster.png";
+import gearLaney from "../../Assets/Icons/Poster/icon_poster_gear_laney.png";
+import gearLudwig from "../../Assets/Icons/Poster/icon_poster_gear_ludwig.png";
+import gearMarshallJvm410 from "../../Assets/Icons/Poster/icon_poster_gear_marshall_jvm410.png";
+import gearPaiste from "../../Assets/Icons/Poster/icon_poster_gear_paiste.png";
+import gearStrat from "../../Assets/Icons/Poster/icon_poster_gear_strat.png";
+import gearTelecaster from "../../Assets/Icons/Poster/icon_poster_gear_telecaster.png";
 import {
   Body,
   CarouselContainer,
   CarouselSlide,
   CarouselViewport,
   CTA,
-  HeadlineStack,
-  HeadlineWipeLine,
+  Headline,
+  HeroCopy,
+  HeroDivider,
   HeroGrid,
   HeroLogo,
   HeroPlaceholder,
@@ -57,7 +68,28 @@ const toolStickers = [
   { name: "Rode NT5", icon: micNt5 },
   { name: "Shure SM57", icon: micSm57 },
   { name: "Shure SM58", icon: micSm58 },
+  { name: "Blackstar HT-5", icon: gearBlackstar },
+  { name: "Gibson SG", icon: gearGibsonSg },
+  { name: "Godin Radiator", icon: gearGodin },
+  { name: "Fender Jazzmaster", icon: gearJazzmaster },
+  { name: "Laney L5 Lionheart", icon: gearLaney },
+  { name: "Ludwig Classic Maple", icon: gearLudwig },
+  { name: "Marshall JVM410H", icon: gearMarshallJvm410 },
+  { name: "Paiste 2002", icon: gearPaiste },
+  { name: "Fender Stratocaster", icon: gearStrat },
+  { name: "Fender Telecaster", icon: gearTelecaster },
 ];
+const shuffleArray = <T,>(items: T[]) => {
+  const nextItems = [...items];
+  for (let index = nextItems.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [nextItems[index], nextItems[randomIndex]] = [
+      nextItems[randomIndex],
+      nextItems[index],
+    ];
+  }
+  return nextItems;
+};
 const brightenHexColor = (hex: string, amount: number) => {
   const normalized = hex.replace("#", "");
   const expanded =
@@ -87,6 +119,10 @@ const brightenHexColor = (hex: string, amount: number) => {
 
 const Home: React.FC = () => {
   const { theme } = useTheme();
+  const randomizedToolStickers = React.useMemo(
+    () => shuffleArray(toolStickers),
+    []
+  );
   const openContactMail = () => {
     window.location.assign("mailto:contact@reddragonrecords.tw");
   };
@@ -140,15 +176,18 @@ const Home: React.FC = () => {
   return (
     <Page>
       <HomeShell theme={theme}>
-        <Panel theme={theme} borderBottomOnly>
+        <Panel theme={theme} borderBottomOnly noPadding>
           <HeroGrid>
-            <div>
-              <HeadlineStack>
-                <HeadlineWipeLine $delayMs={0}>RED</HeadlineWipeLine>
-                <HeadlineWipeLine $delayMs={180}>DRAGON</HeadlineWipeLine>
-                <HeadlineWipeLine $delayMs={360}>RECORDS</HeadlineWipeLine>
-              </HeadlineStack>
-              <SubHeading theme={theme} borderTop>
+            <HeroCopy>
+              <Headline>
+                RED
+                <br />
+                DRAGON
+                <br />
+                RECORDS
+              </Headline>
+              <HeroDivider theme={theme} />
+              <SubHeading theme={theme}>
                 Tainan Record Company
               </SubHeading>
               <Body theme={theme}>
@@ -159,7 +198,7 @@ const Home: React.FC = () => {
                 <PrimaryButtonFill theme={theme} />
                 <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
               </PrimaryButton>
-            </div>
+            </HeroCopy>
             <HeroPlaceholder theme={theme}>
               <HeroLogo src={heroArtists} alt="Red Dragon Records artists" />
             </HeroPlaceholder>
@@ -234,7 +273,7 @@ const Home: React.FC = () => {
               <ToolsSideFadeOverlay />
               <CarouselViewport ref={emblaRef} onWheel={pauseAndResumeAutoplay}>
                 <CarouselContainer>
-                  {toolStickers.map(({ name, icon }, index) => (
+                  {randomizedToolStickers.map(({ name, icon }, index) => (
                     <CarouselSlide
                       key={name}
                       theme={theme}

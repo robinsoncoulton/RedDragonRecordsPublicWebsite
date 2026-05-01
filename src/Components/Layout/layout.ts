@@ -86,8 +86,10 @@ export const HeaderContainer = styled.div`
 `;
 
 export const NorenContainer = styled.div`
+  position: relative;
   left: 0;
   right: 0;
+  overflow: visible;
 `;
 
 export const FixedBottomFade = styled.div`

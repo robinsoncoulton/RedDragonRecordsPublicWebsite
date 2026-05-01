@@ -108,9 +108,18 @@ export const designTokens = {
 };
 
 export const media = {
+  xs: `@media (min-width: ${designTokens.breakpoint.xs})`,
   sm: `@media (min-width: ${designTokens.breakpoint.sm})`,
   md: `@media (min-width: ${designTokens.breakpoint.md})`,
   lg: `@media (min-width: ${designTokens.breakpoint.lg})`,
   xl: `@media (min-width: ${designTokens.breakpoint.xl})`,
   xxl: `@media (min-width: ${designTokens.breakpoint.xxl})`,
+};
+
+export const layoutBreakpoint = {
+  headerDesktop: designTokens.breakpoint.lg,
+} as const;
+
+export const layoutMedia = {
+  headerDesktop: `@media (min-width: ${layoutBreakpoint.headerDesktop})`,
 };
