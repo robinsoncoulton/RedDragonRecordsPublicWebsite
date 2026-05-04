@@ -24,4 +24,6 @@ export interface Palette {
   brandLowlight: string;
   brandDarkest: string;
   brandDarkHighlight: string;
+  roofTeal: string;
+  roofTempleOrange: string;
 }

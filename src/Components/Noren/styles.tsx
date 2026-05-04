@@ -7,6 +7,7 @@ interface NorenClothProps {
   $phaseDelayMs: number;
   $baseColor: string;
   $shadeColor: string;
+  $breezeMultiplier: number;
 }
 
 interface NorenColorProps {
@@ -130,6 +131,13 @@ export const NorenCloth = styled.div<NorenClothProps>`
   background-position: 0 0, 1px 1px, 0 0;
   transition: clip-path 220ms ease, box-shadow 220ms ease;
   will-change: clip-path, box-shadow, background;
+  --noren-breeze-right-offset: ${({ $breezeMultiplier }) => `${2 * $breezeMultiplier}%`};
+  --noren-breeze-left-offset: ${({ $breezeMultiplier }) => `${4 * $breezeMultiplier}%`};
+  --noren-gust-right-peak-offset: ${({ $breezeMultiplier }) => `${9 * $breezeMultiplier}%`};
+  --noren-gust-left-peak-offset: ${({ $breezeMultiplier }) => `${15 * $breezeMultiplier}%`};
+  --noren-gust-right-secondary-offset: ${({ $breezeMultiplier }) =>
+    `${13 * $breezeMultiplier}%`};
+  --noren-gust-left-secondary-offset: ${({ $breezeMultiplier }) => `${5 * $breezeMultiplier}%`};
   ${({ $isGusting, $phaseDelayMs }) =>
     $isGusting
       ? css`

@@ -5,6 +5,7 @@ import PosterFrame from "../PosterFrame/PosterFrame";
 import Header from "../Header";
 import { StyledPage, StyledPageContent, StyledPageTexture } from "../Page/styles";
 import { useTheme } from "../../Utils/Theme";
+import { Theme } from "../../Utils/Theme/types";
 import { getColors } from "../../Styles/colors";
 import {
   FixedBottomFade,
@@ -26,6 +27,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { theme } = useTheme();
   const colors = getColors(theme);
+  const roofColor = theme === Theme.DARK ? colors.roofTempleOrange : colors.roofTeal;
   return (
     <PosterFrame>
       <IosNotchBuffer theme={theme} />
@@ -37,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <TaiwanContainer>
         <TileRoofContainer>
           <TileRoof
-            color="#39b9bd"
+            color={roofColor}
             height={200}
             circleSize={24}
             depth={8}

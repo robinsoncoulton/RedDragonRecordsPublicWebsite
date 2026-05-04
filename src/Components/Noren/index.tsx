@@ -17,6 +17,7 @@ interface NorenProps {
   flagCount?: number;
   width?: number | string;
   height?: number | string;
+  breezeMultiplier?: number;
 }
 
 const toPx = (value: number | string) =>
@@ -55,6 +56,7 @@ const Noren: React.FC<NorenProps> = ({
   flagCount,
   width = 96,
   height = 96,
+  breezeMultiplier = 1.4,
 }) => {
   const rowRef = React.useRef<HTMLDivElement | null>(null);
   const probeRef = React.useRef<HTMLDivElement | null>(null);
@@ -193,6 +195,7 @@ const Noren: React.FC<NorenProps> = ({
     color,
     0.22
   )} 100%)`;
+  const resolvedBreezeMultiplier = Math.max(0, breezeMultiplier);
 
   return (
     <NorenScaleFrame
@@ -220,6 +223,7 @@ const Noren: React.FC<NorenProps> = ({
                 $phaseDelayMs={0}
                 $baseColor={color}
                 $shadeColor={shadeColor}
+                $breezeMultiplier={resolvedBreezeMultiplier}
               />
             </NorenPanel>
             {Array.from({ length: resolvedFlagCount }, (_, index) => (
@@ -241,6 +245,7 @@ const Noren: React.FC<NorenProps> = ({
                   $phaseDelayMs={phaseDelays[index] ?? 0}
                   $baseColor={color}
                   $shadeColor={shadeColor}
+                  $breezeMultiplier={resolvedBreezeMultiplier}
                 >
                   {labels?.[index] ?? ""}
                 </NorenCloth>

@@ -28,6 +28,8 @@ export const minimalPalettes: Record<string, Palette> = {
     brandLowlight: "#8A6A53",
     brandDarkest: "#141418",
     brandDarkHighlight: "#333333",
+    roofTeal: "#39b9bd",
+    roofTempleOrange: "#d86a2b",
   },
   dark: {
     primary: "#ef4444",
@@ -55,6 +57,8 @@ export const minimalPalettes: Record<string, Palette> = {
     brandLowlight: "#8A6A53",
     brandDarkest: "#141418",
     brandDarkHighlight: "#333333",
+    roofTeal: "#39b9bd",
+    roofTempleOrange: "#d86a2b",
   },
 };
 

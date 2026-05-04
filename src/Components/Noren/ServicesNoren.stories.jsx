@@ -9,6 +9,7 @@ const meta = {
     color: "#4b0e0e",
     width: 100,
     height: 200,
+    breezeMultiplier: 1.4,
     labels,
   },
   argTypes: {
@@ -16,6 +17,7 @@ const meta = {
     width: { control: { type: "number", min: 40, max: 180, step: 1 } },
     height: { control: { type: "number", min: 80, max: 320, step: 1 } },
     flagCount: { control: { type: "number", min: 1, max: 20, step: 1 } },
+    breezeMultiplier: { control: { type: "number", min: 0, max: 3, step: 0.1 } },
   },
   parameters: {
     layout: "fullscreen",

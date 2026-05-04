@@ -111,7 +111,27 @@ export const CircleTile = styled.div<CircleTileProps>`
       ${({ $tileDark }) => $tileDark} 100%
     );
   box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.32),
-    inset 0 -4px 7px rgba(0, 0, 0, 0.2), 0 2px 3px rgba(0, 0, 0, 0.12);
+    inset 0 -4px 7px rgba(0, 0, 0, 0.2), 0 3px 5px rgba(0, 0, 0, 0.2),
+    0 8px 16px rgba(0, 0, 0, 0.18);
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: ${({ $sizePx }) => `${Math.round($sizePx * 0.52)}px`};
+    height: ${({ $sizePx }) => `${Math.round($sizePx * 0.52)}px`};
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    border: 1px solid ${({ $borderColor }) => $borderColor};
+    background: linear-gradient(
+      180deg,
+      ${({ $tileDark }) => $tileDark} 0%,
+      ${({ $tileMid }) => $tileMid} 45%,
+      ${({ $tileLight }) => $tileLight} 100%
+    );
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 export const GapTriangle = styled.div<GapTriangleProps>`
@@ -156,7 +176,53 @@ export const GapTriangle = styled.div<GapTriangleProps>`
     ${({ $triangleDark }) => $triangleDark} 100%
   );
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.18);
+    inset 0 -2px 3px rgba(0, 0, 0, 0.18), 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 7px 12px rgba(0, 0, 0, 0.16);
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 62%;
+    height: 62%;
+    transform: translate(-50%, -46%);
+    clip-path: polygon(
+      0% 0%,
+      50% 5%,
+      100% 0%,
+      95% 22%,
+      90% 38%,
+      84% 58%,
+      74% 78%,
+      50% 100%,
+      26% 78%,
+      16% 58%,
+      10% 38%,
+      5% 22%
+    );
+    -webkit-clip-path: polygon(
+      0% 0%,
+      50% 5%,
+      100% 0%,
+      95% 22%,
+      90% 38%,
+      84% 58%,
+      74% 78%,
+      50% 100%,
+      26% 78%,
+      16% 58%,
+      10% 38%,
+      5% 22%
+    );
+    border: 1px solid ${({ $borderColor }) => $borderColor};
+    background: linear-gradient(
+      180deg,
+      ${({ $triangleDark }) => $triangleDark} 0%,
+      ${({ $triangleLight }) => $triangleLight} 100%
+    );
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.16),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 export const BackTile = styled.div<BackTileProps>`
