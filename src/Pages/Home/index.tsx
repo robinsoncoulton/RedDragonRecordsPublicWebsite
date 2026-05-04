@@ -207,7 +207,7 @@ const Home: React.FC = () => {
                 Tainan Record Company
               </SubHeading>
               <Body theme={theme}>
-                Analog methadologies. Music made by humans. Love for the craft.
+                Bespoke recording and music production services for hobbyists and professionals alike.
               </Body>
               <ButtonContainer>
                 <PrimaryButton theme={theme} onClick={openContactMail}>
