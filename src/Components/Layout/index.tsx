@@ -14,7 +14,7 @@ import {
   NorenContainer,
 } from "./layout";
 import { IosNotchBuffer } from "./styles";
-import Noren from "../ServicesNoren";
+import Noren from "../Noren";
 
 interface LayoutProps {
   children?: React.ReactNode;

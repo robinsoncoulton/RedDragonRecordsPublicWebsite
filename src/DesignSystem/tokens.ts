@@ -62,7 +62,7 @@ export const designTokens = {
     controlMd: "2.5rem",
     controlLg: "3rem",
     brandLogo: "6.25rem",
-    contentMax: "87.5rem",
+    contentMax: "120rem",
     proseMax: "46rem",
     pageMinHeight: "90vh",
     heroHeight: "35rem",

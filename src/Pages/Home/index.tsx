@@ -290,7 +290,7 @@ const Home: React.FC = () => {
                   ))}
                 </CarouselContainer>
               </CarouselViewport>
-                <ViewFullGearLink to="/equipment" theme={theme} borderless>
+                <ViewFullGearLink to="/studio/equipment" theme={theme} borderless>
                   View Full Gear List →
                 </ViewFullGearLink>
             </ToolsSectionContent>

@@ -11,7 +11,6 @@ export const StyledPage = styled.div`
   margin: 0 auto ${designTokens.spacing["6xl"]};
   box-sizing: border-box;
   padding: ${designTokens.spacing.md};
-  box-shadow: 0px -264px 41px -115px #333;
   &::before {
     content: "";
     position: absolute;

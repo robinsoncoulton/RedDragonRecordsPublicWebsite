@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { designTokens } from "../../DesignSystem";
 export const Frame = styled.div`
   min-height: 100vh;
   padding: 12px;
@@ -90,7 +91,7 @@ export const NorenContainer = styled.div`
   left: 0;
   right: 0;
   overflow: visible;
-  margin-bottom: -22px;
+  margin-bottom: ${designTokens.spacing["6xl"]};
 `;
 
 export const FixedBottomFade = styled.div`
