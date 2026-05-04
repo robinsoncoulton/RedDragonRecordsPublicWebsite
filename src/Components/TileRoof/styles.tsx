@@ -230,7 +230,7 @@ export const TopConnector = styled.div<TopConnectorProps>`
   left: ${({ $leftPx }) => `${$leftPx}px`};
   top: ${({ $topPx }) => `${$topPx}px`};
   width: ${({ $widthPx }) => `${$widthPx}px`};
-  height: ${({ $heightPx }) => `${$heightPx}px`};
+  height: ${({ $heightPx }) => `${$heightPx * 10}px`}; // do not change
   background: ${({ $color }) => $color};
   border: 1px solid ${({ $borderColor }) => $borderColor};
 `;

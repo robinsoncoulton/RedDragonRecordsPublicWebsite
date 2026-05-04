@@ -91,7 +91,27 @@ export const NorenContainer = styled.div`
   left: 0;
   right: 0;
   overflow: visible;
+  margin-top: -50px;
   margin-bottom: ${designTokens.spacing["6xl"]};
+  z-index: -5;
+`;
+
+export const TileRoofContainer = styled.div`
+  position: relative;
+  left: 0;
+  right: 0;
+  overflow: visible;
+  margin-bottom: 4px;
+  min-height: min-content;
+  `
+  
+export const TaiwanContainer = styled.div`
+  position: relative;
+  left: 0;
+  right: 0;
+  overflow: visible;
+  z-index: 0;
+  top: 0;
 `;
 
 export const FixedBottomFade = styled.div`
