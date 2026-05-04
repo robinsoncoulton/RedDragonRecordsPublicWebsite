@@ -37,6 +37,8 @@ import {
   HeroCopy,
   HeroDivider,
   HeroGrid,
+  HeroLeftShade,
+  HeroRightShade,
   HeroLogo,
   HeroPlaceholder,
   HomeShell,
@@ -183,6 +185,8 @@ const Home: React.FC = () => {
     <Page>
       <HomeShell theme={theme}>
         <Panel theme={theme} borderBottomOnly noPadding>
+          <HeroLeftShade aria-hidden="true" />
+          <HeroRightShade aria-hidden="true" />
           <NorenContainer>
             <Noren
               color={colors.brandDarkest}

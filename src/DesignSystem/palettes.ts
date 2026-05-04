@@ -58,7 +58,7 @@ export const minimalPalettes: Record<string, Palette> = {
     brandDarkest: "#141418",
     brandDarkHighlight: "#333333",
     roofTeal: "#39b9bd",
-    roofTempleOrange: "#d86a2b",
+    roofTempleOrange: "#D9452B",
   },
 };
 

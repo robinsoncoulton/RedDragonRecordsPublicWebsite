@@ -26,6 +26,8 @@ export const HomeShell = styled.div<ThemedElementProps>`
 `;
 
 export const  Panel = styled.section<PanelProps>`
+  position: relative;
+  z-index: 1;
   ${({ noPadding }) =>
     noPadding
       ? css`
@@ -61,23 +63,50 @@ export const HeroGrid = styled.div`
   gap: ${designTokens.spacing.xl};
   ${media.lg} {
     grid-template-columns: 0.8fr 1.2fr;
-    &::before {
-      content: "";
-      position: absolute;
-      left: 1px;
-      top: 1px;
-      bottom: 0;
-      width: clamp(4rem, 500px, 500px);
-      background: linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0.9) 0%,
-        rgba(0, 0, 0, 0.65) 35%,
-        rgba(0, 0, 0, 0.2) 70%,
-        rgba(0, 0, 0, 0) 100%
-      );
-      z-index: 2;
-      pointer-events: none;
-    }
+  }
+`;
+
+export const HeroLeftShade = styled.div`
+  display: none;
+  ${media.lg} {
+    display: block;
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    bottom: 0;
+    width: 100%;
+    height: calc(100% - 1px);
+    background: linear-gradient(
+      to bottom right,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.65) 15%,
+      rgba(0, 0, 0, 0.2) 40%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    z-index: -2;
+    pointer-events: none;
+  }
+`;
+
+export const HeroRightShade = styled.div`
+  display: none;
+  ${media.lg} {
+    display: block;
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    bottom: 0;
+    width: 100%;
+    height: calc(100% - 1px);
+    background: linear-gradient(
+      to bottom left,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.65) 15%,
+      rgba(0, 0, 0, 0.2) 40%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    z-index: -1;
+    pointer-events: none;
   }
 `;
 
@@ -130,18 +159,6 @@ const headlineWordStyles = css`
 export const HeadlineRed = styled.span`
   ${headlineWordStyles}
   font-size: ${designTokens.fontSize["6xl"]};
-  // @media (max-width: 900px) {
-  //   font-size: ${designTokens.fontSize["5xl"]};
-  // }
-  // @media (max-width: 600px) {
-  //   font-size: 2.7rem;
-  // }
-  // @media (max-width: 480px) {
-  //   font-size: 2.4rem;
-  // }
-  // @media (max-width: 400px) {
-  //   font-size: 2.15rem;
-  // }
 `;
 
 export const HeadlineDragon = styled.span`
@@ -206,6 +223,7 @@ export const PrimaryButton = styled.button<ThemedElementProps>`
   &:hover {
     color: ${({ theme }) => getColors(theme).background};
   }
+  white-space: nowrap;
 `;
 
 export const ButtonContainer = styled.div`
@@ -215,6 +233,7 @@ export const ButtonContainer = styled.div`
 export const PrimaryButtonText = styled.span`
   position: relative;
   z-index: 3;
+  whitespace: nowrap;
 `;
 
 export const PrimaryButtonFill = styled.span<ThemedElementProps>`
@@ -505,5 +524,5 @@ export const CTA = styled.div<ThemedElementProps>`
 `;
 
 export const NorenContainer = styled.div`
-  margin-top: -25px;
+  margin-top: -35px;
 `;
