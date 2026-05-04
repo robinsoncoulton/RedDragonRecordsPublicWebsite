@@ -31,6 +31,9 @@ import {
   CarouselViewport,
   CTA,
   Headline,
+  HeadlineDragon,
+  HeadlineRecords,
+  HeadlineRed,
   HeroCopy,
   HeroDivider,
   HeroGrid,
@@ -191,11 +194,9 @@ const Home: React.FC = () => {
           <HeroGrid>
             <HeroCopy>
               <Headline>
-                RED
-                <br />
-                DRAGON
-                <br />
-                RECORDS
+                <HeadlineRed>RED</HeadlineRed>
+                <HeadlineDragon>DRAGON</HeadlineDragon>
+                <HeadlineRecords>RECORDS</HeadlineRecords>
               </Headline>
               <HeroDivider theme={theme} />
               <SubHeading theme={theme}>

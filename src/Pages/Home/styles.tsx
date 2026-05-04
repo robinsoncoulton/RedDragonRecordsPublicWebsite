@@ -117,9 +117,50 @@ export const HeroDivider = styled.div<ThemedElementProps>`
 
 export const Headline = styled.h1`
   font-family: var(--font-headline);
-  font-size: ${designTokens.fontSize["6xl"]};
-  line-height: ${designTokens.lineHeight.tight};
+  line-height: 1;
   margin-bottom: ${designTokens.spacing.md};
+  white-space: nowrap;
+`;
+
+const headlineWordStyles = css`
+  display: block;
+  line-height: 1;
+`;
+
+export const HeadlineRed = styled.span`
+  ${headlineWordStyles}
+  font-size: ${designTokens.fontSize["6xl"]};
+  // @media (max-width: 900px) {
+  //   font-size: ${designTokens.fontSize["5xl"]};
+  // }
+  // @media (max-width: 600px) {
+  //   font-size: 2.7rem;
+  // }
+  // @media (max-width: 480px) {
+  //   font-size: 2.4rem;
+  // }
+  // @media (max-width: 400px) {
+  //   font-size: 2.15rem;
+  // }
+`;
+
+export const HeadlineDragon = styled.span`
+  ${headlineWordStyles}
+  font-size: ${designTokens.fontSize["6xl"]};
+  @media (max-width: 385px) {
+    font-size: ${designTokens.fontSize["5xl"]};
+  }
+`;
+
+export const HeadlineRecords = styled.span`
+  ${headlineWordStyles}
+  font-size: ${designTokens.fontSize["6xl"]};
+  @media (max-width: 600px) {
+    font-size: ${designTokens.fontSize["5.5xl"]};
+  }
+  @media (max-width: 385px) {
+    font-size: ${designTokens.fontSize["5xl"]};
+  }
 `;
 
 export const SubHeading = styled.h2<SubHeadingProps>`
