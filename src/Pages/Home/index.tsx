@@ -3,6 +3,7 @@ import { PaperTexture } from "@paper-design/shaders-react";
 import useEmblaCarousel from "embla-carousel-react";
 import WheelGesturesPlugin from "embla-carousel-wheel-gestures";
 import Page from "../../Components/Page";
+import Noren from "../../Components/Noren";
 import { useTheme } from "../../Utils/Theme";
 import { getColors } from "../../Styles/colors";
 import heroArtists from "../../Assets/hero_artists.png";
@@ -58,6 +59,7 @@ import {
   ToolTile,
   ViewFullGearLink,
   ButtonContainer,
+  NorenContainer,
 } from "./styles";
 
 const services = ["Recording", "Mixing", "Production", "Session Work"];
@@ -178,6 +180,14 @@ const Home: React.FC = () => {
     <Page>
       <HomeShell theme={theme}>
         <Panel theme={theme} borderBottomOnly noPadding>
+          <NorenContainer>
+            <Noren
+              color={colors.brandDarkest}
+              height={200}
+              width={100}
+              labels={["轟", "隆", "紅", "龍", "音", "樂", "製", "作", "工", "作", "室"]}
+            />
+          </NorenContainer>
           <HeroGrid>
             <HeroCopy>
               <Headline>

@@ -462,3 +462,7 @@ export const CTA = styled.div<ThemedElementProps>`
   padding: ${designTokens.spacing["5xl"]};
   text-align: center;
 `;
+
+export const NorenContainer = styled.div`
+  margin-top: -25px;
+`;

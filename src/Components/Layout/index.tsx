@@ -12,12 +12,10 @@ import {
   FixedBottomWarp,
   FixedTopFade,
   HeaderContainer,
-  NorenContainer,
   TaiwanContainer,
   TileRoofContainer,
 } from "./layout";
 import { IosNotchBuffer } from "./styles";
-import Noren from "../Noren";
 import TileRoof from "../TileRoof";
 
 interface LayoutProps {
@@ -46,9 +44,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             rectangleHeightMultiplier={2}
           />
         </TileRoofContainer>
-        <NorenContainer>
-          <Noren color={colors.brandDarkest} height={200} width={100} labels={["轟", "隆", "紅", "龍", "音", "樂", "製", "作", "工", "作", "室"]}/>
-        </NorenContainer>
       </TaiwanContainer>
       <StyledPage>
         <StyledPageTexture aria-hidden="true">
