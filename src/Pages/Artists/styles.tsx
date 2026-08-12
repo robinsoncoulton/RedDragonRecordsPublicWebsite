@@ -79,7 +79,7 @@ export const DeckSlide = styled.article<DeckSlideProps>`
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
   background: ${({ theme }) => getColors(theme).background};
   ${({ $mode, $elastic }) =>
     $mode === "active"
@@ -116,16 +116,73 @@ export const DeckSlide = styled.article<DeckSlideProps>`
       : ""}
 `;
 
+const slideInName = keyframes`
+  from {
+    transform: translate3d(-1.75rem, 0, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+`;
+
+export const ArtistHero = styled.div`
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 42%;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.72) 0%,
+      rgba(0, 0, 0, 0.28) 55%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+`;
+
+export const ArtistHeroImage = styled.img`
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+`;
+
 export const ArtistMeta = styled.div<ThemedElementProps>`
-  padding: ${designTokens.spacing.lg};
-  border-bottom: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
   display: grid;
   gap: ${designTokens.spacing.xs};
 `;
 
-export const ArtistName = styled.h2<ThemedElementProps>`
+export const ArtistName = styled.h2<ThemedElementProps & { $overlay?: boolean; $animate?: boolean }>`
+  margin: 0;
   color: ${({ theme }) => getColors(theme).primary};
   font-size: ${designTokens.fontSize["3xl"]};
+  ${({ $overlay }) =>
+    $overlay
+      ? css`
+          position: absolute;
+          left: ${designTokens.spacing.lg};
+          bottom: ${designTokens.spacing.lg};
+          z-index: 1;
+          max-width: calc(100% - ${designTokens.spacing.lg} * 2);
+        `
+      : ""}
+  ${({ $animate }) =>
+    $animate
+      ? css`
+          opacity: 0;
+          animation: ${slideInName} ${designTokens.duration.slower} ${designTokens.easing.out} 80ms forwards;
+        `
+      : css`
+          opacity: 1;
+        `}
 `;
 
 export const ArtistTag = styled.p`
@@ -137,11 +194,16 @@ export const ArtistTag = styled.p`
 export const ArtistScrollArea = styled.div<ThemedElementProps>`
   min-height: 0;
   overflow-y: auto;
+  display: grid;
+  align-content: start;
+  scrollbar-width: thin;
+  scrollbar-color: ${({ theme }) => getColors(theme).primary} transparent;
+`;
+
+export const ArtistBody = styled.div`
   padding: ${designTokens.spacing.lg};
   display: grid;
   gap: ${designTokens.spacing.lg};
-  scrollbar-width: thin;
-  scrollbar-color: ${({ theme }) => getColors(theme).primary} transparent;
 `;
 
 export const ArtistCopy = styled.p<ThemedElementProps>`

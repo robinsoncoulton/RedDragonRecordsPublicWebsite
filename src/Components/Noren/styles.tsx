@@ -66,7 +66,7 @@ export const NorenPole = styled.div`
   top: calc(${designTokens.spacing.lg} + 1px);
   height: calc(var(--noren-strap-size) - 1px);
   background: linear-gradient(
-    90deg,
+    0deg,
     #4a2b1d 0%,
     #6e402b 30%,
     #805138 50%,

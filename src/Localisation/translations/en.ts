@@ -58,21 +58,28 @@ const enLocalisation = {
         bandArtistName: "Band / Artist Name",
         personalName: "Your Name",
         email: "Email Address",
+        genre: "Genre",
         location: "Location",
         mediaLink: "Link to Music / Video",
         artistBio: "Artist Bio / Tell us about the project",
         message: "Message",
+        representativeImage: "Representative Image",
+        additionalImages: "Additional Images",
       },
       placeholders: {
         mediaLink: "https://",
         artistBio: "What information should be displayed about you?",
         message: "I'm interested in becoming an affiliate artist...",
+        representativeImage: "A photo that represents you or the project.",
+        additionalImages: "Optional. You can attach more photos.",
       },
       submit: "Apply to join",
       submitting: "Sending...",
       success: "Thanks — your application has been sent.",
       error:
         "Something went wrong sending your application. Please try again or email contact@reddragonrecords.tw directly.",
+      fileTooLarge:
+        "Those images are too large to send together. Please keep the total under 8MB.",
     },
   },
 };

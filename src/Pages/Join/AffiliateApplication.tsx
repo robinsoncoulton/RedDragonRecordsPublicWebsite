@@ -12,6 +12,8 @@ import {
   ApplicationSection,
   Field,
   FieldLabel,
+  FileHint,
+  FileInput,
   FormStatus,
   Honeypot,
   JoinForm,
@@ -27,31 +29,66 @@ type JoinFormValuesDTO = {
   bandArtistName: string;
   personalName: string;
   email: string;
+  genre: string;
   location: string;
   mediaLink: string;
   artistBio: string;
   message: string;
 };
 
-type JoinSubmitPayloadDTO = JoinFormValuesDTO & {
-  _subject: string;
-  _template: string;
-  _replyto: string;
+type JoinTextField = {
+  name: keyof JoinFormValuesDTO;
+  type?: "text" | "email" | "url";
+  as?: "input" | "textarea";
+  placeholder?: keyof LocalisationCopy["join"]["application"]["placeholders"];
+};
+
+type JoinFileField = {
+  name: "representativeImage" | "additionalImages";
+  required?: boolean;
+  multiple?: boolean;
 };
 
 const JOIN_FORM_ENDPOINT =
   process.env.REACT_APP_JOIN_FORM_ENDPOINT ??
   "https://formsubmit.co/ajax/contact@reddragonrecords.tw";
 
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/gif";
+
 const emptyValues: JoinFormValuesDTO = {
   bandArtistName: "",
   personalName: "",
   email: "",
+  genre: "",
   location: "",
   mediaLink: "",
   artistBio: "",
   message: "",
 };
+
+const textFields: JoinTextField[] = [
+  { name: "bandArtistName" },
+  { name: "personalName" },
+  { name: "email", type: "email" },
+  { name: "genre" },
+  { name: "location" },
+  { name: "mediaLink", type: "url", placeholder: "mediaLink" },
+  { name: "artistBio", as: "textarea", placeholder: "artistBio" },
+  { name: "message", as: "textarea", placeholder: "message" },
+];
+
+const fileFields: JoinFileField[] = [
+  { name: "representativeImage", required: true },
+  { name: "additionalImages", multiple: true },
+];
+
+const filesFromForm = (formData: FormData) =>
+  ["representativeImage", "additionalImages"].flatMap((name) =>
+    formData
+      .getAll(name)
+      .filter((entry): entry is File => entry instanceof File && entry.size > 0)
+  );
 
 type AffiliateApplicationProps = {
   theme: Theme;
@@ -74,33 +111,39 @@ const AffiliateApplication: React.FC<AffiliateApplicationProps> = ({ theme, copy
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = event.currentTarget;
     if (honeypot) {
       setStatus("success");
       setValues(emptyValues);
+      form.reset();
+      return;
+    }
+    const formData = new FormData(form);
+    const totalBytes = filesFromForm(formData).reduce((sum, file) => sum + file.size, 0);
+    if (totalBytes > MAX_UPLOAD_BYTES) {
+      setStatus("error");
+      setErrorMessage(copy.fileTooLarge);
       return;
     }
     setStatus("submitting");
     setErrorMessage("");
-    const payload: JoinSubmitPayloadDTO = {
-      ...values,
-      _subject: `Affiliate application: ${values.bandArtistName}`,
-      _template: "table",
-      _replyto: values.email,
-    };
+    formData.append("_subject", `Affiliate application: ${values.bandArtistName}`);
+    formData.append("_template", "table");
+    formData.append("_replyto", values.email);
     try {
       const response = await fetch(JOIN_FORM_ENDPOINT, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify(payload),
+        body: formData,
       });
       if (!response.ok) {
         throw new Error("Request failed");
       }
       setStatus("success");
       setValues(emptyValues);
+      form.reset();
     } catch {
       setStatus("error");
       setErrorMessage(copy.error);
@@ -122,7 +165,7 @@ const AffiliateApplication: React.FC<AffiliateApplicationProps> = ({ theme, copy
           </ApplicationPoints>
           <ApplicationClosing theme={theme}>{copy.closing}</ApplicationClosing>
         </ApplicationIntro>
-        <JoinForm onSubmit={handleSubmit} noValidate={false}>
+        <JoinForm onSubmit={handleSubmit} encType="multipart/form-data">
           <Honeypot
             type="text"
             name="_gotcha"
@@ -131,84 +174,49 @@ const AffiliateApplication: React.FC<AffiliateApplicationProps> = ({ theme, copy
             value={honeypot}
             onChange={(event) => setHoneypot(event.target.value)}
           />
-          <Field>
-            <FieldLabel theme={theme}>{copy.fields.bandArtistName}</FieldLabel>
-            <TextInput
-              theme={theme}
-              name="bandArtistName"
-              type="text"
-              required
-              value={values.bandArtistName}
-              onChange={updateField("bandArtistName")}
-            />
-          </Field>
-          <Field>
-            <FieldLabel theme={theme}>{copy.fields.personalName}</FieldLabel>
-            <TextInput
-              theme={theme}
-              name="personalName"
-              type="text"
-              required
-              value={values.personalName}
-              onChange={updateField("personalName")}
-            />
-          </Field>
-          <Field>
-            <FieldLabel theme={theme}>{copy.fields.email}</FieldLabel>
-            <TextInput
-              theme={theme}
-              name="email"
-              type="email"
-              required
-              value={values.email}
-              onChange={updateField("email")}
-            />
-          </Field>
-          <Field>
-            <FieldLabel theme={theme}>{copy.fields.location}</FieldLabel>
-            <TextInput
-              theme={theme}
-              name="location"
-              type="text"
-              required
-              value={values.location}
-              onChange={updateField("location")}
-            />
-          </Field>
-          <Field>
-            <FieldLabel theme={theme}>{copy.fields.mediaLink}</FieldLabel>
-            <TextInput
-              theme={theme}
-              name="mediaLink"
-              type="url"
-              required
-              placeholder={copy.placeholders.mediaLink}
-              value={values.mediaLink}
-              onChange={updateField("mediaLink")}
-            />
-          </Field>
-          <Field>
-            <FieldLabel theme={theme}>{copy.fields.artistBio}</FieldLabel>
-            <TextArea
-              theme={theme}
-              name="artistBio"
-              required
-              placeholder={copy.placeholders.artistBio}
-              value={values.artistBio}
-              onChange={updateField("artistBio")}
-            />
-          </Field>
-          <Field>
-            <FieldLabel theme={theme}>{copy.fields.message}</FieldLabel>
-            <TextArea
-              theme={theme}
-              name="message"
-              required
-              placeholder={copy.placeholders.message}
-              value={values.message}
-              onChange={updateField("message")}
-            />
-          </Field>
+          {textFields.map((field) => (
+            <Field key={field.name}>
+              <FieldLabel theme={theme}>{copy.fields[field.name]}</FieldLabel>
+              {field.as === "textarea" ? (
+                <TextArea
+                  theme={theme}
+                  name={field.name}
+                  required
+                  placeholder={
+                    field.placeholder ? copy.placeholders[field.placeholder] : undefined
+                  }
+                  value={values[field.name]}
+                  onChange={updateField(field.name)}
+                />
+              ) : (
+                <TextInput
+                  theme={theme}
+                  name={field.name}
+                  type={field.type ?? "text"}
+                  required
+                  placeholder={
+                    field.placeholder ? copy.placeholders[field.placeholder] : undefined
+                  }
+                  value={values[field.name]}
+                  onChange={updateField(field.name)}
+                />
+              )}
+            </Field>
+          ))}
+          {fileFields.map((field) => (
+            <Field key={field.name}>
+              <FieldLabel theme={theme}>{copy.fields[field.name]}</FieldLabel>
+              <FileHint theme={theme}>{copy.placeholders[field.name]}</FileHint>
+              <FileInput
+                theme={theme}
+                name={field.name}
+                type="file"
+                accept={IMAGE_ACCEPT}
+                required={field.required}
+                multiple={field.multiple}
+              />
+            </Field>
+          ))}
           <SubmitButton theme={theme} type="submit" disabled={status === "submitting"}>
             <SubmitButtonText>
               {status === "submitting" ? copy.submitting : copy.submit}

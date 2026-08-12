@@ -2,17 +2,20 @@ import React from "react";
 import Page from "../../Components/Page";
 import ComingSoon from "../ComingSoon";
 import { useTheme } from "../../Utils/Theme";
+import woanderEverywhereEternalHero from "../../Assets/Artists/woander_everywhere_eternal.jpg";
 import {
   ArtistCopy,
   ArtistCredit,
   ArtistCredits,
+  ArtistBody,
+  ArtistHero,
+  ArtistHeroImage,
   ArtistImageMock,
   ArtistImageStrip,
   ArtistMeta,
   ArtistName,
   ArtistScrollArea,
   ArtistTag,
-  ArtistsHeading,
   ArtistsShell,
   DeckSlide,
   DeckViewport,
@@ -25,20 +28,18 @@ type ArtistProfile = {
   copy: string[];
   images: string[];
   credits: string[];
+  heroImage?: string;
 };
 
 const mockArtists: ArtistProfile[] = [
   {
-    name: "Neon Widow",
-    genre: "Post-Punk / Dream Noise",
-    city: "Tainan",
-    copy: [
-      "A five-piece band folding brittle drum machine rhythms into tape-saturated guitars.",
-      "Their live set starts minimal and blooms into dense harmonic walls with spoken-word hooks.",
-      "They treat studio sessions like film scenes, writing transitions as if they were camera cuts.",
-    ],
-    images: ["Live Room", "Tape Echo"],
-    credits: ["Debut LP tracking in progress", "Single mixed to 1/4 inch tape", "Tour prep sessions"],
+    name: "Woander Everywhere Eternal",
+    genre: "Genre placeholder",
+    city: "City placeholder",
+    copy: ["Bio placeholder."],
+    images: ["Image placeholder"],
+    credits: ["Credit placeholder"],
+    heroImage: woanderEverywhereEternalHero,
   },
   {
     name: "Salt Cathedral Club",
@@ -101,7 +102,7 @@ type TransitionState = {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const wrapIndex = (value: number, length: number) => ((value % length) + length) % length;
-const SHOW_ARTISTS_SHOWCASE = false;
+const SHOW_ARTISTS_SHOWCASE = true;
 
 const ArtistsShowcase: React.FC = () => {
   const { theme } = useTheme();
@@ -229,35 +230,62 @@ const ArtistsShowcase: React.FC = () => {
   ) => {
     const artist = mockArtists[index];
     return (
-      <DeckSlide key={`${artist.name}-${mode}`} $mode={mode} $direction={direction} $elastic={elastic} theme={theme}>
-        <ArtistMeta theme={theme}>
-          <ArtistName theme={theme}>{artist.name}</ArtistName>
-          <ArtistTag>{artist.genre}</ArtistTag>
-          <ArtistTag>{artist.city}</ArtistTag>
-        </ArtistMeta>
+      <DeckSlide
+        key={`${artist.name}-${mode}`}
+        $mode={mode}
+        $direction={direction}
+        $elastic={elastic}
+        theme={theme}
+      >
         <ArtistScrollArea
           ref={(element) => {
             panelRefs.current[index] = element;
           }}
           theme={theme}
         >
-          {artist.copy.map((paragraph) => (
-            <ArtistCopy key={paragraph} theme={theme}>
-              {paragraph}
-            </ArtistCopy>
-          ))}
-          <ArtistImageStrip>
-            {artist.images.map((image) => (
-              <ArtistImageMock key={image} theme={theme}>
-                {image}
-              </ArtistImageMock>
+          {artist.heroImage ? (
+            <ArtistHero>
+              <ArtistHeroImage src={artist.heroImage} alt="" />
+              <ArtistName
+                theme={theme}
+                $overlay
+                $animate={mode === "active" || mode === "entering"}
+              >
+                {artist.name}
+              </ArtistName>
+            </ArtistHero>
+          ) : null}
+          <ArtistBody>
+            {artist.heroImage ? null : (
+              <ArtistName
+                theme={theme}
+                $animate={mode === "active" || mode === "entering"}
+              >
+                {artist.name}
+              </ArtistName>
+            )}
+            <ArtistMeta theme={theme}>
+              <ArtistTag>{artist.genre}</ArtistTag>
+              <ArtistTag>{artist.city}</ArtistTag>
+            </ArtistMeta>
+            {artist.copy.map((paragraph) => (
+              <ArtistCopy key={paragraph} theme={theme}>
+                {paragraph}
+              </ArtistCopy>
             ))}
-          </ArtistImageStrip>
-          <ArtistCredits>
-            {artist.credits.map((credit) => (
-              <ArtistCredit key={credit}>{credit}</ArtistCredit>
-            ))}
-          </ArtistCredits>
+            <ArtistImageStrip>
+              {artist.images.map((image) => (
+                <ArtistImageMock key={image} theme={theme}>
+                  {image}
+                </ArtistImageMock>
+              ))}
+            </ArtistImageStrip>
+            <ArtistCredits>
+              {artist.credits.map((credit) => (
+                <ArtistCredit key={credit}>{credit}</ArtistCredit>
+              ))}
+            </ArtistCredits>
+          </ArtistBody>
         </ArtistScrollArea>
       </DeckSlide>
     );
@@ -266,7 +294,6 @@ const ArtistsShowcase: React.FC = () => {
   return (
     <Page>
       <ArtistsShell theme={theme}>
-        <ArtistsHeading theme={theme}>Artists</ArtistsHeading>
         <DeckViewport onWheel={handleWheel} theme={theme}>
           {transition
             ? [

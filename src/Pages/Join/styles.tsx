@@ -372,6 +372,49 @@ export const TextArea = styled.textarea<ThemedElementProps>`
   }
 `;
 
+export const FileInput = styled.input<ThemedElementProps>`
+  font: inherit;
+  color: ${({ theme }) => getColors(theme).text};
+  background: transparent;
+  border: ${designTokens.borderWidth.thin} solid
+    ${({ theme }) => getColors(theme).border};
+  border-radius: ${designTokens.radius.md};
+  padding: ${designTokens.spacing.md};
+  outline: none;
+  cursor: pointer;
+  transition: border-color ${designTokens.duration.fast}
+    ${designTokens.easing.standard};
+
+  &:focus {
+    border-color: ${({ theme }) => getColors(theme).primary};
+  }
+
+  &:focus-visible {
+    outline: ${designTokens.borderWidth.thin} solid
+      ${({ theme }) => getColors(theme).primary};
+    outline-offset: 2px;
+  }
+
+  &::file-selector-button {
+    font: inherit;
+    margin-right: ${designTokens.spacing.md};
+    padding: ${designTokens.spacing.xs} ${designTokens.spacing.md};
+    border: ${designTokens.borderWidth.thin} solid
+      ${({ theme }) => getColors(theme).primary};
+    border-radius: ${designTokens.radius.sm};
+    background: transparent;
+    color: ${({ theme }) => getColors(theme).primary};
+    cursor: pointer;
+  }
+`;
+
+export const FileHint = styled.span<ThemedElementProps>`
+  font-family: var(--font-body);
+  color: ${({ theme }) => getColors(theme).textMuted};
+  font-size: ${designTokens.fontSize.xs};
+  line-height: ${designTokens.lineHeight.normal};
+`;
+
 export const Honeypot = styled.input`
   position: absolute;
   left: -10000px;
