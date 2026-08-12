@@ -4,8 +4,11 @@ import useEmblaCarousel from "embla-carousel-react";
 import WheelGesturesPlugin from "embla-carousel-wheel-gestures";
 import Page from "../../Components/Page";
 import Noren from "../../Components/Noren";
+import TileRoof from "../../Components/TileRoof";
 import { useTheme } from "../../Utils/Theme";
+import { Theme } from "../../Utils/Theme/types";
 import { getColors } from "../../Styles/colors";
+import { designTokens } from "../../DesignSystem";
 import heroArtists from "../../Assets/hero_artists.png";
 import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
 import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
@@ -41,6 +44,8 @@ import {
   HeroRightShade,
   HeroLogo,
   HeroPlaceholder,
+  HeroImageShade,
+  MobileRoofShade,
   HomeShell,
   Panel,
   PrimaryButtonArrow,
@@ -51,23 +56,65 @@ import {
   ServicesPanelShell,
   ServiceName,
   ServiceRow,
+  ServiceBorderFrame,
   ServicesList,
+  ServicesLayout,
+  ServicesDetail,
+  ServicesCarouselViewport,
+  ServicesCarouselContainer,
+  ServicesCarouselSlide,
+  ServiceDetailTitle,
+  ServicesPips,
+  ServicePip,
   SubHeading,
   ToolsSectionBackground,
   ToolsSectionContent,
   ToolsSideFadeOverlay,
   ToolsSectionTopTexture,
   ToolsSectionTexture,
-  ThreeCol,
   ToolIcon,
   ToolLabel,
   ToolTile,
   ViewFullGearLink,
   ButtonContainer,
   NorenContainer,
+  MobileTileRoofContainer,
 } from "./styles";
 
-const services = ["Recording", "Mixing", "Production", "Session Work"];
+const services: { name: string; body: string | string[] }[] = [
+  {
+    name: "Recording",
+    body: [
+      "At Red Dragon Records, the goal is to faithfully capture performances and make the sound as complete as possible at the source.",
+      "Drawing inspiration from renowned recording engineers such as Glyn Johns, Eddie Kramer and Steve Albini, our approach is simple: the artist is the creator; the engineer is the facilitator. We focus on musicianship, arrangement, acoustics, microphone placement and the character of real instruments and amplifiers, rather than relying on extensive processing to create the sound afterwards.",
+      "Whether you're recording an album, producing a voiceover or capturing a live performance, Red Dragon Records offers an authentic hybrid analogue recording experience; combining the character and hands-on excitement of traditional studio recording with the flexibility and convenience of a modern digital workflow.",
+    ],
+  },
+  {
+    name: "Mixing",
+    body: [
+      "A hybrid analogue and digital approach combines classic outboard gear, from tube compressors to tape machines, with the precision of modern plugins, bringing clarity and definition to a mix while retaining character, dynamics and creative flair.",
+      "Get hands-on with the mixing console and experience the music come to life at your fingertips, informed by more than two decades of recording, playing and experimenting with sound."
+    ],
+  },
+  {
+    name: "Production",
+    body: [
+      "Creative feedback and suggestions available whenever inspiration reaches an impasse, helping to find a way forward without compromising the original vision.",
+      "Drawing on extensive songwriting and performance experience, with a willingness to experiment in order to find what best serves the music.",
+      "Practical advice on home recording, equipment and recording techniques available to help achieve better results beyond the studio."
+      ]
+  },
+  {
+    name: "Session Work",
+    body: [
+      "Building meaningful connections across the country, Red Dragon Records brings together a network of exceptional musicians and understated talent from throughout Taiwan.",
+      "Drawing on a diverse network of trusted musicians, additional players can be brought into a project to complement an arrangement and find the character that makes it stand out.",
+    ]
+  },
+];
+const getServiceBodyParagraphs = (body: string | string[]) =>
+  (Array.isArray(body) ? body : [body]).map((paragraph) => paragraph.trim()).filter(Boolean);
 const toolStickers = [
   { name: "AKG C414 XLS", icon: micC414 },
   { name: "Shure Beta 52A", icon: micBeta52a },
@@ -138,6 +185,11 @@ const Home: React.FC = () => {
     { loop: true, align: "start", dragFree: true, skipSnaps: true },
     [WheelGesturesPlugin({ forceWheelAxis: "x" })]
   );
+  const [servicesEmblaRef, servicesEmblaApi] = useEmblaCarousel(
+    { loop: false, align: "start", containScroll: "trimSnaps" },
+    [WheelGesturesPlugin({ forceWheelAxis: "x" })]
+  );
+  const [selectedServiceIndex, setSelectedServiceIndex] = React.useState(0);
   const autoplayRef = React.useRef<number | null>(null);
   const resetRef = React.useRef<number | null>(null);
   const clearAutoplay = React.useCallback(() => {
@@ -178,7 +230,63 @@ const Home: React.FC = () => {
     };
   }, [emblaApi, clearAutoplay, pauseAndResumeAutoplay, startAutoplay]);
 
+  React.useEffect(() => {
+    if (!servicesEmblaApi) {
+      return;
+    }
+    const onSelect = () => {
+      setSelectedServiceIndex(servicesEmblaApi.selectedScrollSnap());
+    };
+    onSelect();
+    servicesEmblaApi.on("select", onSelect);
+    servicesEmblaApi.on("reInit", onSelect);
+    return () => {
+      servicesEmblaApi.off("select", onSelect);
+      servicesEmblaApi.off("reInit", onSelect);
+    };
+  }, [servicesEmblaApi]);
+
+  React.useEffect(() => {
+    if (!servicesEmblaApi) {
+      return;
+    }
+    const root = servicesEmblaApi.rootNode();
+    const desktopQuery = window.matchMedia(
+      `(min-width: ${designTokens.breakpoint.lg})`
+    );
+    const syncHeight = () => {
+      if (desktopQuery.matches) {
+        root.style.height = "";
+        return;
+      }
+      const slide =
+        servicesEmblaApi.slideNodes()[servicesEmblaApi.selectedScrollSnap()];
+      if (!slide) {
+        return;
+      }
+      root.style.height = `${slide.getBoundingClientRect().height}px`;
+    };
+    syncHeight();
+    servicesEmblaApi.on("select", syncHeight);
+    servicesEmblaApi.on("reInit", syncHeight);
+    desktopQuery.addEventListener("change", syncHeight);
+    window.addEventListener("resize", syncHeight);
+    return () => {
+      servicesEmblaApi.off("select", syncHeight);
+      servicesEmblaApi.off("reInit", syncHeight);
+      desktopQuery.removeEventListener("change", syncHeight);
+      window.removeEventListener("resize", syncHeight);
+      root.style.height = "";
+    };
+  }, [servicesEmblaApi]);
+
+  const selectService = (index: number) => {
+    setSelectedServiceIndex(index);
+    servicesEmblaApi?.scrollTo(index);
+  };
+
   const colors = getColors(theme);
+  const roofColor = theme === Theme.DARK ? colors.roofTempleOrange : colors.roofTeal;
   const toolsBackgroundColor = colors.background;
   const toolsDetailColor = brightenHexColor(colors.danger, 0.35);
   return (
@@ -221,29 +329,78 @@ const Home: React.FC = () => {
               <HeroLogo src={heroArtists} alt="Red Dragon Records artists" />
             </HeroPlaceholder>
           </HeroGrid>
+          <HeroImageShade aria-hidden="true" />
         </Panel>
 
+        <MobileTileRoofContainer aria-hidden="true">
+          <TileRoof
+            color={roofColor}
+            height={150}
+            circleSize={24}
+            depth={5}
+            rectangleHeightMultiplier={2}
+          />
+          <MobileRoofShade />
+        </MobileTileRoofContainer>
         <Panel theme={theme} borderBottomOnly noPadding>
           <ServicesPanelShell>
-            <ThreeCol>
+            <ServicesLayout>
               <div>
                 <SubHeading theme={theme}>Services</SubHeading>
                 <ServicesList>
                   {services.map((service, index) => (
-                    <ServiceRow key={service} theme={theme}>
-                      <ServiceIndex theme={theme}>{`0${index + 1}`}</ServiceIndex>
-                      <ServiceName>{service}</ServiceName>
+                    <ServiceRow
+                      key={service.name}
+                      theme={theme}
+                      type="button"
+                      $active={selectedServiceIndex === index}
+                      onClick={() => selectService(index)}
+                      aria-pressed={selectedServiceIndex === index}
+                    >
+                      {selectedServiceIndex === index ? (
+                        <ServiceBorderFrame theme={theme} aria-hidden="true" />
+                      ) : null}
+                      <ServiceIndex
+                        theme={theme}
+                        $active={selectedServiceIndex === index}
+                      >{`0${index + 1}`}</ServiceIndex>
+                      <ServiceName>{service.name}</ServiceName>
                     </ServiceRow>
                   ))}
                 </ServicesList>
               </div>
-              <div>
-                <SubHeading theme={theme}>Created By Music Lovers. Built on the shoulders of giants.</SubHeading>
-                <Body theme={theme}>
-                  Red Dragon Records is a recording studio and creative base. Cement your creative ambitions into a permanent realisation.
-                </Body>
-              </div>
-            </ThreeCol>
+              <ServicesDetail>
+                <ServicesCarouselViewport ref={servicesEmblaRef}>
+                  <ServicesCarouselContainer>
+                    {services.map((service) => (
+                      <ServicesCarouselSlide key={service.name}>
+                        <ServiceDetailTitle>{service.name}</ServiceDetailTitle>
+                        {getServiceBodyParagraphs(service.body).map(
+                          (paragraph, paragraphIndex) => (
+                            <Body key={`${service.name}-${paragraphIndex}`} theme={theme}>
+                              {paragraph}
+                            </Body>
+                          )
+                        )}
+                      </ServicesCarouselSlide>
+                    ))}
+                  </ServicesCarouselContainer>
+                </ServicesCarouselViewport>
+                <ServicesPips aria-label="Service slides">
+                  {services.map((service, index) => (
+                    <ServicePip
+                      key={service.name}
+                      theme={theme}
+                      type="button"
+                      $active={selectedServiceIndex === index}
+                      onClick={() => selectService(index)}
+                      aria-label={`Show ${service.name}`}
+                      aria-current={selectedServiceIndex === index}
+                    />
+                  ))}
+                </ServicesPips>
+              </ServicesDetail>
+            </ServicesLayout>
           </ServicesPanelShell>
         </Panel>
 
@@ -313,9 +470,9 @@ const Home: React.FC = () => {
         </Panel>
 
         <CTA theme={theme}>
-          <SubHeading theme={theme}>Enter The Studio</SubHeading>
+          <SubHeading theme={theme}>Make your mark</SubHeading>
           <Body theme={theme}>
-            Make something authentic.
+            Create something that lasts forever.
           </Body>
           <PrimaryButton theme={theme} onClick={openContactMail}>
             <PrimaryButtonText>Get In Touch</PrimaryButtonText>

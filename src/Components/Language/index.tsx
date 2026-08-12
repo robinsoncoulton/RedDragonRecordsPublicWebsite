@@ -3,20 +3,20 @@ import { LanguageSelectProps } from "./types";
 import Selector from "../Selector";
 import supportedLanguages from "./supportedLanguages.json";
 import { NonEmptyArray } from "../../types";
+import { useLocalisation } from "../../Localisation";
 
 const LanguageSelect: React.FC<LanguageSelectProps> = ({ theme }) => {
   const [languages] = useState(supportedLanguages as NonEmptyArray<string>);
-
-  const [language, setLanguage] = useState(languages[0]);
+  const { languageLabel, setLanguageLabel } = useLocalisation();
 
   const handleSelect = (selection: string) => {
-    setLanguage(selection);
+    setLanguageLabel(selection);
   };
 
   return (
     <Selector
       options={languages}
-      selectedOption={language}
+      selectedOption={languageLabel}
       onSelect={handleSelect}
       theme={theme}
     />

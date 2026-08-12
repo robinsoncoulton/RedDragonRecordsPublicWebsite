@@ -7,3 +7,5 @@ const localisation = {
 };
 
 export default localisation;
+export { LocalisationProvider, useLocalisation } from "./LocalisationProvider";
+export type { Locale, LocalisationCopy } from "./types";
