@@ -1,119 +1,121 @@
 import React from "react";
 import Page from "../../Components/Page";
 import ComingSoon from "../ComingSoon";
-import { useTheme } from "../../Utils/Theme";
-import woanderEverywhereEternalHero from "../../Assets/Artists/woander_everywhere_eternal.jpg";
 import {
-  ArtistCopy,
+  FacebookIcon,
+  InstagramIcon,
+  SpotifyIcon,
+  YouTubeIcon,
+} from "../../icons";
+import { useTheme } from "../../Utils/Theme";
+import ArtistCopyContent from "./ArtistCopyContent";
+import { artists } from "./data";
+import {
   ArtistCredit,
   ArtistCredits,
   ArtistBody,
-  ArtistHero,
   ArtistHeroImage,
-  ArtistImageMock,
-  ArtistImageStrip,
   ArtistMeta,
+  HeroPlaceholder,
+  ArtistMusicLinks,
   ArtistName,
   ArtistScrollArea,
+  ArtistSocialLink,
+  ArtistSocialLinks,
+  ArtistSocialFallback,
   ArtistTag,
   ArtistsShell,
+  CardReveal,
+  CardRevealInner,
   DeckSlide,
   DeckViewport,
+  HeroFrame,
+  HeroStage,
 } from "./styles";
+import { SocialPlatform } from "./types";
 
-type ArtistProfile = {
-  name: string;
-  genre: string;
-  city: string;
-  copy: string[];
-  images: string[];
-  credits: string[];
-  heroImage?: string;
+const socialPlatformIcon: Partial<
+  Record<SocialPlatform, React.FunctionComponent<React.SVGProps<SVGSVGElement>>>
+> = {
+  [SocialPlatform.FACEBOOK]: FacebookIcon,
+  [SocialPlatform.YOUTUBE]: YouTubeIcon,
+  [SocialPlatform.INSTAGRAM]: InstagramIcon,
+  [SocialPlatform.SPOTIFY]: SpotifyIcon,
 };
 
-const mockArtists: ArtistProfile[] = [
-  {
-    name: "Woander Everywhere Eternal",
-    genre: "Genre placeholder",
-    city: "City placeholder",
-    copy: ["Bio placeholder."],
-    images: ["Image placeholder"],
-    credits: ["Credit placeholder"],
-    heroImage: woanderEverywhereEternalHero,
-  },
-  {
-    name: "Salt Cathedral Club",
-    genre: "Alt Pop / Disco Guitars",
-    city: "Kaohsiung",
-    copy: [
-      "A producer-fronted project that blends crisp Linn patterns with jagged chorus guitars.",
-      "The artist team builds songs from groove first, then folds in vocal counter melodies.",
-      "Most sessions are tracked at night with a quick mix pass before sunrise.",
-      "Their visual language drives arrangement choices and dynamic drops in each chorus.",
-    ],
-    images: ["Control Room", "Vocal Booth", "Patch Bay"],
-    credits: ["2 EPs released independently", "Sync pitch reel in production", "Live stems archived for remix"],
-  },
-  {
-    name: "Copper Youth",
-    genre: "Indie Rock / Garage Soul",
-    city: "Taichung",
-    copy: [
-      "A trio centered on raw drum tones, close-mic bass, and overdriven ribbon-style ambiance.",
-      "Songs are cut mostly live, then doubled with contrasting guitar layers for width.",
-      "They favor first-take vocals and keep edits to emotion-preserving nudges only.",
-    ],
-    images: ["Drum Corner", "Amp Stack"],
-    credits: ["Full-length album writing camp", "Live-off-floor tracking workflow", "Analog stem print archive"],
-  },
-  {
-    name: "Velvet District",
-    genre: "Cinematic R&B / Electronica",
-    city: "Taipei",
-    copy: [
-      "A collaborative project built around low-end synth movement and intimate vocal stacks.",
-      "Sessions layer modular textures with organic percussion and baritone guitar swells.",
-      "Arrangements are mapped in chapters, each chapter with distinct ambience and reverb depth.",
-      "Their releases emphasize headphone detail with broad mono compatibility for club systems.",
-    ],
-    images: ["Modular Rack", "Percussion Table", "Mix Notes"],
-    credits: ["Concept album chapter one complete", "Dolby Atmos prep stems", "Alt vocal cuts archived"],
-  },
-  {
-    name: "Aster North",
-    genre: "Folk Noir / Experimental",
-    city: "Tainan",
-    copy: [
-      "A songwriter collective mixing fingerstyle acoustics, bowed textures, and field recordings.",
-      "They capture most parts through preamps pushed into gentle harmonic breakup.",
-      "Songs evolve from rough demos into layered narratives with choir-like backing passes.",
-      "Every session ends with a print-through pass for lo-fi alternate versions.",
-    ],
-    images: ["Song Map", "Mic Pair", "Late Night Print"],
-    credits: ["Acoustic suite recording", "Hybrid analog mastering tests", "Film score cues in development"],
-  },
-];
+const socialPlatformLabel: Record<SocialPlatform, string> = {
+  [SocialPlatform.FACEBOOK]: "Facebook",
+  [SocialPlatform.YOUTUBE]: "YouTube",
+  [SocialPlatform.INSTAGRAM]: "Instagram",
+  [SocialPlatform.SPOTIFY]: "Spotify",
+  [SocialPlatform.BANDCAMP]: "Bandcamp",
+};
 
 type TransitionState = {
   from: number;
   to: number;
   direction: 1 | -1;
+  durationMs?: number;
+  spin?: boolean;
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const wrapIndex = (value: number, length: number) => ((value % length) + length) % length;
+const wrapOffset = (index: number, position: number, length: number) => {
+  const head = wrapIndex(position, length);
+  let delta = index - head;
+  if (delta > length / 2) {
+    delta -= length;
+  }
+  if (delta < -length / 2) {
+    delta += length;
+  }
+  return delta;
+};
 const SHOW_ARTISTS_SHOWCASE = true;
+const SLIDE_DURATION_MS = 540;
+const CONTENT_EXPAND_DELAY_MS = 280;
+const SPIN_DURATION_MS = 10000;
+const SPIN_INTRO_MS = 1100;
+const SPIN_START_SCALE = 0.5;
+const easeOutCubic = (progress: number) => 1 - (1 - progress) ** 3;
 
 const ArtistsShowcase: React.FC = () => {
   const { theme } = useTheme();
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [transition, setTransition] = React.useState<TransitionState | null>(null);
   const [elasticOffset, setElasticOffset] = React.useState(0);
+  const [isSpinning, setIsSpinning] = React.useState(artists.length > 1);
+  const [spinPosition, setSpinPosition] = React.useState(0);
+  const [spinReveal, setSpinReveal] = React.useState({
+    opacity: 0,
+    scale: SPIN_START_SCALE,
+  });
+  const [contentOpen, setContentOpen] = React.useState(false);
   const panelRefs = React.useRef<(HTMLDivElement | null)[]>([]);
   const overscrollRef = React.useRef(0);
   const animationTimeoutRef = React.useRef<number | null>(null);
   const elasticResetTimeoutRef = React.useRef<number | null>(null);
+  const contentOpenTimeoutRef = React.useRef<number | null>(null);
   const ignoreWheelUntilRef = React.useRef(0);
+
+  const clearContentOpenTimeout = React.useCallback(() => {
+    if (contentOpenTimeoutRef.current) {
+      window.clearTimeout(contentOpenTimeoutRef.current);
+      contentOpenTimeoutRef.current = null;
+    }
+  }, []);
+
+  const expandContentSoon = React.useCallback(
+    (delayMs = CONTENT_EXPAND_DELAY_MS) => {
+      clearContentOpenTimeout();
+      contentOpenTimeoutRef.current = window.setTimeout(() => {
+        setContentOpen(true);
+        ignoreWheelUntilRef.current = Date.now() + 560;
+      }, delayMs);
+    },
+    [clearContentOpenTimeout]
+  );
 
   React.useEffect(
     () => () => {
@@ -123,9 +125,53 @@ const ArtistsShowcase: React.FC = () => {
       if (elasticResetTimeoutRef.current) {
         window.clearTimeout(elasticResetTimeoutRef.current);
       }
+      if (contentOpenTimeoutRef.current) {
+        window.clearTimeout(contentOpenTimeoutRef.current);
+      }
     },
     []
   );
+
+  React.useEffect(() => {
+    if (artists.length < 2) {
+      setIsSpinning(false);
+      setContentOpen(true);
+      return;
+    }
+    const targetIndex = Math.floor(Math.random() * artists.length);
+    const endPos = artists.length * 3 + targetIndex;
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(1, elapsed / SPIN_DURATION_MS);
+      const intro = easeOutCubic(Math.min(1, elapsed / SPIN_INTRO_MS));
+      setSpinPosition(endPos * easeOutCubic(t));
+      setSpinReveal({
+        opacity: intro,
+        scale: SPIN_START_SCALE + (1 - SPIN_START_SCALE) * intro,
+      });
+      if (t < 1) {
+        raf = window.requestAnimationFrame(tick);
+        return;
+      }
+      setSpinPosition(endPos);
+      setSpinReveal({ opacity: 1, scale: 1 });
+      setActiveIndex(targetIndex);
+      setTransition(null);
+      setIsSpinning(false);
+      expandContentSoon();
+    };
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
+  }, [expandContentSoon]);
+
+  React.useEffect(() => {
+    const panel = panelRefs.current[activeIndex];
+    if (panel) {
+      panel.scrollTop = 0;
+    }
+  }, [activeIndex]);
 
   React.useEffect(() => {
     const originalHtmlOverflow = document.documentElement.style.overflow;
@@ -140,11 +186,13 @@ const ArtistsShowcase: React.FC = () => {
 
   const triggerSlide = React.useCallback(
     (direction: 1 | -1) => {
-      if (transition) {
+      if (transition || isSpinning || !contentOpen) {
         return;
       }
-      const nextIndex = wrapIndex(activeIndex + direction, mockArtists.length);
-      setTransition({ from: activeIndex, to: nextIndex, direction });
+      const nextIndex = wrapIndex(activeIndex + direction, artists.length);
+      clearContentOpenTimeout();
+      setContentOpen(false);
+      setTransition({ from: activeIndex, to: nextIndex, direction, durationMs: SLIDE_DURATION_MS });
       setElasticOffset(0);
       overscrollRef.current = 0;
       if (elasticResetTimeoutRef.current) {
@@ -153,10 +201,10 @@ const ArtistsShowcase: React.FC = () => {
       animationTimeoutRef.current = window.setTimeout(() => {
         setActiveIndex(nextIndex);
         setTransition(null);
-        ignoreWheelUntilRef.current = Date.now() + 180;
-      }, 540);
+        expandContentSoon();
+      }, SLIDE_DURATION_MS);
     },
-    [activeIndex, transition]
+    [activeIndex, transition, isSpinning, contentOpen, clearContentOpenTimeout, expandContentSoon]
   );
 
   const scheduleElasticReset = React.useCallback(() => {
@@ -171,7 +219,7 @@ const ArtistsShowcase: React.FC = () => {
 
   const handleWheel = React.useCallback(
     (event: React.WheelEvent<HTMLDivElement>) => {
-      if (transition) {
+      if (transition || isSpinning || !contentOpen) {
         event.preventDefault();
         return;
       }
@@ -219,22 +267,38 @@ const ArtistsShowcase: React.FC = () => {
       }
       scheduleElasticReset();
     },
-    [activeIndex, transition, triggerSlide, scheduleElasticReset]
+    [activeIndex, transition, isSpinning, contentOpen, triggerSlide, scheduleElasticReset]
   );
 
-  const renderSlide = (
+  const heroModeFor = (index: number) => {
+    if (transition) {
+      if (index === transition.from) {
+        return "leaving" as const;
+      }
+      if (index === transition.to) {
+        return "entering" as const;
+      }
+      return "hidden" as const;
+    }
+    return index === activeIndex ? ("active" as const) : ("hidden" as const);
+  };
+
+  const renderContent = (
     index: number,
     mode: "active" | "entering" | "leaving",
     direction: 1 | -1,
-    elastic: number
+    elastic: number,
+    durationMs = SLIDE_DURATION_MS
   ) => {
-    const artist = mockArtists[index];
+    const artist = artists[index];
+    const hasSocialLinks = Boolean(artist.socialLinks?.length);
     return (
       <DeckSlide
         key={`${artist.name}-${mode}`}
         $mode={mode}
         $direction={direction}
         $elastic={elastic}
+        $durationMs={durationMs}
         theme={theme}
       >
         <ArtistScrollArea
@@ -243,49 +307,51 @@ const ArtistsShowcase: React.FC = () => {
           }}
           theme={theme}
         >
-          {artist.heroImage ? (
-            <ArtistHero>
-              <ArtistHeroImage src={artist.heroImage} alt="" />
-              <ArtistName
-                theme={theme}
-                $overlay
-                $animate={mode === "active" || mode === "entering"}
-              >
-                {artist.name}
-              </ArtistName>
-            </ArtistHero>
-          ) : null}
           <ArtistBody>
-            {artist.heroImage ? null : (
-              <ArtistName
-                theme={theme}
-                $animate={mode === "active" || mode === "entering"}
-              >
-                {artist.name}
-              </ArtistName>
-            )}
             <ArtistMeta theme={theme}>
               <ArtistTag>{artist.genre}</ArtistTag>
               <ArtistTag>{artist.city}</ArtistTag>
             </ArtistMeta>
-            {artist.copy.map((paragraph) => (
-              <ArtistCopy key={paragraph} theme={theme}>
-                {paragraph}
-              </ArtistCopy>
-            ))}
-            <ArtistImageStrip>
-              {artist.images.map((image) => (
-                <ArtistImageMock key={image} theme={theme}>
-                  {image}
-                </ArtistImageMock>
-              ))}
-            </ArtistImageStrip>
-            <ArtistCredits>
-              {artist.credits.map((credit) => (
-                <ArtistCredit key={credit}>{credit}</ArtistCredit>
-              ))}
-            </ArtistCredits>
+            <ArtistCopyContent blocks={artist.copy} theme={theme} />
+            {artist.musicLinks?.length ? (
+              <ArtistMusicLinks>
+                {artist.musicLinks.map((embedHtml, embedIndex) => (
+                  <div
+                    key={`${artist.name}-music-${embedIndex}`}
+                    dangerouslySetInnerHTML={{ __html: embedHtml }}
+                  />
+                ))}
+              </ArtistMusicLinks>
+            ) : null}
+            {artist.credits?.length ? (
+              <ArtistCredits>
+                {artist.credits.map((credit) => (
+                  <ArtistCredit key={credit}>{credit}</ArtistCredit>
+                ))}
+              </ArtistCredits>
+            ) : null}
           </ArtistBody>
+          {hasSocialLinks ? (
+            <ArtistSocialLinks theme={theme}>
+              {artist.socialLinks!.map((link) => {
+                const Icon = socialPlatformIcon[link.platform];
+                const label = socialPlatformLabel[link.platform] ?? link.platform;
+                return (
+                  <ArtistSocialLink
+                    key={`${link.platform}-${link.url}`}
+                    theme={theme}
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={label}
+                    $textOnly={!Icon}
+                  >
+                    {Icon ? <Icon /> : <ArtistSocialFallback>{label}</ArtistSocialFallback>}
+                  </ArtistSocialLink>
+                );
+              })}
+            </ArtistSocialLinks>
+          ) : null}
         </ArtistScrollArea>
       </DeckSlide>
     );
@@ -294,13 +360,72 @@ const ArtistsShowcase: React.FC = () => {
   return (
     <Page>
       <ArtistsShell theme={theme}>
-        <DeckViewport onWheel={handleWheel} theme={theme}>
-          {transition
-            ? [
-                renderSlide(transition.from, "leaving", transition.direction, 0),
-                renderSlide(transition.to, "entering", transition.direction, 0),
-              ]
-            : renderSlide(activeIndex, "active", 1, elasticOffset)}
+        <DeckViewport
+          $compact={!contentOpen}
+          onWheel={handleWheel}
+          theme={theme}
+          style={
+            isSpinning
+              ? {
+                  opacity: spinReveal.opacity,
+                  transform: `scale(${spinReveal.scale})`,
+                }
+              : undefined
+          }
+        >
+          <HeroStage>
+            {artists.map((artist, index) => {
+              const mode = heroModeFor(index);
+              const direction = transition?.direction ?? 1;
+              const durationMs = transition?.durationMs ?? SLIDE_DURATION_MS;
+              const offset = isSpinning
+                ? wrapOffset(index, spinPosition, artists.length)
+                : undefined;
+              const showName =
+                Boolean(artist.heroImage) && !isSpinning && mode !== "hidden";
+              return (
+                <HeroFrame
+                  key={artist.name}
+                  $mode={mode}
+                  $direction={direction}
+                  $durationMs={durationMs}
+                  $hasHero={Boolean(artist.heroImage)}
+                  $spinning={isSpinning}
+                  style={
+                    offset === undefined
+                      ? undefined
+                      : {
+                          transform: `translate3d(${offset * 100}%, ${offset * 100}%, 0)`,
+                          opacity: Math.abs(offset) < 1.02 ? 1 : 0,
+                          zIndex: Math.max(0, Math.round((1.02 - Math.abs(offset)) * 20)),
+                        }
+                  }
+                >
+                  {artist.heroImage ? (
+                    <ArtistHeroImage src={artist.heroImage} alt="" loading="eager" />
+                  ) : (
+                    <HeroPlaceholder theme={theme}>{artist.name}</HeroPlaceholder>
+                  )}
+                  {showName ? (
+                    <ArtistName
+                      theme={theme}
+                      $overlay
+                      $animate={mode === "entering" || (mode === "active" && !transition)}
+                    >
+                      {artist.name}
+                    </ArtistName>
+                  ) : null}
+                </HeroFrame>
+              );
+            })}
+          </HeroStage>
+          <CardReveal $open={contentOpen}>
+            <CardRevealInner>
+              {isSpinning
+                ? null
+                : renderContent(activeIndex, "active", 1, contentOpen ? elasticOffset : 0)}
+            </CardRevealInner>
+          </CardReveal>
         </DeckViewport>
       </ArtistsShell>
     </Page>

@@ -18,7 +18,27 @@ interface NorenProps {
   width?: number | string;
   height?: number | string;
   breezeMultiplier?: number;
+  fullWidth?: boolean;
 }
+
+const panelSpanWidth = (count: number, panelWidth: number, panelGap: number) =>
+  count > 0 ? count * panelWidth + (count - 1) * panelGap : 0;
+
+const calculateSidePadding = (
+  labeledCount: number,
+  panelWidth: number,
+  panelGap: number,
+  targetWidth: number
+) => {
+  if (!labeledCount || !panelWidth || !targetWidth) {
+    return 0;
+  }
+  if (panelSpanWidth(labeledCount, panelWidth, panelGap) >= targetWidth) {
+    return 0;
+  }
+  const totalPanels = Math.ceil((targetWidth + panelGap) / (panelWidth + panelGap));
+  return Math.ceil(Math.max(0, totalPanels - labeledCount) / 2);
+};
 
 const toPx = (value: number | string) =>
   typeof value === "number" ? `${value}px` : value;
@@ -57,6 +77,7 @@ const Noren: React.FC<NorenProps> = ({
   width = 96,
   height = 96,
   breezeMultiplier = 1.4,
+  fullWidth = false,
 }) => {
   const rowRef = React.useRef<HTMLDivElement | null>(null);
   const probeRef = React.useRef<HTMLDivElement | null>(null);
@@ -64,15 +85,23 @@ const Noren: React.FC<NorenProps> = ({
   const scaleContentRef = React.useRef<HTMLDivElement | null>(null);
   const gap = 2;
   const [autoFlagCount, setAutoFlagCount] = React.useState(1);
+  const [sidePaddingCount, setSidePaddingCount] = React.useState(0);
   const [scale, setScale] = React.useState(1);
   const [naturalHeightPx, setNaturalHeightPx] = React.useState(0);
   const [scaledHeightPx, setScaledHeightPx] = React.useState(0);
   const hasLabels = Boolean(labels && labels.length);
-  const resolvedFlagCount = hasLabels
+  const labeledFlagCount = hasLabels
     ? labels!.length
     : flagCount
-      ? Math.max(1, Math.min(flagCount, autoFlagCount))
+      ? Math.max(1, flagCount)
       : autoFlagCount;
+  const resolvedFlagCount = fullWidth
+    ? labeledFlagCount + sidePaddingCount * 2
+    : hasLabels
+      ? labels!.length
+      : flagCount
+        ? Math.max(1, Math.min(flagCount, autoFlagCount))
+        : autoFlagCount;
   const [isGusting, setIsGusting] = React.useState(() =>
     Array.from({ length: resolvedFlagCount }, () => false)
   );
@@ -84,7 +113,36 @@ const Noren: React.FC<NorenProps> = ({
   );
 
   React.useEffect(() => {
-    if (hasLabels) {
+    if (!fullWidth) {
+      setSidePaddingCount(0);
+      return;
+    }
+    const calculatePadding = () => {
+      if (!probeRef.current) {
+        return;
+      }
+      const panelWidth = probeRef.current.offsetWidth;
+      if (!panelWidth) {
+        return;
+      }
+      setSidePaddingCount(
+        calculateSidePadding(labeledFlagCount, panelWidth, gap, window.innerWidth)
+      );
+    };
+    calculatePadding();
+    const observer = new ResizeObserver(calculatePadding);
+    if (probeRef.current) {
+      observer.observe(probeRef.current);
+    }
+    window.addEventListener("resize", calculatePadding);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", calculatePadding);
+    };
+  }, [fullWidth, labeledFlagCount, width, height]);
+
+  React.useEffect(() => {
+    if (hasLabels || fullWidth) {
       return;
     }
     const calculateAutoFlagCount = () => {
@@ -110,7 +168,41 @@ const Noren: React.FC<NorenProps> = ({
     return () => {
       observer.disconnect();
     };
-  }, [hasLabels, width]);
+  }, [hasLabels, fullWidth, width]);
+
+  React.useEffect(() => {
+    if (!fullWidth || hasLabels) {
+      return;
+    }
+    const calculateCenterFlagCount = () => {
+      if (!probeRef.current) {
+        return;
+      }
+      const panelWidth = probeRef.current.offsetWidth;
+      if (!panelWidth) {
+        return;
+      }
+      const targetWidth = window.innerWidth;
+      const maxCenterPanels = Math.max(
+        1,
+        Math.floor((targetWidth + gap) / (panelWidth + gap))
+      );
+      const nextCount = flagCount
+        ? Math.max(1, Math.min(flagCount, maxCenterPanels))
+        : maxCenterPanels;
+      setAutoFlagCount(nextCount);
+    };
+    calculateCenterFlagCount();
+    const observer = new ResizeObserver(calculateCenterFlagCount);
+    if (probeRef.current) {
+      observer.observe(probeRef.current);
+    }
+    window.addEventListener("resize", calculateCenterFlagCount);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", calculateCenterFlagCount);
+    };
+  }, [fullWidth, hasLabels, flagCount, width, height]);
 
   React.useEffect(() => {
     setIsGusting(Array.from({ length: resolvedFlagCount }, () => false));
@@ -147,7 +239,7 @@ const Noren: React.FC<NorenProps> = ({
       setNaturalHeightPx((previous) =>
         previous === naturalHeight ? previous : naturalHeight
       );
-      const availableWidth = frame.clientWidth;
+      const availableWidth = fullWidth ? window.innerWidth : frame.clientWidth;
       const nextScale = Math.min(1, availableWidth / naturalWidth);
       setScale((previous) =>
         Math.abs(previous - nextScale) < 0.001 ? previous : nextScale
@@ -166,7 +258,17 @@ const Noren: React.FC<NorenProps> = ({
       observer.disconnect();
       window.removeEventListener("resize", syncScale);
     };
-  }, [resolvedFlagCount, width, height, labels]);
+  }, [resolvedFlagCount, width, height, labels, fullWidth]);
+
+  const getLabelForIndex = (index: number) => {
+    if (!fullWidth) {
+      return labels?.[index] ?? "";
+    }
+    if (index < sidePaddingCount || index >= sidePaddingCount + labeledFlagCount) {
+      return "";
+    }
+    return labels?.[index - sidePaddingCount] ?? "";
+  };
 
   const triggerAnimation = (index: number) => {
     setIsGusting((previous) =>
@@ -196,6 +298,8 @@ const Noren: React.FC<NorenProps> = ({
     0.22
   )} 100%)`;
   const resolvedBreezeMultiplier = Math.max(0, breezeMultiplier);
+  const textBoost =
+    scale >= 1 ? 1 : Math.min(1.45, 1 / Math.pow(scale, 0.35));
 
   return (
     <NorenScaleFrame
@@ -224,6 +328,7 @@ const Noren: React.FC<NorenProps> = ({
                 $baseColor={color}
                 $shadeColor={shadeColor}
                 $breezeMultiplier={resolvedBreezeMultiplier}
+                $textBoost={textBoost}
               />
             </NorenPanel>
             {Array.from({ length: resolvedFlagCount }, (_, index) => (
@@ -246,8 +351,9 @@ const Noren: React.FC<NorenProps> = ({
                   $baseColor={color}
                   $shadeColor={shadeColor}
                   $breezeMultiplier={resolvedBreezeMultiplier}
+                  $textBoost={textBoost}
                 >
-                  {labels?.[index] ?? ""}
+                  {getLabelForIndex(index)}
                 </NorenCloth>
               </NorenPanel>
             ))}

@@ -9,6 +9,7 @@ import { useTheme } from "../../Utils/Theme";
 import { Theme } from "../../Utils/Theme/types";
 import { getColors } from "../../Styles/colors";
 import { designTokens } from "../../DesignSystem";
+import { useLocalisation } from "../../Localisation";
 import heroArtists from "../../Assets/hero_artists.png";
 import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
 import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
@@ -81,38 +82,6 @@ import {
   MobileTileRoofContainer,
 } from "./styles";
 
-const services: { name: string; body: string | string[] }[] = [
-  {
-    name: "Recording",
-    body: [
-      "At Red Dragon Records, the goal is to faithfully capture performances and make the sound as complete as possible at the source.",
-      "Drawing inspiration from renowned recording engineers such as Glyn Johns, Eddie Kramer and Steve Albini, our approach is simple: the artist is the creator; the engineer is the facilitator. We focus on musicianship, arrangement, acoustics, microphone placement and the character of real instruments and amplifiers, rather than relying on extensive processing to create the sound afterwards.",
-      "Whether you're recording an album, producing a voiceover or capturing a live performance, Red Dragon Records offers an authentic hybrid analogue recording experience; combining the character and hands-on excitement of traditional studio recording with the flexibility and convenience of a modern digital workflow.",
-    ],
-  },
-  {
-    name: "Mixing",
-    body: [
-      "A hybrid analogue and digital approach combines classic outboard gear, from tube compressors to tape machines, with the precision of modern plugins, bringing clarity and definition to a mix while retaining character, dynamics and creative flair.",
-      "Get hands-on with the mixing console and experience the music come to life at your fingertips, informed by more than two decades of recording, playing and experimenting with sound."
-    ],
-  },
-  {
-    name: "Production",
-    body: [
-      "Creative feedback and suggestions available whenever inspiration reaches an impasse, helping to find a way forward without compromising the original vision.",
-      "Drawing on extensive songwriting and performance experience, with a willingness to experiment in order to find what best serves the music.",
-      "Practical advice on home recording, equipment and recording techniques available to help achieve better results beyond the studio."
-      ]
-  },
-  {
-    name: "Session Work",
-    body: [
-      "Building meaningful connections across the country, Red Dragon Records brings together a network of exceptional musicians and understated talent from throughout Taiwan.",
-      "Drawing on a diverse network of trusted musicians, additional players can be brought into a project to complement an arrangement and find the character that makes it stand out.",
-    ]
-  },
-];
 const getServiceBodyParagraphs = (body: string | string[]) =>
   (Array.isArray(body) ? body : [body]).map((paragraph) => paragraph.trim()).filter(Boolean);
 const toolStickers = [
@@ -174,6 +143,9 @@ const brightenHexColor = (hex: string, amount: number) => {
 
 const Home: React.FC = () => {
   const { theme } = useTheme();
+  const { copy } = useLocalisation();
+  const home = copy.home;
+  const services = home.services.items;
   const randomizedToolStickers = React.useMemo(
     () => shuffleArray(toolStickers),
     []
@@ -297,36 +269,37 @@ const Home: React.FC = () => {
           <HeroRightShade aria-hidden="true" />
           <NorenContainer>
             <Noren
+              fullWidth
               color={colors.brandDarkest}
               height={200}
               width={100}
-              labels={["轟", "隆", "紅", "龍", "音", "樂", "製", "作", "工", "作", "室"]}
+              labels={home.norenLabels}
             />
           </NorenContainer>
           <HeroGrid>
             <HeroCopy>
               <Headline>
-                <HeadlineRed>RED</HeadlineRed>
-                <HeadlineDragon>DRAGON</HeadlineDragon>
-                <HeadlineRecords>RECORDS</HeadlineRecords>
+                <HeadlineRed>{home.hero.red}</HeadlineRed>
+                <HeadlineDragon>{home.hero.dragon}</HeadlineDragon>
+                <HeadlineRecords>{home.hero.records}</HeadlineRecords>
               </Headline>
               <HeroDivider theme={theme} />
               <SubHeading theme={theme}>
-                Tainan Record Company
+                {home.hero.tagline}
               </SubHeading>
               <Body theme={theme}>
-                Bespoke recording and music production services for hobbyists and professionals alike.
+                {home.hero.intro}
               </Body>
               <ButtonContainer>
                 <PrimaryButton theme={theme} onClick={openContactMail}>
-                  <PrimaryButtonText>Enter The Studio</PrimaryButtonText>
+                  <PrimaryButtonText>{home.hero.cta}</PrimaryButtonText>
                   <PrimaryButtonFill theme={theme} />
                   <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
                 </PrimaryButton>
               </ButtonContainer>
             </HeroCopy>
             <HeroPlaceholder theme={theme}>
-              <HeroLogo src={heroArtists} alt="Red Dragon Records artists" />
+              <HeroLogo src={heroArtists} alt={home.hero.imageAlt} />
             </HeroPlaceholder>
           </HeroGrid>
           <HeroImageShade aria-hidden="true" />
@@ -346,7 +319,7 @@ const Home: React.FC = () => {
           <ServicesPanelShell>
             <ServicesLayout>
               <div>
-                <SubHeading theme={theme}>Services</SubHeading>
+                <SubHeading theme={theme}>{home.services.heading}</SubHeading>
                 <ServicesList>
                   {services.map((service, index) => (
                     <ServiceRow
@@ -386,7 +359,7 @@ const Home: React.FC = () => {
                     ))}
                   </ServicesCarouselContainer>
                 </ServicesCarouselViewport>
-                <ServicesPips aria-label="Service slides">
+                <ServicesPips aria-label={home.services.slidesLabel}>
                   {services.map((service, index) => (
                     <ServicePip
                       key={service.name}
@@ -394,7 +367,7 @@ const Home: React.FC = () => {
                       type="button"
                       $active={selectedServiceIndex === index}
                       onClick={() => selectService(index)}
-                      aria-label={`Show ${service.name}`}
+                      aria-label={home.services.showService.replace("{name}", service.name)}
                       aria-current={selectedServiceIndex === index}
                     />
                   ))}
@@ -463,19 +436,19 @@ const Home: React.FC = () => {
                 </CarouselContainer>
               </CarouselViewport>
                 <ViewFullGearLink to="/studio/equipment" theme={theme} borderless>
-                  View Full Gear List →
+                  {home.tools.viewFullGear}
                 </ViewFullGearLink>
             </ToolsSectionContent>
           </ToolsSectionBackground>
         </Panel>
 
         <CTA theme={theme}>
-          <SubHeading theme={theme}>Make your mark</SubHeading>
+          <SubHeading theme={theme}>{home.cta.heading}</SubHeading>
           <Body theme={theme}>
-            Create something that lasts forever.
+            {home.cta.body}
           </Body>
           <PrimaryButton theme={theme} onClick={openContactMail}>
-            <PrimaryButtonText>Get In Touch</PrimaryButtonText>
+            <PrimaryButtonText>{home.cta.button}</PrimaryButtonText>
             <PrimaryButtonFill theme={theme} />
             <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
           </PrimaryButton>

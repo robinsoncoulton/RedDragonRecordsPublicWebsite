@@ -1,0 +1,181 @@
+[
+  {
+    "name": "Temple Smoke",
+    "genre": "Stoner Rock / Doom",
+    "city": "Tainan",
+    "copy": [
+      {
+        "type": "quote",
+        "text": "They're like a mystical Nebula. Heavy stuff all around.",
+        "attribution": "Classic Rock Magazine"
+      },
+      {
+        "type": "quote",
+        "text": "Absolute belter! High-octane Stoner/Fuzz with a definite Kyuss/Truckfighters vibe. This one will be in many end-of-year lists!",
+        "attribution": "Reek of Stoom"
+      },
+      {
+        "type": "heading",
+        "text": "Current band members"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Bartosz Wiktorowicz — Lead vocals (2025–Present)",
+          "Chad Cote — Bass and backing vocals (2019–Present)",
+          "Robinson Coulton — Guitar / Sound engineer (2022–Present)",
+          "Andrew Jackson — Drums and percussion (2019–Present)"
+        ]
+      }
+    ],
+    "heroImage": "TempleSmoke/temple_smoke.jpg",
+    "musicLinks": [
+      "<iframe style=\"border: 0; width: 100%; height: 120px;\" src=\"https://bandcamp.com/EmbeddedPlayer/album=258165698/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/transparent=true/\" seamless><a href=\"https://templesmoketaiwan.bandcamp.com/album/monolithic-evolution\">Monolithic Evolution by Temple Smoke</a></iframe>"
+    ],
+    "socialLinks": [
+      {
+        "platform": "facebook",
+        "url": "https://www.facebook.com/TempleSmokeTaiwan/"
+      },
+      {
+        "platform": "youtube",
+        "url": "https://www.youtube.com/@templesmoketaiwan"
+      },
+      {
+        "platform": "instagram",
+        "url": "https://www.instagram.com/templesmokeband/"
+      },
+      {
+        "platform": "spotify",
+        "url": "https://open.spotify.com/artist/4RpncY4NrXQ6eg97mEhcjp?si=be9Q3_aqQOeps3OVAu3mqw"
+      },
+      {
+        "platform": "bandcamp",
+        "url": "https://templesmoketaiwan.bandcamp.com/"
+      }
+    ]
+  },
+  {
+    "name": "Woander Everywhere Eternal",
+    "genre": "Ambient / Experimental / Improvisation",
+    "city": "Taipei",
+    "copy": [
+      {
+        "type": "paragraph",
+        "text": "Mesmerising loop based improvisations and compositions inspired by spirituality and everyday life "
+      }
+    ],
+    "heroImage": "WoanderEverywhereEternal/woander_everywhere_eternal.jpg"
+  },
+  {
+    "name": "Phonophasm",
+    "genre": "Ambient / Experimental / Electronic",
+    "city": "Tainan / Belfast",
+    "copy": [
+      {
+        "type": "paragraph",
+        "text": "Phonophasm is an ongoing experiment in the evolution of creativity, specifically relating to the capturing of spontaneous moments both visually and audibly."
+      }
+    ]
+  },
+  {
+    "name": "Liquid Rigidity Project",
+    "genre": "Improvised Rock / Punk Poetry",
+    "city": "Tainan",
+    "copy": [
+      {
+        "type": "paragraph",
+        "text": "Improvised psych-rock meets cosmic storytelling."
+      },
+      {
+        "type": "paragraph",
+        "text": "Rational music falling into the future."
+      },
+      {
+        "type": "paragraph",
+        "text": "Liquid Rigidity Project are a collective currently based in southern Taiwan."
+      },
+      {
+        "type": "heading",
+        "text": "Never Lost A Limb I Needed"
+      },
+      {
+        "type": "paragraph",
+        "text": "This album documents a live, fluid, partly rigid, improvised session that was recorded at Red Dragon Records, Tainan City, Taiwan, on June 18th, 2026."
+      },
+      {
+        "type": "paragraph",
+        "text": "None of these songs are to be taken as definitive versions. Each performance mutates the song's structure and arrangement. They change according to our whims, the temperature, and heavily dependent on the quantity (and flavour) of the potato chips (crisps)."
+      },
+      {
+        "type": "heading",
+        "text": "Credits"
+      },
+      {
+        "type": "paragraph",
+        "text": "Released June 27, 2026"
+      },
+      {
+        "type": "paragraph",
+        "text": "Performed by Liquid Rigidity Project"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Daniel C. Moore — spoken word, lyrics, screams and howls",
+          "Pete Harrison — Phonosphere VR instrument, beeps, boops, and vocal effects",
+          "Hera Chan — bass, grooves, and psychic waves",
+          "Robinson Coulton — electric guitar and impeccable timing",
+          "Sebastián “Rico Suave” Serrano — drums and dancing",
+          "Ben Capka — acoustic guitar, flute, and the wind"
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Recording and mastering — Red Dragon Records, Tainan (www.reddragonrecords.tw)"
+      },
+      {
+        "type": "paragraph",
+        "text": "All rights reserved."
+      }
+    ],
+    "musicLinks": [
+      "<iframe style=\"border: 0; width: 100%; height: 621px;\" src=\"https://bandcamp.com/EmbeddedPlayer/album=2622675627/size=large/bgcol=333333/linkcol=e32c14/transparent=true/\" seamless><a href=\"https://liquidrigidityproject.bandcamp.com/album/never-lost-a-limb-i-needed\">Never Lost A Limb I Needed by Liquid Rigidity Project</a></iframe>"
+    ],
+    "socialLinks": [
+      {
+        "platform": "bandcamp",
+        "url": "https://liquidrigidityproject.bandcamp.com/"
+      }
+    ]
+  },
+  {
+    "name": "Robinson Coulton",
+    "genre": "Progressive Rock",
+    "city": "Tainan",
+    "copy": [
+      {
+        "type": "paragraph",
+        "text": "Robinson Coulton is a musician and artist based in Tainan, Taiwan."
+      }
+    ],
+    "musicLinks": [
+      "<iframe style=\"border: 0; width: 100%; height: 442px;\" src=\"https://bandcamp.com/EmbeddedPlayer/track=4270491860/size=large/bgcol=333333/linkcol=e32c14/tracklist=false/transparent=true/\" seamless><a href=\"https://robinsoncoulton.bandcamp.com/track/head-in-the-clouds\">Head In The Clouds by Robinson Coulton</a></iframe>"
+    ],
+    "socialLinks": [
+      {
+        "platform": "bandcamp",
+        "url": "https://robinsoncoulton.bandcamp.com/"
+      }
+    ]
+  },
+  {
+    "name": "Timothy Barkley"
+  },
+  {
+    "name": "Mirko Liang"
+  },
+  {
+    "name": "V.O.L.H"
+  }
+]
