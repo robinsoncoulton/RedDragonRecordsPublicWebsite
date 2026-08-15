@@ -8,8 +8,10 @@ import {
   AlphabetLetter,
   AlphabetRail,
   AlphabetTrack,
+  ArtistsHeading,
   ArtistsShell,
   ArtistsShadow,
+  ArtistsTitleBar,
   CardFrame,
   CardStage,
   DeckNavButton,
@@ -108,7 +110,11 @@ const ArtistsShowcase: React.FC = () => {
   const goToArtistRef = React.useRef<(index: number) => void>(() => undefined);
   const triggerSlideRef = React.useRef<(direction: 1 | -1) => void>(() => undefined);
   const activeIndexRef = React.useRef(activeIndex);
+  const transitionRef = React.useRef(transition);
+  const contentOpenRef = React.useRef(contentOpen);
   activeIndexRef.current = activeIndex;
+  transitionRef.current = transition;
+  contentOpenRef.current = contentOpen;
 
   const clearContentOpenTimeout = React.useCallback(() => {
     if (contentOpenTimeoutRef.current) {
@@ -443,6 +449,68 @@ const ArtistsShowcase: React.FC = () => {
     [activeIndex, transition, contentOpen, triggerSlide, scheduleElasticReset]
   );
 
+  React.useEffect(() => {
+    const panel = panelRefs.current[activeIndex];
+    if (!panel) {
+      return;
+    }
+    let lastY = 0;
+    let tracking = false;
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        return;
+      }
+      lastY = event.touches[0].clientY;
+      tracking = true;
+      overscrollRef.current = 0;
+      setElasticOffset(0);
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (!tracking || transitionRef.current || !contentOpenRef.current) {
+        return;
+      }
+      if (event.touches.length !== 1) {
+        return;
+      }
+      const y = event.touches[0].clientY;
+      const delta = lastY - y;
+      lastY = y;
+      if (delta === 0) {
+        return;
+      }
+      const maxScrollTop = panel.scrollHeight - panel.clientHeight;
+      const atTop = panel.scrollTop <= 1;
+      const atBottom = panel.scrollTop >= maxScrollTop - 1;
+      const overscrolling =
+        maxScrollTop <= 0 || (delta > 0 && atBottom) || (delta < 0 && atTop);
+      if (!overscrolling) {
+        overscrollRef.current = 0;
+        setElasticOffset(0);
+        return;
+      }
+      overscrollRef.current = clamp(overscrollRef.current + delta * 0.9, -240, 240);
+      setElasticOffset(overscrollRef.current);
+      if (Math.abs(overscrollRef.current) > ELASTIC_TRIGGER) {
+        tracking = false;
+        triggerSlideRef.current(overscrollRef.current > 0 ? 1 : -1);
+      }
+    };
+    const onTouchEnd = () => {
+      tracking = false;
+      scheduleElasticReset();
+    };
+    panel.addEventListener("touchstart", onTouchStart, { passive: true });
+    panel.addEventListener("touchmove", onTouchMove, { passive: true });
+    panel.addEventListener("touchend", onTouchEnd);
+    panel.addEventListener("touchcancel", onTouchEnd);
+    return () => {
+      panel.removeEventListener("touchstart", onTouchStart);
+      panel.removeEventListener("touchmove", onTouchMove);
+      panel.removeEventListener("touchend", onTouchEnd);
+      panel.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [activeIndex, scheduleElasticReset]);
+
   const handleAlphabetWheel = React.useCallback(
     (event: React.WheelEvent<HTMLElement>) => {
       event.preventDefault();
@@ -597,6 +665,45 @@ const ArtistsShowcase: React.FC = () => {
     <Page>
       <ArtistsShadow>
         <ArtistsShell theme={theme}>
+        <ArtistsTitleBar>
+          <DeckNavButton
+            type="button"
+            theme={theme}
+            $side="prev"
+            aria-label="Previous artist"
+            disabled={navDisabled}
+            onClick={() => triggerSlide(-1)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M14.5 5.5 8 12l6.5 6.5"
+                stroke="currentColor"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </DeckNavButton>
+          <ArtistsHeading theme={theme}>Artists</ArtistsHeading>
+          <DeckNavButton
+            type="button"
+            theme={theme}
+            $side="next"
+            aria-label="Next artist"
+            disabled={navDisabled}
+            onClick={() => triggerSlide(1)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M9.5 5.5 16 12l-6.5 6.5"
+                stroke="currentColor"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </DeckNavButton>
+        </ArtistsTitleBar>
         <AlphabetRail
           ref={alphabetRailRef}
           onWheel={handleAlphabetWheel}
@@ -658,42 +765,6 @@ const ArtistsShowcase: React.FC = () => {
           onWheel={handleWheel}
           theme={theme}
         >
-          <DeckNavButton
-            type="button"
-            theme={theme}
-            $side="prev"
-            aria-label="Previous artist"
-            disabled={navDisabled}
-            onClick={() => triggerSlide(-1)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M14.5 5.5 8 12l6.5 6.5"
-                stroke="currentColor"
-                strokeWidth="2.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </DeckNavButton>
-          <DeckNavButton
-            type="button"
-            theme={theme}
-            $side="next"
-            aria-label="Next artist"
-            disabled={navDisabled}
-            onClick={() => triggerSlide(1)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M9.5 5.5 16 12l-6.5 6.5"
-                stroke="currentColor"
-                strokeWidth="2.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </DeckNavButton>
           <CardStage>
             {artists.map((artist, index) => {
               const pose = cardPoseFor(index);

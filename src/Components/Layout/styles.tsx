@@ -13,7 +13,7 @@ export const Background = styled.div<ThemedElementProps>`
 
 export const Wrapper = styled.div`
   position: relative;
-  margin: ${designTokens.spacing.none} ${designTokens.spacing.lg};
+  margin: ${designTokens.spacing.none} ${designTokens.spacing.xl};
   padding: ${designTokens.spacing.none} ${designTokens.spacing["5xl"]};
   width: 100%;
   max-width: ${designTokens.size.contentMax};

@@ -112,6 +112,12 @@ export const TaiwanContainer = styled.div`
   overflow: visible;
   z-index: 1100;
   top: 0;
+
+  body.artists-page & {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 `;
 
 export const FixedBottomFade = styled.div`

@@ -39,6 +39,15 @@ export const ArtistsShadow = styled.div`
   width: 100%;
   padding: ${designTokens.spacing["3xl"]} 0;
 
+  @media (max-width: 768px) {
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   &::after {
     content: "";
     position: absolute;
@@ -75,7 +84,12 @@ export const ArtistsShell = styled.div<ThemedElementProps>`
   z-index: 1000;
 
   @media (max-width: 768px) {
-    padding: ${designTokens.spacing.sm} 0 ${designTokens.spacing.xl};
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    padding: 0;
   }
 `;
 
@@ -101,6 +115,10 @@ export const AlphabetRail = styled.aside`
 
   &:active {
     cursor: grabbing;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -186,11 +204,42 @@ export const SearchFlashText = styled.p<ThemedElementProps>`
 `;
 
 export const ArtistsHeading = styled.h1<ThemedElementProps>`
+  display: none;
   font-family: var(--font-headline);
   color: ${({ theme }) => getColors(theme).primary};
   font-size: ${designTokens.fontSize["5xl"]};
   line-height: ${designTokens.lineHeight.tight};
   margin-bottom: ${designTokens.spacing.lg};
+
+  @media (max-width: 768px) {
+    display: block;
+    grid-column: 2;
+    margin: 0;
+    padding: 0;
+    font-size: ${designTokens.fontSize["2xl"]};
+    letter-spacing: 0.06em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+`;
+
+export const ArtistsTitleBar = styled.div`
+  @media (max-width: 768px) {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+    min-height: 2.75rem;
+    z-index: 8;
+  }
+
+  @media (min-width: 769px) {
+    position: absolute;
+    inset: 0;
+    z-index: 1100;
+    pointer-events: none;
+  }
 `;
 
 export const DeckViewport = styled.section<ThemedElementProps & DeckViewportProps>`
@@ -217,7 +266,11 @@ export const DeckViewport = styled.section<ThemedElementProps & DeckViewportProp
   transition: height 540ms cubic-bezier(0.22, 1, 0.36, 1);
 
   @media (max-width: 768px) {
-    height: min(92dvh, 52rem);
+    flex: 1 1 0;
+    align-self: stretch;
+    width: 100%;
+    height: auto;
+    min-height: 0;
   }
 `;
 
@@ -225,8 +278,9 @@ export const CardStage = styled.div`
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 100%;
+  flex: 1 1 0;
   min-height: 0;
+  height: 100%;
   display: flex;
   justify-content: center;
 `;
@@ -283,6 +337,7 @@ export const DeckNavButton = styled.button<ThemedElementProps & { $side: "prev" 
   top: 50%;
   z-index: 8;
   transform: translateY(-50%);
+  pointer-events: auto;
   ${({ $side }) =>
     $side === "prev"
       ? css`
@@ -323,6 +378,31 @@ export const DeckNavButton = styled.button<ThemedElementProps & { $side: "prev" 
     width: 1.35rem;
     height: 1.35rem;
     filter: drop-shadow(0 0.1rem 0.35rem rgba(0, 0, 0, 0.55));
+  }
+
+  @media (max-width: 768px) {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    color: ${({ theme }) => getColors(theme).primary};
+
+    svg {
+      filter: none;
+    }
+
+    &:hover {
+      transform: scale(1.08);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:disabled {
+      transform: none;
+    }
   }
 
   ${media.lg} {
@@ -685,7 +765,7 @@ export const TradingCard = styled.article<ThemedElementProps>`
   height: 100%;
   box-sizing: border-box;
   container-type: size;
-  border: 0.55rem solid ${({ theme }) => getColors(theme).brandHighlightLight};
+  border: 0.55rem solid ${({ theme }) => getColors(theme).brandDarkHighlight};
   border-radius: 1.15rem;
   background: ${({ theme }) => getColors(theme).brandDarkest};
   color: ${({ theme }) => getColors(theme).white};
@@ -694,6 +774,11 @@ export const TradingCard = styled.article<ThemedElementProps>`
     0 0.35rem 1.1rem rgba(0, 0, 0, 0.28),
     0 1.4rem 2.6rem rgba(0, 0, 0, 0.22);
   transition: width ${designTokens.duration.normal} ${designTokens.easing.standard};
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+    width: 100%;
+  }
 
   ${media.lg} {
     width: min(100%, 30rem);
