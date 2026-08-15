@@ -1,6 +1,7 @@
 import React from "react";
 import { Theme } from "../../Utils/Theme/types";
 import {
+  AppleMusicIcon,
   BandcampIcon,
   FacebookIcon,
   InstagramIcon,
@@ -29,20 +30,27 @@ import {
   TradingCardInfoValue,
   TradingCardName,
   TradingCardNameText,
-  TradingCardRelease,
-  TradingCardReleaseCaption,
+  TradingCardReleaseCarousel,
+  TradingCardReleaseCoverFallback,
+  TradingCardReleaseCoverFrame,
+  TradingCardReleaseCoverStage,
   TradingCardReleaseEmbed,
   TradingCardReleaseEmbedShield,
+  TradingCardReleaseEmbedStack,
   TradingCardReleaseImage,
-  TradingCardReleaseItem,
+  TradingCardReleaseMeta,
   TradingCardReleaseNav,
-  TradingCardReleaseRow,
-  TradingCardReleaseTile,
-  TradingCardReleaseTrack,
+  TradingCardReleaseSlide,
+  TradingCardReleaseTitle,
+  TradingCardReleaseCredit,
+  TradingCardReleaseYear,
   TradingCardScroll,
   TradingCardSection,
 } from "./styles";
 import { ArtistProfile, SocialPlatform } from "./types";
+
+const wrapReleaseIndex = (value: number, length: number) =>
+  ((value % length) + length) % length;
 
 const socialPlatformIcon: Partial<
   Record<SocialPlatform, React.FunctionComponent<React.SVGProps<SVGSVGElement>>>
@@ -52,6 +60,7 @@ const socialPlatformIcon: Partial<
   [SocialPlatform.INSTAGRAM]: InstagramIcon,
   [SocialPlatform.SPOTIFY]: SpotifyIcon,
   [SocialPlatform.BANDCAMP]: BandcampIcon,
+  [SocialPlatform.APPLE_MUSIC]: AppleMusicIcon,
 };
 
 const socialPlatformLabel: Record<SocialPlatform, string> = {
@@ -60,6 +69,7 @@ const socialPlatformLabel: Record<SocialPlatform, string> = {
   [SocialPlatform.INSTAGRAM]: "Instagram",
   [SocialPlatform.SPOTIFY]: "Spotify",
   [SocialPlatform.BANDCAMP]: "Bandcamp",
+  [SocialPlatform.APPLE_MUSIC]: "Apple Music",
 };
 
 type ArtistCardProps = {
@@ -75,26 +85,45 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
   scrollRef,
   parallaxEnabled = false,
 }) => {
-  const releaseTrackRef = React.useRef<HTMLDivElement | null>(null);
   const heroRef = React.useRef<HTMLDivElement | null>(null);
   const nameRef = React.useRef<HTMLHeadingElement | null>(null);
   const nameTextRef = React.useRef<HTMLSpanElement | null>(null);
   const [nameFontSize, setNameFontSize] = React.useState(56);
   const [nameScaleX, setNameScaleX] = React.useState(1);
   const [heroParallax, setHeroParallax] = React.useState({ x: 0, y: 0 });
-  const [activeEmbedKey, setActiveEmbedKey] = React.useState<string | null>(null);
+  const [unlockedEmbeds, setUnlockedEmbeds] = React.useState<Record<string, boolean>>({});
+  const [releaseIndex, setReleaseIndex] = React.useState(0);
   const releases = artist.featuredReleases ?? [];
   const highlights = artist.sessionHighlights ?? [];
   const socialLinks = artist.socialLinks ?? [];
   const copyBlocks = artist.copy ?? [];
   const bio = artist.bio?.trim() ?? "";
   const showCopy = copyBlocks.length > 0;
+  const activeRelease = releases[releaseIndex] ?? null;
+  const canFlipReleases = releases.length > 1;
 
   React.useEffect(() => {
-    if (!parallaxEnabled) {
-      setActiveEmbedKey(null);
+    setReleaseIndex(0);
+    setUnlockedEmbeds({});
+  }, [artist.name]);
+
+  const stepRelease = (direction: 1 | -1) => {
+    if (!canFlipReleases) {
+      return;
     }
-  }, [parallaxEnabled]);
+    setReleaseIndex((current) => wrapReleaseIndex(current + direction, releases.length));
+  };
+
+  const selectRelease = (index: number) => {
+    if (index === releaseIndex || index < 0 || index >= releases.length) {
+      return;
+    }
+    setReleaseIndex(index);
+  };
+
+  const unlockEmbed = (releaseKey: string) => {
+    setUnlockedEmbeds((current) => ({ ...current, [releaseKey]: true }));
+  };
 
   React.useLayoutEffect(() => {
     const hero = heroRef.current;
@@ -175,14 +204,6 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
     return () => observer.disconnect();
   }, [artist.name]);
 
-  const scrollReleases = (direction: 1 | -1) => {
-    const track = releaseTrackRef.current;
-    if (!track) {
-      return;
-    }
-    track.scrollBy({ left: direction * track.clientWidth * 0.7, behavior: "smooth" });
-  };
-
   React.useEffect(() => {
     if (!parallaxEnabled || !artist.heroImage) {
       setHeroParallax({ x: 0, y: 0 });
@@ -251,72 +272,102 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
         <TradingCardBody>
           {bio ? <TradingCardBio>{bio}</TradingCardBio> : null}
           {showCopy ? <ArtistCopyContent blocks={copyBlocks} theme={theme} /> : null}
-          {releases.length ? (
+          {activeRelease ? (
             <TradingCardSection>
-              <TradingCardReleaseRow>
-                <TradingCardReleaseNav
-                  type="button"
-                  theme={theme}
-                  aria-label="Previous releases"
-                  onClick={() => scrollReleases(-1)}
-                  disabled={releases.length < 2}
-                >
-                  ‹
-                </TradingCardReleaseNav>
-                <TradingCardReleaseTrack ref={releaseTrackRef}>
-                  {releases.map((release) => {
-                    const releaseKey = `${release.title}-${release.year}`;
-                    const hasCover = Boolean(release.coverImage);
-                    const cover = hasCover ? (
-                      <>
+              <TradingCardReleaseSlide>
+                <TradingCardReleaseCarousel>
+                  <TradingCardReleaseNav
+                    type="button"
+                    theme={theme}
+                    aria-label="Previous release"
+                    onClick={() => stepRelease(-1)}
+                    disabled={!canFlipReleases}
+                  >
+                    ‹
+                  </TradingCardReleaseNav>
+                  <TradingCardReleaseCoverStage $peekable={canFlipReleases}>
+                    {releases.map((release, index) => {
+                      const offset = index - releaseIndex;
+                      const releaseKey = `${release.title}-${release.year}`;
+                      const isCenter = offset === 0;
+                      const cover = release.coverImage ? (
                         <TradingCardReleaseImage src={release.coverImage} alt="" />
-                        <TradingCardReleaseCaption>
-                          {release.title} {release.year}
-                        </TradingCardReleaseCaption>
-                      </>
-                    ) : null;
+                      ) : null;
+                      return (
+                        <TradingCardReleaseCoverFrame
+                          key={releaseKey}
+                          $offset={offset}
+                          $interactive={!isCenter && Math.abs(offset) === 1}
+                          type="button"
+                          aria-label={
+                            isCenter
+                              ? `${release.title} ${release.year}`
+                              : `Show ${release.title}`
+                          }
+                          tabIndex={Math.abs(offset) <= 1 ? 0 : -1}
+                          onClick={() => {
+                            if (!isCenter) {
+                              selectRelease(index);
+                              return;
+                            }
+                            if (release.url) {
+                              window.open(release.url, "_blank", "noopener,noreferrer");
+                            }
+                          }}
+                        >
+                          {cover ?? <TradingCardReleaseCoverFallback />}
+                        </TradingCardReleaseCoverFrame>
+                      );
+                    })}
+                  </TradingCardReleaseCoverStage>
+                  <TradingCardReleaseNav
+                    type="button"
+                    theme={theme}
+                    aria-label="Next release"
+                    onClick={() => stepRelease(1)}
+                    disabled={!canFlipReleases}
+                  >
+                    ›
+                  </TradingCardReleaseNav>
+                </TradingCardReleaseCarousel>
+                <TradingCardReleaseMeta>
+                  <TradingCardReleaseTitle theme={theme}>
+                    {activeRelease.title}
+                  </TradingCardReleaseTitle>
+                  {activeRelease.year ? (
+                    <TradingCardReleaseYear>{activeRelease.year}</TradingCardReleaseYear>
+                  ) : null}
+                  {activeRelease.credit ? (
+                    <TradingCardReleaseCredit>{activeRelease.credit}</TradingCardReleaseCredit>
+                  ) : null}
+                </TradingCardReleaseMeta>
+                <TradingCardReleaseEmbedStack>
+                  {releases.map((release, index) => {
+                    if (!release.embed) {
+                      return null;
+                    }
+                    const releaseKey = `${release.title}-${release.year}`;
+                    const isSelected = index === releaseIndex;
+                    const isUnlocked = Boolean(unlockedEmbeds[releaseKey]);
                     return (
-                      <TradingCardReleaseItem key={releaseKey}>
-                        {hasCover ? (
-                          release.url ? (
-                            <TradingCardRelease
-                              theme={theme}
-                              href={release.url}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {cover}
-                            </TradingCardRelease>
-                          ) : (
-                            <TradingCardReleaseTile theme={theme}>{cover}</TradingCardReleaseTile>
-                          )
+                      <TradingCardReleaseEmbed
+                        key={releaseKey}
+                        $visible={isSelected}
+                        $active={isSelected && isUnlocked}
+                      >
+                        <div dangerouslySetInnerHTML={{ __html: release.embed }} />
+                        {isSelected && !isUnlocked ? (
+                          <TradingCardReleaseEmbedShield
+                            type="button"
+                            aria-label={`Play ${release.title}`}
+                            onClick={() => unlockEmbed(releaseKey)}
+                          />
                         ) : null}
-                        {release.embed ? (
-                          <TradingCardReleaseEmbed $active={activeEmbedKey === releaseKey}>
-                            <div dangerouslySetInnerHTML={{ __html: release.embed }} />
-                            {activeEmbedKey === releaseKey ? null : (
-                              <TradingCardReleaseEmbedShield
-                                type="button"
-                                aria-label={`Play ${release.title}`}
-                                onClick={() => setActiveEmbedKey(releaseKey)}
-                              />
-                            )}
-                          </TradingCardReleaseEmbed>
-                        ) : null}
-                      </TradingCardReleaseItem>
+                      </TradingCardReleaseEmbed>
                     );
                   })}
-                </TradingCardReleaseTrack>
-                <TradingCardReleaseNav
-                  type="button"
-                  theme={theme}
-                  aria-label="Next releases"
-                  onClick={() => scrollReleases(1)}
-                  disabled={releases.length < 2}
-                >
-                  ›
-                </TradingCardReleaseNav>
-              </TradingCardReleaseRow>
+                </TradingCardReleaseEmbedStack>
+              </TradingCardReleaseSlide>
             </TradingCardSection>
           ) : null}
           {highlights.length ? (

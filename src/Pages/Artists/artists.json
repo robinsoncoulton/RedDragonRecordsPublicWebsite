@@ -1,5 +1,46 @@
 [
   {
+    "name": "Blake Galligan",
+    "affiliation": "Studio Affiliate",
+    "genre": "Rock",
+    "city": "Tainan, Taiwan",
+    "bio": "Blake Galligan is a rock artist based in Tainan, Taiwan. Paradise Prison, released February 10, 2026, is an eight-song album recorded, mixed and mastered at Red Dragon Records.",
+    "heroImage": "BlakeGalligan/hero_blake_galligan.jpg",
+    "featuredReleases": [
+      {
+        "title": "Paradise Prison",
+        "year": "2026",
+        "coverImage": "BlakeGalligan/blake_galligan_paradise_prison.png",
+        "url": "https://music.apple.com/us/album/paradise-prison/1876372562",
+        "credit": "Recorded, Mixed and Mastered at Red Dragon Records",
+        "embed": "<div style=\"left: 0; width: 100%; height: 450px; position: relative;\"><iframe src=\"https://embed.music.apple.com/us/album/paradise-prison/1876372562\" style=\"top: 0; left: 0; width: 100%; height: 100%; position: absolute; border: 0;\" allowfullscreen allow=\"encrypted-media *; fullscreen *; clipboard-write *\" title=\"Paradise Prison by Blake Galligan\"></iframe></div>"
+      },
+      {
+        "title": "Seeking Paradise",
+        "year": "2025",
+        "coverImage": "BlakeGalligan/blake_galligan_seeking_paradise.png",
+        "url": "https://music.apple.com/us/album/seeking-paradise-ep/1827756168",
+        "credit": "Recorded and Mixed at Red Dragon Records",
+        "embed": "<div style=\"left: 0; width: 100%; height: 450px; position: relative;\"><iframe src=\"https://embed.music.apple.com/us/album/seeking-paradise-ep/1827756168\" style=\"top: 0; left: 0; width: 100%; height: 100%; position: absolute; border: 0;\" allowfullscreen allow=\"encrypted-media *; fullscreen *; clipboard-write *;\" title=\"Seeking Paradise by Blake Galligan\"></iframe></div>"
+      }
+    ],
+    "copy": [],
+    "socialLinks": [
+      {
+        "platform": "spotify",
+        "url": "https://open.spotify.com/artist/0fWeQeJNd79FYZXyRD3n84"
+      },
+      {
+        "platform": "youtube",
+        "url": "https://www.youtube.com/channel/UC_Kf-Dnn0RORV4SotyXTbAg"
+      },
+      {
+        "platform": "applemusic",
+        "url": "https://music.apple.com/tw/artist/blake-galligan/1789148244"
+      }
+    ]
+  },
+  {
     "name": "Temple Smoke",
     "cardNumber": 1,
     "affiliation": "Studio Affiliate",
@@ -195,7 +236,32 @@
     "name": "Timothy Barkley"
   },
   {
-    "name": "Mirko Liang"
+    "name": "Mirko Liang",
+    "affiliation": "Studio Affiliate",
+    "genre": "Punk Rock • Surf Punk • Classical",
+    "city": "Taiwan",
+    "bio": "Italy born, Australia relocated, Taiwan based, Mirko Liang is a punk-rock musician and songwriter. Trained classically, he then turned electric and played in several bands mostly punk-rock and surf-punk. His swashbuckling solo project (since 2021) is an amalgam of intense strumming bringing glimpses of classical baroque music and flamenco to punk-rock. The lyrics convey philosophical themes - such as existentialism and absurdism - while mostly drawing from European baroque culture and horror fiction. His debut solo album Art Of The Wheel (Red Dragon Records, 2024) features the back up vocals of Andrew Jackson (former Good Riddance).",
+    "heroImage": "MirkoLiang/mirko_liang.jpg",
+    "featuredReleases": [
+      {
+        "title": "Art Of The Wheel",
+        "year": "2024",
+        "coverImage": "MirkoLiang/art_of_the_wheel.png",
+        "url": "https://open.spotify.com/album/5yge0c3l7vBQoPfXO1D5dg",
+        "embed": "<iframe style=\"border-radius:12px; border: 0; width: 100%; height: 352px;\" src=\"https://open.spotify.com/embed/album/5yge0c3l7vBQoPfXO1D5dg?utm_source=generator&theme=0\" width=\"100%\" height=\"352\" allowfullscreen allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\" loading=\"lazy\" title=\"Art Of The Wheel by Mirko Liang\"></iframe>"
+      }
+    ],
+    "copy": [],
+    "socialLinks": [
+      {
+        "platform": "facebook",
+        "url": "https://www.facebook.com/mirkoliangaroo"
+      },
+      {
+        "platform": "instagram",
+        "url": "https://www.instagram.com/mirkoliang"
+      }
+    ]
   },
   {
     "name": "V.O.L.H"

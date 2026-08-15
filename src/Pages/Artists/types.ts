@@ -4,6 +4,7 @@ export enum SocialPlatform {
   INSTAGRAM = "instagram",
   SPOTIFY = "spotify",
   BANDCAMP = "bandcamp",
+  APPLE_MUSIC = "applemusic",
 }
 
 export enum ArtistCopyBlockType {
@@ -51,6 +52,7 @@ export type FeaturedReleaseDTO = {
   coverImage?: string;
   url?: string;
   embed?: string;
+  credit?: string;
 };
 
 export type SessionHighlightDTO = {

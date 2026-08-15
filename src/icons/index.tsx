@@ -3,3 +3,4 @@ export { ReactComponent as YouTubeIcon } from "../Assets/Icons/youtube-app-white
 export { ReactComponent as SpotifyIcon } from "../Assets/Icons/spotify-white-icon.svg";
 export { ReactComponent as FacebookIcon } from "../Assets/Icons/facebook-app-round-white-icon.svg";
 export { ReactComponent as BandcampIcon } from "../Assets/Icons/bandcamp-circle-negative-space.svg";
+export { ReactComponent as AppleMusicIcon } from "../Assets/Icons/apple-music-white-icon.svg";

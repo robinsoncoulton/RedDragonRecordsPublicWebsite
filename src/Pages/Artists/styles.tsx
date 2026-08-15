@@ -1051,11 +1051,83 @@ export const TradingCardSectionAction = styled.span`
   color: rgba(255, 255, 255, 0.45);
 `;
 
-export const TradingCardReleaseRow = styled.div`
+export const TradingCardReleaseCarousel = styled.div`
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: ${designTokens.spacing.xs};
   align-items: center;
+`;
+
+export const TradingCardReleaseSlide = styled.div`
+  display: grid;
+  gap: ${designTokens.spacing.sm};
+  align-content: start;
+  min-width: 0;
+`;
+
+export const TradingCardReleaseCoverStage = styled.div<{ $peekable?: boolean }>`
+  position: relative;
+  width: 100%;
+  height: ${({ $peekable }) => ($peekable ? "11.5rem" : "12.5rem")};
+  overflow: hidden;
+  isolation: isolate;
+`;
+
+export const TradingCardReleaseCoverFrame = styled.button<{
+  $offset: number;
+  $interactive?: boolean;
+}>`
+  appearance: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(72%, 12.5rem);
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  cursor: ${({ $interactive, $offset }) =>
+    $interactive || $offset === 0 ? "pointer" : "default"};
+  transform-origin: center center;
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    z-index 0s linear 0s;
+  z-index: ${({ $offset }) => Math.max(0, 8 - Math.abs($offset) * 2)};
+  opacity: ${({ $offset }) => {
+    if ($offset === 0) {
+      return 1;
+    }
+    if (Math.abs($offset) === 1) {
+      return 0.55;
+    }
+    return 0;
+  }};
+  filter: ${({ $offset }) => ($offset === 0 ? "none" : "brightness(0.72)")};
+  transform: ${({ $offset }) => {
+    if ($offset === 0) {
+      return "translate(-50%, -50%) scale(1)";
+    }
+    if ($offset < 0) {
+      return `translate(calc(-50% - ${2.8 + Math.abs($offset) * 1.1}rem), -50%) scale(${Math.max(0.62, 0.84 - Math.abs($offset) * 0.08)})`;
+    }
+    return `translate(calc(-50% + ${2.8 + Math.abs($offset) * 1.1}rem), -50%) scale(${Math.max(0.62, 0.84 - Math.abs($offset) * 0.08)})`;
+  }};
+  pointer-events: ${({ $offset }) => (Math.abs($offset) <= 1 ? "auto" : "none")};
+  box-shadow:
+    0 0.35rem 1rem rgba(0, 0, 0, 0.35),
+    0 0.1rem 0.3rem rgba(0, 0, 0, 0.25);
+`;
+
+export const TradingCardReleaseCoverFallback = styled.span`
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.08);
 `;
 
 export const TradingCardReleaseNav = styled.button`
@@ -1063,44 +1135,63 @@ export const TradingCardReleaseNav = styled.button`
   border: none;
   background: transparent;
   color: ${({ theme }) => getColors(theme).primary};
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
   display: grid;
   place-items: center;
   padding: 0;
   cursor: pointer;
-  font-size: ${designTokens.fontSize.lg};
+  font-size: ${designTokens.fontSize["2xl"]};
   line-height: 1;
+  flex-shrink: 0;
+  z-index: 10;
 
   &:disabled {
-    opacity: 0.25;
+    opacity: 0.2;
     cursor: default;
   }
 `;
 
-export const TradingCardReleaseTrack = styled.div`
+export const TradingCardReleaseMeta = styled.div`
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(8rem, 1fr);
-  gap: ${designTokens.spacing.sm};
-  overflow-x: auto;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  gap: 0.15rem;
+  justify-items: center;
+  text-align: center;
 `;
 
-export const TradingCardReleaseItem = styled.div`
-  display: grid;
-  gap: ${designTokens.spacing.xs};
-  align-content: start;
-  min-width: 0;
+export const TradingCardReleaseTitle = styled.h4<ThemedElementProps>`
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: ${designTokens.fontSize.sm};
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: ${({ theme }) => getColors(theme).white};
+`;
+
+export const TradingCardReleaseYear = styled.span`
+  font-family: var(--font-body);
+  font-size: ${designTokens.fontSize.xs};
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+`;
+
+export const TradingCardReleaseCredit = styled.p`
+  margin: 0.2rem 0 0;
+  max-width: 18rem;
+  font-family: var(--font-body);
+  font-size: ${designTokens.fontSize.xs};
+  line-height: ${designTokens.lineHeight.compact};
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.45);
 `;
 
 export const TradingCardRelease = styled.a`
   position: relative;
   display: block;
+  width: 100%;
+  max-width: 14rem;
+  margin: 0 auto;
   aspect-ratio: 1;
   overflow: hidden;
   text-decoration: none;
@@ -1111,6 +1202,9 @@ export const TradingCardRelease = styled.a`
 export const TradingCardReleaseTile = styled.div`
   position: relative;
   display: block;
+  width: 100%;
+  max-width: 14rem;
+  margin: 0 auto;
   aspect-ratio: 1;
   overflow: hidden;
   color: ${({ theme }) => getColors(theme).white};
@@ -1138,12 +1232,27 @@ export const TradingCardReleaseCaption = styled.span`
   background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
 `;
 
-export const TradingCardReleaseEmbed = styled.div<{ $active?: boolean }>`
+export const TradingCardReleaseEmbedStack = styled.div`
   position: relative;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+`;
+
+export const TradingCardReleaseEmbed = styled.div<{ $active?: boolean; $visible?: boolean }>`
+  position: relative;
+  grid-area: 1 / 1;
   width: 100%;
   min-width: 0;
   overflow: hidden;
   border-radius: 0.15rem;
+  visibility: ${({ $visible }) => ($visible ? "visible" : "hidden")};
+  pointer-events: ${({ $visible }) => ($visible ? "auto" : "none")};
+
+  > div {
+    width: 100% !important;
+    max-width: 100%;
+  }
 
   iframe {
     display: block;
