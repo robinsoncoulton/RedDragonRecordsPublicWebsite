@@ -45,11 +45,31 @@ export type ArtistSocialLinkDTO = {
   url: string;
 };
 
+export type FeaturedReleaseDTO = {
+  title: string;
+  year: string;
+  coverImage?: string;
+  url?: string;
+  embed?: string;
+};
+
+export type SessionHighlightDTO = {
+  role: string;
+  title: string;
+  collaborator: string;
+  year: string;
+};
+
 export type ArtistProfile = {
   name: string;
   genre: string;
   city: string;
   copy: ArtistCopyBlockDTO[];
+  cardNumber?: number;
+  affiliation?: string;
+  bio?: string;
+  featuredReleases?: FeaturedReleaseDTO[];
+  sessionHighlights?: SessionHighlightDTO[];
   images?: string[];
   credits?: string[];
   heroImage?: string;

@@ -16,7 +16,11 @@ type ArtistCopyContentProps = {
   theme: Theme;
 };
 
-const ArtistCopyContent: React.FC<ArtistCopyContentProps> = ({ blocks, theme }) => (
+const ArtistCopyContent: React.FC<ArtistCopyContentProps> = ({ blocks, theme }) => {
+  if (!blocks?.length) {
+    return null;
+  }
+  return (
   <ArtistCopyBlocks>
     {blocks.map((block, index) => {
       switch (block.type) {
@@ -54,6 +58,7 @@ const ArtistCopyContent: React.FC<ArtistCopyContentProps> = ({ blocks, theme }) 
       }
     })}
   </ArtistCopyBlocks>
-);
+  );
+};
 
 export default ArtistCopyContent;

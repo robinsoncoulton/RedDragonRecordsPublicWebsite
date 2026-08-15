@@ -11,19 +11,33 @@ export const StyledPage = styled.div`
   margin: 0 auto ${designTokens.spacing["6xl"]};
   box-sizing: border-box;
   padding: ${designTokens.spacing.md};
+  --page-frame-rise: 12.5rem;
+
+  body.artists-page & {
+    z-index: 1000;
+  }
+
   &::before {
     content: "";
     position: absolute;
-    inset: ${designTokens.spacing.xs};
+    top: calc(-1 * var(--page-frame-rise));
+    right: ${designTokens.spacing.xs};
+    bottom: ${designTokens.spacing.xs};
+    left: ${designTokens.spacing.xs};
     border: 5px solid rgba(107, 35, 27, 0.78);
+    border-top: none;
     pointer-events: none;
     z-index: 1;
   }
   &::after {
     content: "";
     position: absolute;
-    inset: ${designTokens.spacing.md};
+    top: calc(-1 * var(--page-frame-rise) + ${designTokens.spacing.md} - ${designTokens.spacing.xs});
+    right: ${designTokens.spacing.md};
+    bottom: ${designTokens.spacing.md};
+    left: ${designTokens.spacing.md};
     border: 1.5px solid var(--frame-inner-color, rgba(103, 78, 61, 0.65));
+    border-top: none;
     pointer-events: none;
     z-index: 1;
   }
