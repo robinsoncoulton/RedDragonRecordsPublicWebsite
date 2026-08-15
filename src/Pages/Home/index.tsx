@@ -4,8 +4,12 @@ import useEmblaCarousel from "embla-carousel-react";
 import WheelGesturesPlugin from "embla-carousel-wheel-gestures";
 import Page from "../../Components/Page";
 import Noren from "../../Components/Noren";
+import TileRoof from "../../Components/TileRoof";
 import { useTheme } from "../../Utils/Theme";
+import { Theme } from "../../Utils/Theme/types";
 import { getColors } from "../../Styles/colors";
+import { designTokens } from "../../DesignSystem";
+import { useLocalisation } from "../../Localisation";
 import heroArtists from "../../Assets/hero_artists.png";
 import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
 import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
@@ -41,6 +45,8 @@ import {
   HeroRightShade,
   HeroLogo,
   HeroPlaceholder,
+  HeroImageShade,
+  MobileRoofShade,
   HomeShell,
   Panel,
   PrimaryButtonArrow,
@@ -51,23 +57,33 @@ import {
   ServicesPanelShell,
   ServiceName,
   ServiceRow,
+  ServiceBorderFrame,
   ServicesList,
+  ServicesLayout,
+  ServicesDetail,
+  ServicesCarouselViewport,
+  ServicesCarouselContainer,
+  ServicesCarouselSlide,
+  ServiceDetailTitle,
+  ServicesPips,
+  ServicePip,
   SubHeading,
   ToolsSectionBackground,
   ToolsSectionContent,
   ToolsSideFadeOverlay,
   ToolsSectionTopTexture,
   ToolsSectionTexture,
-  ThreeCol,
   ToolIcon,
   ToolLabel,
   ToolTile,
   ViewFullGearLink,
   ButtonContainer,
   NorenContainer,
+  MobileTileRoofContainer,
 } from "./styles";
 
-const services = ["Recording", "Mixing", "Production", "Session Work"];
+const getServiceBodyParagraphs = (body: string | string[]) =>
+  (Array.isArray(body) ? body : [body]).map((paragraph) => paragraph.trim()).filter(Boolean);
 const toolStickers = [
   { name: "AKG C414 XLS", icon: micC414 },
   { name: "Shure Beta 52A", icon: micBeta52a },
@@ -127,6 +143,9 @@ const brightenHexColor = (hex: string, amount: number) => {
 
 const Home: React.FC = () => {
   const { theme } = useTheme();
+  const { copy } = useLocalisation();
+  const home = copy.home;
+  const services = home.services.items;
   const randomizedToolStickers = React.useMemo(
     () => shuffleArray(toolStickers),
     []
@@ -138,6 +157,11 @@ const Home: React.FC = () => {
     { loop: true, align: "start", dragFree: true, skipSnaps: true },
     [WheelGesturesPlugin({ forceWheelAxis: "x" })]
   );
+  const [servicesEmblaRef, servicesEmblaApi] = useEmblaCarousel(
+    { loop: false, align: "start", containScroll: "trimSnaps" },
+    [WheelGesturesPlugin({ forceWheelAxis: "x" })]
+  );
+  const [selectedServiceIndex, setSelectedServiceIndex] = React.useState(0);
   const autoplayRef = React.useRef<number | null>(null);
   const resetRef = React.useRef<number | null>(null);
   const clearAutoplay = React.useCallback(() => {
@@ -178,7 +202,63 @@ const Home: React.FC = () => {
     };
   }, [emblaApi, clearAutoplay, pauseAndResumeAutoplay, startAutoplay]);
 
+  React.useEffect(() => {
+    if (!servicesEmblaApi) {
+      return;
+    }
+    const onSelect = () => {
+      setSelectedServiceIndex(servicesEmblaApi.selectedScrollSnap());
+    };
+    onSelect();
+    servicesEmblaApi.on("select", onSelect);
+    servicesEmblaApi.on("reInit", onSelect);
+    return () => {
+      servicesEmblaApi.off("select", onSelect);
+      servicesEmblaApi.off("reInit", onSelect);
+    };
+  }, [servicesEmblaApi]);
+
+  React.useEffect(() => {
+    if (!servicesEmblaApi) {
+      return;
+    }
+    const root = servicesEmblaApi.rootNode();
+    const desktopQuery = window.matchMedia(
+      `(min-width: ${designTokens.breakpoint.lg})`
+    );
+    const syncHeight = () => {
+      if (desktopQuery.matches) {
+        root.style.height = "";
+        return;
+      }
+      const slide =
+        servicesEmblaApi.slideNodes()[servicesEmblaApi.selectedScrollSnap()];
+      if (!slide) {
+        return;
+      }
+      root.style.height = `${slide.getBoundingClientRect().height}px`;
+    };
+    syncHeight();
+    servicesEmblaApi.on("select", syncHeight);
+    servicesEmblaApi.on("reInit", syncHeight);
+    desktopQuery.addEventListener("change", syncHeight);
+    window.addEventListener("resize", syncHeight);
+    return () => {
+      servicesEmblaApi.off("select", syncHeight);
+      servicesEmblaApi.off("reInit", syncHeight);
+      desktopQuery.removeEventListener("change", syncHeight);
+      window.removeEventListener("resize", syncHeight);
+      root.style.height = "";
+    };
+  }, [servicesEmblaApi]);
+
+  const selectService = (index: number) => {
+    setSelectedServiceIndex(index);
+    servicesEmblaApi?.scrollTo(index);
+  };
+
   const colors = getColors(theme);
+  const roofColor = theme === Theme.DARK ? colors.roofTempleOrange : colors.roofTeal;
   const toolsBackgroundColor = colors.background;
   const toolsDetailColor = brightenHexColor(colors.danger, 0.35);
   return (
@@ -189,61 +269,111 @@ const Home: React.FC = () => {
           <HeroRightShade aria-hidden="true" />
           <NorenContainer>
             <Noren
+              fullWidth
               color={colors.brandDarkest}
               height={200}
               width={100}
-              labels={["轟", "隆", "紅", "龍", "音", "樂", "製", "作", "工", "作", "室"]}
+              labels={home.norenLabels}
             />
           </NorenContainer>
           <HeroGrid>
             <HeroCopy>
               <Headline>
-                <HeadlineRed>RED</HeadlineRed>
-                <HeadlineDragon>DRAGON</HeadlineDragon>
-                <HeadlineRecords>RECORDS</HeadlineRecords>
+                <HeadlineRed>{home.hero.red}</HeadlineRed>
+                <HeadlineDragon>{home.hero.dragon}</HeadlineDragon>
+                <HeadlineRecords>{home.hero.records}</HeadlineRecords>
               </Headline>
               <HeroDivider theme={theme} />
               <SubHeading theme={theme}>
-                Tainan Record Company
+                {home.hero.tagline}
               </SubHeading>
               <Body theme={theme}>
-                Bespoke recording and music production services for hobbyists and professionals alike.
+                {home.hero.intro}
               </Body>
               <ButtonContainer>
                 <PrimaryButton theme={theme} onClick={openContactMail}>
-                  <PrimaryButtonText>Enter The Studio</PrimaryButtonText>
+                  <PrimaryButtonText>{home.hero.cta}</PrimaryButtonText>
                   <PrimaryButtonFill theme={theme} />
                   <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
                 </PrimaryButton>
               </ButtonContainer>
             </HeroCopy>
             <HeroPlaceholder theme={theme}>
-              <HeroLogo src={heroArtists} alt="Red Dragon Records artists" />
+              <HeroLogo src={heroArtists} alt={home.hero.imageAlt} />
             </HeroPlaceholder>
           </HeroGrid>
+          <HeroImageShade aria-hidden="true" />
         </Panel>
 
+        <MobileTileRoofContainer aria-hidden="true">
+          <TileRoof
+            color={roofColor}
+            height={150}
+            circleSize={24}
+            depth={5}
+            rectangleHeightMultiplier={2}
+          />
+          <MobileRoofShade />
+        </MobileTileRoofContainer>
         <Panel theme={theme} borderBottomOnly noPadding>
           <ServicesPanelShell>
-            <ThreeCol>
+            <ServicesLayout>
               <div>
-                <SubHeading theme={theme}>Services</SubHeading>
+                <SubHeading theme={theme}>{home.services.heading}</SubHeading>
                 <ServicesList>
                   {services.map((service, index) => (
-                    <ServiceRow key={service} theme={theme}>
-                      <ServiceIndex theme={theme}>{`0${index + 1}`}</ServiceIndex>
-                      <ServiceName>{service}</ServiceName>
+                    <ServiceRow
+                      key={service.name}
+                      theme={theme}
+                      type="button"
+                      $active={selectedServiceIndex === index}
+                      onClick={() => selectService(index)}
+                      aria-pressed={selectedServiceIndex === index}
+                    >
+                      {selectedServiceIndex === index ? (
+                        <ServiceBorderFrame theme={theme} aria-hidden="true" />
+                      ) : null}
+                      <ServiceIndex
+                        theme={theme}
+                        $active={selectedServiceIndex === index}
+                      >{`0${index + 1}`}</ServiceIndex>
+                      <ServiceName>{service.name}</ServiceName>
                     </ServiceRow>
                   ))}
                 </ServicesList>
               </div>
-              <div>
-                <SubHeading theme={theme}>Created By Music Lovers. Built on the shoulders of giants.</SubHeading>
-                <Body theme={theme}>
-                  Red Dragon Records is a recording studio and creative base. Cement your creative ambitions into a permanent realisation.
-                </Body>
-              </div>
-            </ThreeCol>
+              <ServicesDetail>
+                <ServicesCarouselViewport ref={servicesEmblaRef}>
+                  <ServicesCarouselContainer>
+                    {services.map((service) => (
+                      <ServicesCarouselSlide key={service.name}>
+                        <ServiceDetailTitle>{service.name}</ServiceDetailTitle>
+                        {getServiceBodyParagraphs(service.body).map(
+                          (paragraph, paragraphIndex) => (
+                            <Body key={`${service.name}-${paragraphIndex}`} theme={theme}>
+                              {paragraph}
+                            </Body>
+                          )
+                        )}
+                      </ServicesCarouselSlide>
+                    ))}
+                  </ServicesCarouselContainer>
+                </ServicesCarouselViewport>
+                <ServicesPips aria-label={home.services.slidesLabel}>
+                  {services.map((service, index) => (
+                    <ServicePip
+                      key={service.name}
+                      theme={theme}
+                      type="button"
+                      $active={selectedServiceIndex === index}
+                      onClick={() => selectService(index)}
+                      aria-label={home.services.showService.replace("{name}", service.name)}
+                      aria-current={selectedServiceIndex === index}
+                    />
+                  ))}
+                </ServicesPips>
+              </ServicesDetail>
+            </ServicesLayout>
           </ServicesPanelShell>
         </Panel>
 
@@ -306,19 +436,19 @@ const Home: React.FC = () => {
                 </CarouselContainer>
               </CarouselViewport>
                 <ViewFullGearLink to="/studio/equipment" theme={theme} borderless>
-                  View Full Gear List →
+                  {home.tools.viewFullGear}
                 </ViewFullGearLink>
             </ToolsSectionContent>
           </ToolsSectionBackground>
         </Panel>
 
         <CTA theme={theme}>
-          <SubHeading theme={theme}>Enter The Studio</SubHeading>
+          <SubHeading theme={theme}>{home.cta.heading}</SubHeading>
           <Body theme={theme}>
-            Make something authentic.
+            {home.cta.body}
           </Body>
           <PrimaryButton theme={theme} onClick={openContactMail}>
-            <PrimaryButtonText>Get In Touch</PrimaryButtonText>
+            <PrimaryButtonText>{home.cta.button}</PrimaryButtonText>
             <PrimaryButtonFill theme={theme} />
             <PrimaryButtonArrow theme={theme}>→</PrimaryButtonArrow>
           </PrimaryButton>

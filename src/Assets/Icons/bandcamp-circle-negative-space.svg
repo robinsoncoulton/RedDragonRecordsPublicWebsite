@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <mask id="bandcamp-cutout">
+      <rect width="512" height="512" fill="white"/>
+      <!-- Bandcamp mark: black in mask = transparent -->
+      <polygon points="112,184 276,184 200,326 36,326" fill="black"/>
+      <!-- lowercase b -->
+      <path d="M276 184h22v54c8-12 19-18 32-18 31 0 50 23 50 54 0 32-19 53-50 53-14 0-25-6-33-19v18h-21V184zm52 55c-19 0-31 15-31 35 0 21 12 35 31 35 18 0 29-14 29-35 0-20-11-35-29-35z" fill="black"/>
+      <!-- lowercase c -->
+      <path d="M477 257h-23c-4-12-12-18-24-18-19 0-30 14-30 35 0 22 11 35 30 35 13 0 21-7 25-21h22c-5 25-22 39-47 39-33 0-53-21-53-53 0-31 21-54 53-54 25 0 42 14 47 37z" fill="black"/>
+    </mask>
+  </defs>
+  <!-- Solid color circle; logo is transparent negative space -->
+  <circle cx="256" cy="256" r="256" fill="currentColor" mask="url(#bandcamp-cutout)"/>
+</svg>

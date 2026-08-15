@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { Link } from "react-router-dom";
 import { designTokens, media } from "../../DesignSystem";
 import { getColors } from "../../Styles/colors";
@@ -53,16 +53,24 @@ export const  Panel = styled.section<PanelProps>`
 
 export const ServicesPanelShell = styled.div`
   position: relative;
-  padding: ${designTokens.spacing["5xl"]};
+  padding: ${designTokens.spacing.lg} ${designTokens.spacing.xl}
+    ${designTokens.spacing["5xl"]};
+  ${media.lg} {
+    padding: ${designTokens.spacing["5xl"]};
+  }
 `;
 
 export const HeroGrid = styled.div`
-  position: relative;
-  isolation: isolate;
+  position: static;
   display: grid;
-  gap: ${designTokens.spacing.xl};
+  gap: ${designTokens.spacing.md};
+  overflow: hidden;
   ${media.lg} {
+    position: relative;
+    isolation: isolate;
     grid-template-columns: 0.8fr 1.2fr;
+    gap: ${designTokens.spacing.xl};
+    overflow: visible;
   }
 `;
 
@@ -111,8 +119,12 @@ export const HeroRightShade = styled.div`
 `;
 
 export const HeroCopy = styled.div`
-  position: relative;
+  position: static;
   padding: ${designTokens.spacing.xl};
+  ${media.lg} {
+    position: relative;
+    z-index: 2;
+  }
   > * {
     position: relative;
     z-index: 4;
@@ -227,7 +239,32 @@ export const PrimaryButton = styled.button<ThemedElementProps>`
 `;
 
 export const ButtonContainer = styled.div`
-  margin-top: ${designTokens.spacing["6xl"]};
+  && {
+    position: absolute;
+    left: 50%;
+    bottom: calc(${designTokens.spacing.xl} * 4);
+    transform: translateX(-50%);
+    z-index: 5;
+    margin-top: 0;
+  }
+
+  ${PrimaryButton} {
+    margin-top: 0;
+  }
+
+  ${media.lg} {
+    && {
+      position: static;
+      left: auto;
+      bottom: auto;
+      transform: none;
+      margin-top: ${designTokens.spacing["6xl"]};
+    }
+
+    ${PrimaryButton} {
+      margin-top: ${designTokens.spacing.xl};
+    }
+  }
 `;
 
 export const PrimaryButtonText = styled.span`
@@ -280,6 +317,28 @@ export const HeroPlaceholder = styled.div<ThemedElementProps>`
   letter-spacing: 0.1em;
 `;
 
+export const HeroImageShade = styled.div`
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    #000000 0%,
+    rgba(0, 0, 0, 0.85) 18%,
+    rgba(0, 0, 0, 0.4) 45%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  ${media.lg} {
+    display: none;
+  }
+`;
+
 export const HeroLogo = styled.img`
   position: absolute;
   z-index: 1;
@@ -315,27 +374,161 @@ export const ThreeCol = styled.div`
   }
 `;
 
+const revealServiceBorder = keyframes`
+  from {
+    --service-border-reveal: 0%;
+  }
+  to {
+    --service-border-reveal: 100%;
+  }
+`;
+
+export const ServicesLayout = styled.div`
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: ${designTokens.spacing.xxl};
+  ${media.lg} {
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: stretch;
+    gap: ${designTokens.spacing["4xl"]};
+  }
+`;
+
 export const ServicesList = styled.div`
   display: grid;
   gap: ${designTokens.spacing.md};
 `;
 
-export const ServiceRow = styled.div<ThemedElementProps>`
-  border-top: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
-  padding-top: ${designTokens.spacing.md};
+export const ServiceRow = styled.button<ThemedElementProps & { $active?: boolean }>`
+  position: relative;
+  border: none;
+  border-top: ${designTokens.borderWidth.thin} solid
+    ${({ theme }) => getColors(theme).border};
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: ${designTokens.spacing.md};
   display: flex;
   gap: ${designTokens.spacing.md};
   align-items: baseline;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
 `;
 
-export const ServiceIndex = styled.span<ThemedElementProps>`
-  color: ${({ theme }) => getColors(theme).primary};
+export const ServiceBorderFrame = styled.div<ThemedElementProps>`
+  @property --service-border-reveal {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 0%;
+  }
+
+  --service-border-reveal: 0%;
+  position: absolute;
+  inset: 0;
+  border: none;
+  border-left: 48px solid ${({ theme }) => getColors(theme).primary};
+  border-bottom: ${designTokens.borderWidth.thin} solid
+    ${({ theme }) => getColors(theme).primary};
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 var(--service-border-reveal),
+    transparent var(--service-border-reveal)
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 var(--service-border-reveal),
+    transparent var(--service-border-reveal)
+  );
+  animation: ${revealServiceBorder} ${designTokens.duration.slower}
+    ${designTokens.easing.inOut} forwards;
+`;
+
+export const ServiceIndex = styled.span<ThemedElementProps & { $active?: boolean }>`
+  position: relative;
+  z-index: 1;
+  color: ${({ theme, $active }) =>
+    $active ? "#ffffff" : getColors(theme).primary};
   min-width: 1.8rem;
   font-size: ${designTokens.fontSize.lg};
+  transition: color ${designTokens.duration.fast} ${designTokens.easing.standard};
 `;
 
 export const ServiceName = styled.span`
+  position: relative;
+  z-index: 1;
   font-size: ${designTokens.fontSize.xl};
+`;
+
+export const ServicesDetail = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: ${designTokens.spacing.lg};
+  ${media.lg} {
+    min-height: 100%;
+    height: 100%;
+  }
+`;
+
+export const ServicesCarouselViewport = styled.div`
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  ${media.lg} {
+    flex: 1;
+    min-height: 0;
+  }
+`;
+
+export const ServicesCarouselContainer = styled.div`
+  display: flex;
+  ${media.lg} {
+    height: 100%;
+  }
+`;
+
+export const ServicesCarouselSlide = styled.div`
+  min-width: 0;
+  flex: 0 0 100%;
+
+  ${Body} + ${Body} {
+    margin-top: ${designTokens.spacing.md};
+  }
+`;
+
+export const ServiceDetailTitle = styled.h3`
+  font-family: var(--font-subheadline);
+  font-size: ${designTokens.fontSize["2xl"]};
+  line-height: ${designTokens.lineHeight.compact};
+  margin-bottom: ${designTokens.spacing.md};
+`;
+
+export const ServicesPips = styled.div`
+  display: flex;
+  gap: ${designTokens.spacing.sm};
+  align-items: center;
+  justify-content: center;
+  ${media.lg} {
+    margin-top: auto;
+  }
+`;
+
+export const ServicePip = styled.button<ThemedElementProps & { $active?: boolean }>`
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: none;
+  border-radius: ${designTokens.radius.pill};
+  background: ${({ theme, $active }) =>
+    $active ? getColors(theme).danger : getColors(theme).border};
+  cursor: pointer;
+  transition: background ${designTokens.duration.fast} ease;
 `;
 
 export const ToolsSectionBackground = styled.div<ToolsSectionBackgroundProps>`
@@ -525,4 +718,44 @@ export const CTA = styled.div<ThemedElementProps>`
 
 export const NorenContainer = styled.div`
   margin-top: -35px;
+`;
+
+export const MobileServicesNorenContainer = styled.div`
+  margin-top: calc(-1 * ${designTokens.spacing.xl} - 35px);
+  ${media.lg} {
+    display: none;
+  }
+`;
+
+export const MobileTileRoofContainer = styled.div`
+  position: relative;
+  left: 0;
+  right: 0;
+  overflow: visible;
+  margin-top: calc(
+    -1 * ${designTokens.spacing.xl} - ${designTokens.borderWidth.thin}
+  );
+  margin-bottom: 4px;
+  min-height: min-content;
+  ${media.lg} {
+    display: none;
+  }
+`;
+
+export const MobileRoofShade = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    #000000 0%,
+    rgba(0, 0, 0, 0.85) 18%,
+    rgba(0, 0, 0, 0.4) 45%,
+    rgba(0, 0, 0, 0) 100%
+  );
 `;

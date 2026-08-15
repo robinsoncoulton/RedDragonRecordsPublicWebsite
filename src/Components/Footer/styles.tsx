@@ -3,6 +3,8 @@ import { designTokens, media } from "../../DesignSystem";
 import { ThemedElementProps } from "../../Utils/Theme/types";
 
 export const StyledFooter = styled.div<ThemedElementProps>`
+  margin-top: auto;
+  flex-shrink: 0;
   border-top: ${designTokens.borderWidth.thin} solid var(--frame-inner-color);
   padding: ${designTokens.spacing.xl} ${designTokens.spacing.lg};
   display: grid;
@@ -18,6 +20,17 @@ export const StyledFooter = styled.div<ThemedElementProps>`
   font-size: ${designTokens.fontSize.xs};
   text-transform: uppercase;
   letter-spacing: 0.1em;
+
+  body.artists-page & {
+    @media (max-width: 768px) {
+      grid-template-areas: "copyright";
+      gap: 0;
+      margin-top: 0;
+      padding: ${designTokens.spacing.sm} ${designTokens.spacing.md}
+        calc(${designTokens.spacing.sm} + env(safe-area-inset-bottom, 0px));
+      border-top-width: ${designTokens.borderWidth.thin};
+    }
+  }
 
   ${media.lg} {
     padding: ${designTokens.spacing.lg} ${designTokens.spacing.xl};
@@ -37,6 +50,12 @@ export const FooterLeft = styled.div`
   justify-content: center;
   gap: ${designTokens.spacing.md};
   flex-wrap: wrap;
+
+  body.artists-page & {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 
   ${media.lg} {
     justify-content: flex-start;
@@ -62,6 +81,12 @@ export const FooterRight = styled.div`
   grid-area: location;
   text-align: center;
   white-space: normal;
+
+  body.artists-page & {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 
   ${media.lg} {
     text-align: right;

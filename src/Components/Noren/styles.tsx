@@ -8,6 +8,7 @@ interface NorenClothProps {
   $baseColor: string;
   $shadeColor: string;
   $breezeMultiplier: number;
+  $textBoost?: number;
 }
 
 interface NorenColorProps {
@@ -66,7 +67,7 @@ export const NorenPole = styled.div`
   top: calc(${designTokens.spacing.lg} + 1px);
   height: calc(var(--noren-strap-size) - 1px);
   background: linear-gradient(
-    90deg,
+    0deg,
     #4a2b1d 0%,
     #6e402b 30%,
     #805138 50%,
@@ -122,7 +123,9 @@ export const NorenCloth = styled.div<NorenClothProps>`
   text-align: center;
   padding: ${designTokens.spacing.xs};
   color: #ffffff;
-  font-size: ${designTokens.fontSize["3xl"]};
+  font-size: calc(
+    ${designTokens.fontSize["3xl"]} * ${({ $textBoost = 1 }) => $textBoost}
+  );
   letter-spacing: 0.04em;
   background-image: radial-gradient(rgba(255, 255, 255, 0.05) 0.6px, transparent 0.9px),
     radial-gradient(rgba(0, 0, 0, 0.09) 0.6px, transparent 1px),

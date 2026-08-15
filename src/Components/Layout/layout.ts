@@ -110,8 +110,14 @@ export const TaiwanContainer = styled.div`
   left: 0;
   right: 0;
   overflow: visible;
-  z-index: 0;
+  z-index: 1100;
   top: 0;
+
+  body.artists-page & {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 `;
 
 export const FixedBottomFade = styled.div`
@@ -127,6 +133,11 @@ export const FixedBottomFade = styled.div`
     rgba(0, 0, 0, 0) 0%,
     rgba(0, 0, 0, 1) 95%
   );
+
+  body.artists-page & {
+    z-index: 0;
+    opacity: 0;
+  }
 `;
 
 export const FixedBottomWarp = styled.div`

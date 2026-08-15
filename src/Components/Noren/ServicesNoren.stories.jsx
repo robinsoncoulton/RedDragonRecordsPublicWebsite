@@ -18,6 +18,7 @@ const meta = {
     height: { control: { type: "number", min: 80, max: 320, step: 1 } },
     flagCount: { control: { type: "number", min: 1, max: 20, step: 1 } },
     breezeMultiplier: { control: { type: "number", min: 0, max: 3, step: 0.1 } },
+    fullWidth: { control: "boolean" },
   },
   parameters: {
     layout: "fullscreen",
@@ -61,6 +62,12 @@ const meta = {
 export default meta;
 
 export const LabelList = {};
+
+export const FullWidth = {
+  args: {
+    fullWidth: true,
+  },
+};
 
 export const AutoFlagCount = {
   args: {
