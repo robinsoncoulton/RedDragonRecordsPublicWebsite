@@ -5,6 +5,7 @@ import Artists from "../Pages/Artists";
 import Contact from "../Pages/Contact";
 import Equipment from "../Pages/Equipment";
 import Join from "../Pages/Join";
+import Privacy from "../Pages/Privacy";
 import BlankPage from "../Pages/BlankPage";
 import { NonEmptyArray } from "../types";
 
@@ -50,6 +51,7 @@ export const appRoutes: { path: string; element: React.ReactNode }[] = [
   { path: "/studio/equipment", element: <Equipment /> },
   { path: "/artists", element: <Artists /> },
   { path: "/join", element: <Join /> },
+  { path: "/privacy", element: <Privacy /> },
   { path: "/equipment", element: <Navigate to="/studio/equipment" replace /> },
   { path: "/contact", element: <Contact /> },
 ];

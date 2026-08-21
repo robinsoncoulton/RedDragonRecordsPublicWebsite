@@ -24,6 +24,7 @@ import {
   TextArea,
   TextInput,
 } from "./styles";
+import { trackEvent } from "../../Analytics";
 
 type JoinFormValuesDTO = {
   bandArtistName: string;
@@ -102,10 +103,20 @@ const AffiliateApplication: React.FC<AffiliateApplicationProps> = ({ theme, copy
     "idle"
   );
   const [errorMessage, setErrorMessage] = React.useState("");
+  const hasStarted = React.useRef(false);
+
+  const markFormStart = () => {
+    if (hasStarted.current) {
+      return;
+    }
+    hasStarted.current = true;
+    trackEvent("join_form_start");
+  };
 
   const updateField =
     (field: keyof JoinFormValuesDTO) =>
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      markFormStart();
       setValues((current) => ({ ...current, [field]: event.target.value }));
     };
 
@@ -123,10 +134,12 @@ const AffiliateApplication: React.FC<AffiliateApplicationProps> = ({ theme, copy
     if (totalBytes > MAX_UPLOAD_BYTES) {
       setStatus("error");
       setErrorMessage(copy.fileTooLarge);
+      trackEvent("join_form_error", { reason: "too_large" });
       return;
     }
     setStatus("submitting");
     setErrorMessage("");
+    trackEvent("join_form_submit");
     formData.append("_subject", `Affiliate application: ${values.bandArtistName}`);
     formData.append("_template", "table");
     formData.append("_replyto", values.email);
@@ -144,9 +157,11 @@ const AffiliateApplication: React.FC<AffiliateApplicationProps> = ({ theme, copy
       setStatus("success");
       setValues(emptyValues);
       form.reset();
+      trackEvent("join_form_success");
     } catch {
       setStatus("error");
       setErrorMessage(copy.error);
+      trackEvent("join_form_error", { reason: "request_failed" });
     }
   };
 
@@ -214,6 +229,7 @@ const AffiliateApplication: React.FC<AffiliateApplicationProps> = ({ theme, copy
                 accept={IMAGE_ACCEPT}
                 required={field.required}
                 multiple={field.multiple}
+                onChange={markFormStart}
               />
             </Field>
           ))}

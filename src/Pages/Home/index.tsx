@@ -10,6 +10,7 @@ import { Theme } from "../../Utils/Theme/types";
 import { getColors } from "../../Styles/colors";
 import { designTokens } from "../../DesignSystem";
 import { useLocalisation } from "../../Localisation";
+import { trackEvent } from "../../Analytics";
 import heroArtists from "../../Assets/hero_artists.png";
 import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
 import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
@@ -151,6 +152,7 @@ const Home: React.FC = () => {
     []
   );
   const openContactMail = () => {
+    trackEvent("generate_lead", { method: "mailto" });
     window.location.assign("mailto:contact@reddragonrecords.tw");
   };
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -255,6 +257,13 @@ const Home: React.FC = () => {
   const selectService = (index: number) => {
     setSelectedServiceIndex(index);
     servicesEmblaApi?.scrollTo(index);
+    const service = services[index];
+    if (service) {
+      trackEvent("select_content", {
+        content_type: "service",
+        item_id: service.name,
+      });
+    }
   };
 
   const colors = getColors(theme);

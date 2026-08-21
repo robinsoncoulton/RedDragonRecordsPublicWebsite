@@ -139,6 +139,34 @@ const enLocalisation = {
         "Those images are too large to send together. Please keep the total under 8MB.",
     },
   },
+  cookies: {
+    message:
+      "We use Google Analytics cookies to understand how the site is used.",
+    accept: "Accept",
+    decline: "Decline",
+    learnMore: "Privacy",
+  },
+  footer: {
+    copyright: "©{year} Red Dragon Records. All Rights Reserved.",
+    location: "Tainan, Taiwan",
+    privacy: "Privacy",
+    cookieSettings: "Cookie settings",
+  },
+  privacy: {
+    title: "Privacy",
+    intro:
+      "Red Dragon Records is based in Tainan, Taiwan. This page explains what information this website collects.",
+    analyticsHeading: "Analytics",
+    analyticsBody:
+      "If you accept cookies, we use Google Analytics to measure how the site is used. Google may collect page paths, approximate location, device information, and (when Google signals is available) demographic data such as age range, gender, and interests. Analytics cookies are not set unless you accept.",
+    formsHeading: "Join applications",
+    formsBody:
+      "If you submit the affiliate application form, the details you enter are sent to us by email through FormSubmit. That information is not sent to Google Analytics.",
+    choicesHeading: "Your choices",
+    choicesBody:
+      "You can accept or decline analytics cookies. You can change this later with Cookie settings in the footer.",
+    contact: "Questions: contact@reddragonrecords.tw",
+  },
 };
 
 export default enLocalisation;

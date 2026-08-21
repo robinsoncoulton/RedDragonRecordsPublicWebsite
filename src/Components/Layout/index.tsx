@@ -3,6 +3,7 @@ import { PaperTexture, Warp } from "@paper-design/shaders-react";
 import Footer from "../Footer";
 import PosterFrame from "../PosterFrame/PosterFrame";
 import Header from "../Header";
+import CookieBanner from "../CookieBanner";
 import { StyledPage, StyledPageContent, StyledPageTexture } from "../Page/styles";
 import { useTheme } from "../../Utils/Theme";
 import { Theme } from "../../Utils/Theme/types";
@@ -86,6 +87,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         />
       </FixedBottomWarp>
       <FixedBottomFade aria-hidden="true" />
+      <CookieBanner />
     </PosterFrame>
   );
 };

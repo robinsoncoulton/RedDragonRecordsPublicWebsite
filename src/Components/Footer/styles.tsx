@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 import { designTokens, media } from "../../DesignSystem";
 import { ThemedElementProps } from "../../Utils/Theme/types";
 
@@ -65,15 +66,53 @@ export const FooterLeft = styled.div`
 
 export const FooterCenter = styled.div`
   grid-area: copyright;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${designTokens.spacing.sm};
   text-align: center;
   white-space: normal;
   max-width: 28rem;
   line-height: 1.5;
 
   ${media.lg} {
-    white-space: nowrap;
     max-width: none;
     line-height: normal;
+  }
+`;
+
+export const FooterLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: ${designTokens.spacing.md};
+`;
+
+export const FooterTextLink = styled(Link)`
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--footer-icon-hover-color, #ffffff);
+  }
+`;
+
+export const FooterTextButton = styled.button`
+  border: none;
+  background: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--footer-icon-hover-color, #ffffff);
   }
 `;
 

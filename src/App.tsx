@@ -3,11 +3,13 @@ import { Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./Utils/Theme";
 import { LocalisationProvider } from "./Localisation";
 import { appRoutes } from "./Utils/routes";
+import PageTracker from "./Analytics/PageTracker";
 
 const App: React.FC = () => {
   return (
     <ThemeProvider>
       <LocalisationProvider>
+        <PageTracker />
         <Routes>
           {appRoutes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />

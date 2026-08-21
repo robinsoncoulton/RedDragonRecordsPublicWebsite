@@ -48,6 +48,7 @@ import {
   TradingCardSection,
 } from "./styles";
 import { ArtistProfile, SocialPlatform } from "./types";
+import { trackEvent, trackOutboundClick } from "../../Analytics";
 
 const wrapReleaseIndex = (value: number, length: number) =>
   ((value % length) + length) % length;
@@ -123,6 +124,10 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
 
   const unlockEmbed = (releaseKey: string) => {
     setUnlockedEmbeds((current) => ({ ...current, [releaseKey]: true }));
+    trackEvent("unlock_embed", {
+      artist_name: artist.name,
+      item_id: releaseKey,
+    });
   };
 
   React.useLayoutEffect(() => {
@@ -311,6 +316,10 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
                               return;
                             }
                             if (release.url) {
+                              trackOutboundClick(release.url, {
+                                content_type: "release",
+                                item_id: releaseKey,
+                              });
                               window.open(release.url, "_blank", "noopener,noreferrer");
                             }
                           }}
@@ -403,6 +412,12 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
                   rel="noreferrer"
                   aria-label={label}
                   $textOnly={!Icon}
+                  onClick={() =>
+                    trackOutboundClick(link.url, {
+                      content_type: "artist_social",
+                      item_id: link.platform,
+                    })
+                  }
                 >
                   {Icon ? <Icon /> : <ArtistSocialFallback>{label}</ArtistSocialFallback>}
                 </ArtistSocialLink>
