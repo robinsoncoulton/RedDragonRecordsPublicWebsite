@@ -135,7 +135,7 @@ const zhLocalisation = {
     },
   },
   cookies: {
-    message: "我們使用 Google Analytics Cookie 來了解網站的使用情形。",
+    message: "我們使用 Cookie 進行網站分析與使用洞察（Google Analytics 與 Microsoft Clarity）。",
     accept: "接受",
     decline: "拒絕",
     learnMore: "隱私權",
@@ -151,10 +151,10 @@ const zhLocalisation = {
     intro: "紅龍唱片位於台灣台南。本頁說明本網站會收集哪些資訊。",
     analyticsHeading: "分析",
     analyticsBody:
-      "若你接受 Cookie，我們會使用 Google Analytics 來衡量網站使用情形。Google 可能會收集頁面路徑、大致位置、裝置資訊，以及（在啟用 Google 訊號且有足夠流量時）年齡層、性別與興趣等人口統計資料。未接受前不會設定分析 Cookie。",
+      "若你接受 Cookie，我們會使用 Google Analytics 與 Microsoft Clarity 來了解網站使用情形。Google 可能會收集頁面路徑、大致位置、裝置資訊，以及（在啟用 Google 訊號且有足夠流量時）年齡層、性別與興趣等人口統計資料。Clarity 可能會記錄匿名的工作階段洞察，例如頁面互動與熱圖。未接受前不會設定這些 Cookie。",
     formsHeading: "合作藝人申請",
     formsBody:
-      "若你送出合作藝人申請表，你填寫的內容會透過 FormSubmit 以電子郵件寄給我們。這些資訊不會送到 Google Analytics。",
+      "若你送出合作藝人申請表，你填寫的內容會透過 FormSubmit 以電子郵件寄給我們。這些資訊不會送到 Google Analytics 或 Microsoft Clarity。",
     choicesHeading: "你的選擇",
     choicesBody: "你可以接受或拒絕分析 Cookie。之後也可透過頁尾的 Cookie 設定再次變更。",
     contact: "問題請寄至 contact@reddragonrecords.tw",

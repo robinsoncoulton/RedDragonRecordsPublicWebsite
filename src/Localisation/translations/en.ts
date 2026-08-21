@@ -141,7 +141,7 @@ const enLocalisation = {
   },
   cookies: {
     message:
-      "We use Google Analytics cookies to understand how the site is used.",
+      "We use cookies for analytics and site insights (Google Analytics and Microsoft Clarity).",
     accept: "Accept",
     decline: "Decline",
     learnMore: "Privacy",
@@ -158,10 +158,10 @@ const enLocalisation = {
       "Red Dragon Records is based in Tainan, Taiwan. This page explains what information this website collects.",
     analyticsHeading: "Analytics",
     analyticsBody:
-      "If you accept cookies, we use Google Analytics to measure how the site is used. Google may collect page paths, approximate location, device information, and (when Google signals is available) demographic data such as age range, gender, and interests. Analytics cookies are not set unless you accept.",
+      "If you accept cookies, we use Google Analytics and Microsoft Clarity to understand how the site is used. Google may collect page paths, approximate location, device information, and (when Google signals is available) demographic data such as age range, gender, and interests. Clarity may record anonymized session insights such as page interactions and heatmaps. These cookies are not set unless you accept.",
     formsHeading: "Join applications",
     formsBody:
-      "If you submit the affiliate application form, the details you enter are sent to us by email through FormSubmit. That information is not sent to Google Analytics.",
+      "If you submit the affiliate application form, the details you enter are sent to us by email through FormSubmit. That information is not sent to Google Analytics or Microsoft Clarity.",
     choicesHeading: "Your choices",
     choicesBody:
       "You can accept or decline analytics cookies. You can change this later with Cookie settings in the footer.",

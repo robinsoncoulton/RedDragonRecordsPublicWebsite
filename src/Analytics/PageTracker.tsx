@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { getStoredConsent } from "./consent";
+import { initClarity } from "./clarity";
 import { initAnalytics, trackPageView } from "./gtag";
 
 const PageTracker: React.FC = () => {
@@ -11,6 +12,7 @@ const PageTracker: React.FC = () => {
       return;
     }
     initAnalytics();
+    initClarity();
     trackPageView(`${location.pathname}${location.search}`);
   }, [location.pathname, location.search]);
 

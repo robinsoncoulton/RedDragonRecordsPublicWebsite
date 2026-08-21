@@ -4,8 +4,10 @@ import { useLocalisation } from "../../Localisation";
 import {
   COOKIE_BANNER_OPEN_EVENT,
   currentPagePath,
+  disableClarity,
   getStoredConsent,
   initAnalytics,
+  initClarity,
   setAnalyticsDisabled,
   setStoredConsent,
   trackPageView,
@@ -41,6 +43,7 @@ const CookieBanner: React.FC = () => {
     setAnalyticsDisabled(false);
     updateAnalyticsConsent(true);
     initAnalytics();
+    initClarity();
     trackPageView(currentPagePath());
     setVisible(false);
   };
@@ -49,6 +52,7 @@ const CookieBanner: React.FC = () => {
     setStoredConsent("denied");
     setAnalyticsDisabled(true);
     updateAnalyticsConsent(false);
+    disableClarity();
     setVisible(false);
   };
 

@@ -17,6 +17,7 @@ export {
   updateAnalyticsConsent,
 } from "./gtag";
 export type { AnalyticsEventParams } from "./gtag";
+export { initClarity, disableClarity } from "./clarity";
 
 const domainFromUrl = (url: string) => {
   try {
