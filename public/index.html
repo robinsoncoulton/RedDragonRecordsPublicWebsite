@@ -31,6 +31,10 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Red Dragon Records</title>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_MEASUREMENT_ID%"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -51,13 +55,9 @@
       });
       gtag("js", new Date());
       if (gaMeasurementId.indexOf("G-") === 0) {
-        gtag("config", gaMeasurementId, { send_page_view: false });
+        gtag("config", gaMeasurementId);
       }
     </script>
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_MEASUREMENT_ID%"
-    ></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

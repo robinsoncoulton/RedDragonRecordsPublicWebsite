@@ -25,6 +25,9 @@ const isLocalHost = () => {
 
 const disableKey = () => `ga-disable-${MEASUREMENT_ID}`;
 
+const debugMode = () =>
+  new URLSearchParams(window.location.search).has("gtag_debug");
+
 export const canTrack = () =>
   Boolean(MEASUREMENT_ID) &&
   !isLocalHost() &&
@@ -61,6 +64,15 @@ export const updateAnalyticsConsent = (granted: boolean) => {
 const hasGtagScript = () =>
   Boolean(document.querySelector('script[src*="googletagmanager.com/gtag/js"]'));
 
+const sendConfig = (path: string) => {
+  window.gtag("config", MEASUREMENT_ID, {
+    page_path: path,
+    page_location: window.location.href,
+    page_title: document.title,
+    ...(debugMode() ? { debug_mode: true } : {}),
+  });
+};
+
 export const initAnalytics = () => {
   if (!MEASUREMENT_ID || isLocalHost()) {
     return;
@@ -77,18 +89,14 @@ export const initAnalytics = () => {
     return;
   }
 
-  if (hasGtagScript()) {
-    initialized = true;
-    return;
+  if (!hasGtagScript()) {
+    window.gtag("js", new Date());
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
+    document.head.appendChild(script);
   }
 
-  window.gtag("js", new Date());
-  window.gtag("config", MEASUREMENT_ID, { send_page_view: false });
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
-  document.head.appendChild(script);
   initialized = true;
 };
 
@@ -96,11 +104,7 @@ export const trackPageView = (path: string) => {
   if (!canTrack() || typeof window.gtag !== "function") {
     return;
   }
-  window.gtag("event", "page_view", {
-    page_path: path,
-    page_location: window.location.href,
-    page_title: document.title,
-  });
+  sendConfig(path);
 };
 
 export const trackEvent = (name: string, params?: AnalyticsEventParams) => {
