@@ -31,6 +31,33 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Red Dragon Records</title>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      window.gtag = gtag;
+      var gaMeasurementId = "%REACT_APP_GA_MEASUREMENT_ID%";
+      var analyticsGranted = false;
+      try {
+        analyticsGranted =
+          window.localStorage.getItem("rdr-analytics-consent") === "granted";
+      } catch (error) {}
+      gtag("consent", "default", {
+        analytics_storage: analyticsGranted ? "granted" : "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+      });
+      gtag("js", new Date());
+      if (gaMeasurementId.indexOf("G-") === 0) {
+        gtag("config", gaMeasurementId, { send_page_view: false });
+      }
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_MEASUREMENT_ID%"
+    ></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

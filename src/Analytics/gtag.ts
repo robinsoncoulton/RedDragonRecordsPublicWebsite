@@ -37,8 +37,32 @@ export const setAnalyticsDisabled = (disabled: boolean) => {
   (window as unknown as Record<string, boolean>)[disableKey()] = disabled;
 };
 
+const ensureGtagStub = () => {
+  window.dataLayer = window.dataLayer || [];
+  if (typeof window.gtag === "function") {
+    return;
+  }
+  window.gtag = function () {
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer.push(arguments);
+  };
+};
+
+export const updateAnalyticsConsent = (granted: boolean) => {
+  ensureGtagStub();
+  window.gtag("consent", "update", {
+    analytics_storage: granted ? "granted" : "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+};
+
+const hasGtagScript = () =>
+  Boolean(document.querySelector('script[src*="googletagmanager.com/gtag/js"]'));
+
 export const initAnalytics = () => {
-  if (initialized || !MEASUREMENT_ID || isLocalHost()) {
+  if (!MEASUREMENT_ID || isLocalHost()) {
     return;
   }
   if (getStoredConsent() !== "granted") {
@@ -46,10 +70,18 @@ export const initAnalytics = () => {
   }
 
   setAnalyticsDisabled(false);
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: unknown[]) => {
-    window.dataLayer.push(args);
-  };
+  ensureGtagStub();
+  updateAnalyticsConsent(true);
+
+  if (initialized) {
+    return;
+  }
+
+  if (hasGtagScript()) {
+    initialized = true;
+    return;
+  }
+
   window.gtag("js", new Date());
   window.gtag("config", MEASUREMENT_ID, { send_page_view: false });
 

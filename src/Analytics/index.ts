@@ -14,6 +14,7 @@ export {
   canTrack,
   currentPagePath,
   setAnalyticsDisabled,
+  updateAnalyticsConsent,
 } from "./gtag";
 export type { AnalyticsEventParams } from "./gtag";
 

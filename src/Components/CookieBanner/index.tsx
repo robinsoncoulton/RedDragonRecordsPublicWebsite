@@ -9,6 +9,7 @@ import {
   setAnalyticsDisabled,
   setStoredConsent,
   trackPageView,
+  updateAnalyticsConsent,
 } from "../../Analytics";
 import {
   Banner,
@@ -38,6 +39,7 @@ const CookieBanner: React.FC = () => {
   const accept = () => {
     setStoredConsent("granted");
     setAnalyticsDisabled(false);
+    updateAnalyticsConsent(true);
     initAnalytics();
     trackPageView(currentPagePath());
     setVisible(false);
@@ -46,6 +48,7 @@ const CookieBanner: React.FC = () => {
   const decline = () => {
     setStoredConsent("denied");
     setAnalyticsDisabled(true);
+    updateAnalyticsConsent(false);
     setVisible(false);
   };
 
