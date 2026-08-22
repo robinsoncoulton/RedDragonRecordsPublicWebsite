@@ -5,30 +5,30 @@ import WheelGesturesPlugin from "embla-carousel-wheel-gestures";
 import Page from "../../Components/Page";
 import Noren from "../../Components/Noren";
 import TileRoof from "../../Components/TileRoof";
+import DeferredMount from "../../Components/DeferredMount";
 import { useTheme } from "../../Utils/Theme";
 import { Theme } from "../../Utils/Theme/types";
 import { getColors } from "../../Styles/colors";
 import { designTokens } from "../../DesignSystem";
 import { useLocalisation } from "../../Localisation";
 import { trackEvent } from "../../Analytics";
-import heroArtists from "../../Assets/hero_artists.png";
-import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.png";
-import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.png";
-import micE906 from "../../Assets/Icons/Poster/icon_poster_mic_e906.png";
-import micMd421 from "../../Assets/Icons/Poster/icon_poster_mic_md421.png";
-import micNt5 from "../../Assets/Icons/Poster/icon_poster_mic_nt5.png";
-import micSm57 from "../../Assets/Icons/Poster/icon_poster_mic_sm57.png";
-import micSm58 from "../../Assets/Icons/Poster/icon_poster_mic_sm58.png";
-import gearBlackstar from "../../Assets/Icons/Poster/icon_poster_gear_blackstar.png";
-import gearGibsonSg from "../../Assets/Icons/Poster/icon_poster_gear_gibson_sg.png";
-import gearGodin from "../../Assets/Icons/Poster/icon_poster_gear_godin.png";
-import gearJazzmaster from "../../Assets/Icons/Poster/icon_poster_gear_jazzmaster.png";
-import gearLaney from "../../Assets/Icons/Poster/icon_poster_gear_laney.png";
-import gearLudwig from "../../Assets/Icons/Poster/icon_poster_gear_ludwig.png";
-import gearMarshallJvm410 from "../../Assets/Icons/Poster/icon_poster_gear_marshall_jvm410.png";
-import gearPaiste from "../../Assets/Icons/Poster/icon_poster_gear_paiste.png";
-import gearStrat from "../../Assets/Icons/Poster/icon_poster_gear_strat.png";
-import gearTelecaster from "../../Assets/Icons/Poster/icon_poster_gear_telecaster.png";
+import micC414 from "../../Assets/Icons/Poster/icon_poster_mic_c414.webp";
+import micBeta52a from "../../Assets/Icons/Poster/icon_poster_mic_beta52a.webp";
+import micE906 from "../../Assets/Icons/Poster/icon_poster_mic_e906.webp";
+import micMd421 from "../../Assets/Icons/Poster/icon_poster_mic_md421.webp";
+import micNt5 from "../../Assets/Icons/Poster/icon_poster_mic_nt5.webp";
+import micSm57 from "../../Assets/Icons/Poster/icon_poster_mic_sm57.webp";
+import micSm58 from "../../Assets/Icons/Poster/icon_poster_mic_sm58.webp";
+import gearBlackstar from "../../Assets/Icons/Poster/icon_poster_gear_blackstar.webp";
+import gearGibsonSg from "../../Assets/Icons/Poster/icon_poster_gear_gibson_sg.webp";
+import gearGodin from "../../Assets/Icons/Poster/icon_poster_gear_godin.webp";
+import gearJazzmaster from "../../Assets/Icons/Poster/icon_poster_gear_jazzmaster.webp";
+import gearLaney from "../../Assets/Icons/Poster/icon_poster_gear_laney.webp";
+import gearLudwig from "../../Assets/Icons/Poster/icon_poster_gear_ludwig.webp";
+import gearMarshallJvm410 from "../../Assets/Icons/Poster/icon_poster_gear_marshall_jvm410.webp";
+import gearPaiste from "../../Assets/Icons/Poster/icon_poster_gear_paiste.webp";
+import gearStrat from "../../Assets/Icons/Poster/icon_poster_gear_strat.webp";
+import gearTelecaster from "../../Assets/Icons/Poster/icon_poster_gear_telecaster.webp";
 import {
   Body,
   CarouselContainer,
@@ -45,6 +45,7 @@ import {
   HeroLeftShade,
   HeroRightShade,
   HeroLogo,
+  HeroPicture,
   HeroPlaceholder,
   HeroImageShade,
   MobileRoofShade,
@@ -228,7 +229,9 @@ const Home: React.FC = () => {
     const desktopQuery = window.matchMedia(
       `(min-width: ${designTokens.breakpoint.lg})`
     );
-    const syncHeight = () => {
+    let observer: ResizeObserver | null = null;
+    const observeSelected = () => {
+      observer?.disconnect();
       if (desktopQuery.matches) {
         root.style.height = "";
         return;
@@ -238,18 +241,24 @@ const Home: React.FC = () => {
       if (!slide) {
         return;
       }
-      root.style.height = `${slide.getBoundingClientRect().height}px`;
+      observer = new ResizeObserver((entries) => {
+        const entry = entries[0];
+        if (!entry) {
+          return;
+        }
+        root.style.height = `${entry.contentRect.height}px`;
+      });
+      observer.observe(slide);
     };
-    syncHeight();
-    servicesEmblaApi.on("select", syncHeight);
-    servicesEmblaApi.on("reInit", syncHeight);
-    desktopQuery.addEventListener("change", syncHeight);
-    window.addEventListener("resize", syncHeight);
+    observeSelected();
+    servicesEmblaApi.on("select", observeSelected);
+    servicesEmblaApi.on("reInit", observeSelected);
+    desktopQuery.addEventListener("change", observeSelected);
     return () => {
-      servicesEmblaApi.off("select", syncHeight);
-      servicesEmblaApi.off("reInit", syncHeight);
-      desktopQuery.removeEventListener("change", syncHeight);
-      window.removeEventListener("resize", syncHeight);
+      observer?.disconnect();
+      servicesEmblaApi.off("select", observeSelected);
+      servicesEmblaApi.off("reInit", observeSelected);
+      desktopQuery.removeEventListener("change", observeSelected);
       root.style.height = "";
     };
   }, [servicesEmblaApi]);
@@ -308,7 +317,27 @@ const Home: React.FC = () => {
               </ButtonContainer>
             </HeroCopy>
             <HeroPlaceholder theme={theme}>
-              <HeroLogo src={heroArtists} alt={home.hero.imageAlt} />
+              <HeroPicture>
+                <source
+                  type="image/avif"
+                  srcSet="/hero-artists-800.avif 800w, /hero-artists-1600.avif 1600w"
+                  sizes="(min-width: 1024px) 55vw, 92vw"
+                />
+                <source
+                  type="image/webp"
+                  srcSet="/hero-artists-800.webp 800w, /hero-artists-1600.webp 1600w"
+                  sizes="(min-width: 1024px) 55vw, 92vw"
+                />
+                <HeroLogo
+                  src="/hero-artists-1600.webp"
+                  srcSet="/hero-artists-800.webp 800w, /hero-artists-1600.webp 1600w"
+                  sizes="(min-width: 1024px) 55vw, 92vw"
+                  width={1600}
+                  height={826}
+                  decoding="async"
+                  alt={home.hero.imageAlt}
+                />
+              </HeroPicture>
             </HeroPlaceholder>
           </HeroGrid>
           <HeroImageShade aria-hidden="true" />
@@ -389,42 +418,46 @@ const Home: React.FC = () => {
         <Panel theme={theme} bordered noPadding>
           <ToolsSectionBackground $topColor={toolsBackgroundColor}>
             <ToolsSectionTexture aria-hidden="true">
-              <PaperTexture
-                colorBack={toolsBackgroundColor}
-                colorFront={toolsDetailColor}
-                contrast={0.06}
-                roughness={1}
-                fiber={0.1}
-                fiberSize={0.01}
-                crumples={0.08}
-                crumpleSize={0.01}
-                folds={0.04}
-                foldCount={1}
-                drops={0}
-                fade={0}
-                seed={0}
-                scale={0.5}
-                fit="cover"
-              />
+              <DeferredMount>
+                <PaperTexture
+                  colorBack={toolsBackgroundColor}
+                  colorFront={toolsDetailColor}
+                  contrast={0.06}
+                  roughness={1}
+                  fiber={0.1}
+                  fiberSize={0.01}
+                  crumples={0.08}
+                  crumpleSize={0.01}
+                  folds={0.04}
+                  foldCount={1}
+                  drops={0}
+                  fade={0}
+                  seed={0}
+                  scale={0.5}
+                  fit="cover"
+                />
+              </DeferredMount>
             </ToolsSectionTexture>
             <ToolsSectionTopTexture aria-hidden="true">
-              <PaperTexture
-                colorBack={colors.background}
-                colorFront={colors.danger}
-                contrast={0.04}
-                roughness={1}
-                fiber={0.16}
-                fiberSize={0.016}
-                crumples={0.14}
-                crumpleSize={0.016}
-                folds={0.06}
-                foldCount={1.2}
-                drops={0.03}
-                fade={0}
-                seed={2}
-                scale={0.65}
-                fit="cover"
-              />
+              <DeferredMount>
+                <PaperTexture
+                  colorBack={colors.background}
+                  colorFront={colors.danger}
+                  contrast={0.04}
+                  roughness={1}
+                  fiber={0.16}
+                  fiberSize={0.016}
+                  crumples={0.14}
+                  crumpleSize={0.016}
+                  folds={0.06}
+                  foldCount={1.2}
+                  drops={0.03}
+                  fade={0}
+                  seed={2}
+                  scale={0.65}
+                  fit="cover"
+                />
+              </DeferredMount>
             </ToolsSectionTopTexture>
             <ToolsSectionContent>
               <ToolsSideFadeOverlay />
@@ -437,7 +470,14 @@ const Home: React.FC = () => {
                       $showSeparator
                     >
                       <ToolTile theme={theme}>
-                        <ToolIcon src={icon} alt={name} />
+                        <ToolIcon
+                          src={icon}
+                          alt={name}
+                          width={300}
+                          height={300}
+                          loading="lazy"
+                          decoding="async"
+                        />
                         <ToolLabel>{name}</ToolLabel>
                       </ToolTile>
                     </CarouselSlide>

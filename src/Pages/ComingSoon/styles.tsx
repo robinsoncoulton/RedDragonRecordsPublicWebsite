@@ -1,9 +1,5 @@
 import styled from "styled-components";
-import "../../Fonts/KILLEDDJ.ttf";
-import "../../Fonts/hanwangkantan.ttf";
-import "../../Fonts/jinmei-poster-calligraphy.ttf";
-import "../../Fonts/zhongshan-xingshu.ttf";
-import "../../Fonts/Harukaze.ttf";
+import "./fonts.css";
 import { designTokens, media } from "../../DesignSystem";
 import { getColors } from "../../Styles/colors";
 import { ThemedElementProps } from "../../Utils/Theme/types";

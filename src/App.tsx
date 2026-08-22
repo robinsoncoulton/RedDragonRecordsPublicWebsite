@@ -10,11 +10,13 @@ const App: React.FC = () => {
     <ThemeProvider>
       <LocalisationProvider>
         <PageTracker />
-        <Routes>
-          {appRoutes.map((route) => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
-        </Routes>
+        <React.Suspense fallback={null}>
+          <Routes>
+            {appRoutes.map((route) => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
+        </React.Suspense>
       </LocalisationProvider>
     </ThemeProvider>
   );

@@ -40,15 +40,26 @@ export const setAnalyticsDisabled = (disabled: boolean) => {
   (window as unknown as Record<string, boolean>)[disableKey()] = disabled;
 };
 
+let defaultConsentSent = false;
+
 const ensureGtagStub = () => {
   window.dataLayer = window.dataLayer || [];
-  if (typeof window.gtag === "function") {
+  if (typeof window.gtag !== "function") {
+    window.gtag = function () {
+      // eslint-disable-next-line prefer-rest-params
+      window.dataLayer.push(arguments);
+    };
+  }
+  if (defaultConsentSent) {
     return;
   }
-  window.gtag = function () {
-    // eslint-disable-next-line prefer-rest-params
-    window.dataLayer.push(arguments);
-  };
+  defaultConsentSent = true;
+  window.gtag("consent", "default", {
+    analytics_storage: "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
 };
 
 export const updateAnalyticsConsent = (granted: boolean) => {

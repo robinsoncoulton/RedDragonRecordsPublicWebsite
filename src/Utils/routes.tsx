@@ -1,13 +1,14 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import Home from "../Pages/Home";
-import Artists from "../Pages/Artists";
-import Contact from "../Pages/Contact";
-import Equipment from "../Pages/Equipment";
-import Join from "../Pages/Join";
-import Privacy from "../Pages/Privacy";
-import BlankPage from "../Pages/BlankPage";
 import { NonEmptyArray } from "../types";
+
+const Artists = React.lazy(() => import("../Pages/Artists"));
+const Contact = React.lazy(() => import("../Pages/Contact"));
+const Equipment = React.lazy(() => import("../Pages/Equipment"));
+const Join = React.lazy(() => import("../Pages/Join"));
+const Privacy = React.lazy(() => import("../Pages/Privacy"));
+const BlankPage = React.lazy(() => import("../Pages/BlankPage"));
 
 export type MainNavItem = {
   label: string;

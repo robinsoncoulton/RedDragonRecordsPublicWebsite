@@ -67,6 +67,7 @@ export const StyledPageTexture = styled.div`
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  background-color: var(--app-background);
   > * {
     width: 100%;
     height: 100%;

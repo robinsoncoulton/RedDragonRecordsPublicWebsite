@@ -83,7 +83,8 @@ const Header: React.FC = () => {
   React.useEffect(() => {
     const threshold = getSpacingPx(designTokens.spacing["4xl"]);
     let lastScrollY = window.scrollY;
-    const handleScroll = () => {
+    let frame = 0;
+    const apply = () => {
       const currentScrollY = window.scrollY;
       const isScrollingUp = currentScrollY < lastScrollY;
       const isScrollingDown = currentScrollY > lastScrollY;
@@ -97,11 +98,21 @@ const Header: React.FC = () => {
         setForceOpaque(false);
       }
       lastScrollY = currentScrollY;
+      frame = 0;
     };
-    handleScroll();
+    const handleScroll = () => {
+      if (frame) {
+        return;
+      }
+      frame = window.requestAnimationFrame(apply);
+    };
+    apply();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
     };
   }, []);
 

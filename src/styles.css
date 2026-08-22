@@ -20,65 +20,50 @@ body,
 
 @font-face {
   font-family: "MyFont";
-  src: local("MyFont"), url(./Fonts/powdwrk5.ttf) format("truetype");
-  /* other formats include: 'woff2', 'truetype, 'opentype',
-                            'embedded-opentype', and 'svg' */
-}
-
-@font-face {
-  font-family: "MyFont2";
-  src: local("MyFont2"), url(./Fonts/KILLEDDJ.ttf) format("truetype");
+  src: url(./Fonts/powdwrk5.woff2) format("woff2");
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
 }
 
 @font-face {
   font-family: "Chinese1";
-  src: local("Chinese1"), url(./Fonts/hanwangkantan.ttf) format("truetype");
-}
-
-@font-face {
-  font-family: "Chinese2";
-  src: local("Chinese2"),
-    url(./Fonts/jinmei-poster-calligraphy.ttf) format("truetype");
-}
-
-@font-face {
-  font-family: "Chinese3";
-  src: local("Chinese3"), url(./Fonts/zhongshan-xingshu.ttf) format("truetype");
+  src: url(./Fonts/hanwangkantan.woff2) format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Chinglish1";
-  src: local("Chinglish1"), url(./Fonts/Harukaze.ttf) format("truetype");
-}
-
-@font-face {
-  font-family: "Chinglish2";
-  src: local("Chinglish2"), url(./Fonts/Osake.ttf) format("truetype");
-}
-
-@font-face {
-  font-family: "Chinglish3";
-  src: local("Chinglish3"), url(./Fonts/JAPANBRUSH.ttf) format("truetype");
+  src: url(./Fonts/Harukaze.woff2) format("woff2");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "YoungSerif";
-  src: local("YoungSerif"),
-    url(./Fonts/Young_Serif/YoungSerif-Regular.ttf) format("truetype");
+  src: url(./Fonts/YoungSerif-Regular.woff2) format("woff2");
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
 }
 
 @font-face {
   font-family: "PlayfairDisplay";
-  src: local("PlayfairDisplay"),
-    url(./Fonts/Playfair_Display/static/PlayfairDisplay-Regular.ttf)
-      format("truetype");
+  src: url(./Fonts/PlayfairDisplay-Regular.woff2) format("woff2");
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
 }
 
 @font-face {
   font-family: "LibreBaskerville";
-  src: local("LibreBaskerville"),
-    url(./Fonts/Libre_Baskerville/static/LibreBaskerville-Regular.ttf)
-      format("truetype");
+  src: url(./Fonts/LibreBaskerville-Regular.woff2) format("woff2");
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
 }
 
 * {
@@ -91,6 +76,14 @@ body,
   box-shadow: none;
   font-size: 16px;
   font-family: var(--font-body);
+}
+
+body,
+button,
+a,
+input,
+textarea,
+select {
   transition: background-color var(--theme-transition-duration)
       var(--theme-transition-easing),
     color var(--theme-transition-duration) var(--theme-transition-easing),

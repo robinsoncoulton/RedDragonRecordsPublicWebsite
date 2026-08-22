@@ -2,6 +2,7 @@ import React from "react";
 import { PaperTexture } from "@paper-design/shaders-react";
 import { useTheme } from "../../Utils/Theme";
 import { getColors } from "../../Styles/colors";
+import DeferredMount from "../DeferredMount";
 import "./posterFrame.css";
 
 const PosterFrame = ({ children }) => {
@@ -11,23 +12,25 @@ const PosterFrame = ({ children }) => {
   return (
     <div className="poster-frame">
       <div className="poster-frame__texture" aria-hidden="true">
-        <PaperTexture
-          colorBack={colors.background}
-          colorFront={colors.backgroundAccent}
-          contrast={0.12}
-          roughness={1}
-          fiber={0.05}
-          fiberSize={0.01}
-          crumples={0}
-          crumpleSize={0.01}
-          folds={0}
-          foldCount={1}
-          drops={0}
-          fade={0}
-          seed={0}
-          scale={0.5}
-          fit="cover"
-        />
+        <DeferredMount>
+          <PaperTexture
+            colorBack={colors.background}
+            colorFront={colors.backgroundAccent}
+            contrast={0.12}
+            roughness={1}
+            fiber={0.05}
+            fiberSize={0.01}
+            crumples={0}
+            crumpleSize={0.01}
+            folds={0}
+            foldCount={1}
+            drops={0}
+            fade={0}
+            seed={0}
+            scale={0.5}
+            fit="cover"
+          />
+        </DeferredMount>
       </div>
       <div className="poster-frame__inner">
         <div className="poster-frame__content">{children}</div>

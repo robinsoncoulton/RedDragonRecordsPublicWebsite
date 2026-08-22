@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-import "../../Fonts/powdwrk5.ttf";
 import { designTokens, layoutMedia } from "../../DesignSystem";
 import { getColors } from "../../Styles/colors";
 import { ThemedElementProps } from "../../Utils/Theme/types";

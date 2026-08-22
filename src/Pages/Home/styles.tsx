@@ -339,12 +339,21 @@ export const HeroImageShade = styled.div`
   }
 `;
 
-export const HeroLogo = styled.img`
+export const HeroPicture = styled.picture`
   position: absolute;
   z-index: 1;
   bottom: -61px;
   right: -100px;
   height: 128%;
+  display: block;
+`;
+
+export const HeroLogo = styled.img.attrs({
+  fetchpriority: "high",
+})`
+  height: 100%;
+  width: auto;
+  display: block;
 `;
 
 export const HeroVerticalBanner = styled.div<ThemedElementProps>`
