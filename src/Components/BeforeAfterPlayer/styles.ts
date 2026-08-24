@@ -11,8 +11,24 @@ export const Shell = styled.div<ThemedElementProps>`
   padding: ${designTokens.spacing.lg};
   box-sizing: border-box;
   color: ${({ theme }) => getColors(theme).text};
-  background: ${({ theme }) => getColors(theme).surfaceMuted};
-  border: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
+  background: color-mix(
+    in srgb,
+    ${({ theme }) => getColors(theme).surfaceMuted}
+      calc(100% - var(--energy, 0) * 16%),
+    ${({ theme }) => getColors(theme).primary}
+  );
+  border: ${designTokens.borderWidth.thin} solid
+    color-mix(
+      in srgb,
+      ${({ theme }) => getColors(theme).border} calc(100% - var(--pulse, 0) * 32%),
+      ${({ theme }) => getColors(theme).primary}
+    );
+  box-shadow: 0 0 calc(0.2rem + var(--pulse, 0) * 1.15rem)
+    color-mix(
+      in srgb,
+      ${({ theme }) => getColors(theme).primary} calc(var(--pulse, 0) * 28%),
+      transparent
+    );
 `;
 
 export const Row = styled.div`
@@ -178,4 +194,90 @@ export const VolumeSlider = styled.input<ThemedElementProps>`
   width: 100%;
   accent-color: ${({ theme }) => getColors(theme).primary};
   cursor: pointer;
+`;
+
+export const WaveformStack = styled.div<ThemedElementProps>`
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  background: ${({ theme }) => getColors(theme).background};
+  border: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
+  touch-action: none;
+`;
+
+export const WaveformCanvas = styled.canvas`
+  display: block;
+  width: 100%;
+  vertical-align: top;
+`;
+
+export const WaveformLabels = styled.div<{ $rows: number }>`
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: repeat(${({ $rows }) => $rows}, 1fr);
+  pointer-events: none;
+`;
+
+export const WaveformLabel = styled.span<ThemedElementProps & { $active?: boolean }>`
+  display: flex;
+  align-items: flex-start;
+  padding: ${designTokens.spacing.xs} ${designTokens.spacing.sm};
+  font-size: ${designTokens.fontSize.xs};
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${({ theme, $active }) =>
+    $active ? getColors(theme).primary : getColors(theme).textMuted};
+`;
+
+export const MeterStack = styled.div`
+  display: grid;
+  gap: ${designTokens.spacing.xs};
+  width: 100%;
+`;
+
+export const MeterRow = styled.div`
+  display: grid;
+  grid-template-columns: 0.9rem 1fr;
+  align-items: center;
+  gap: ${designTokens.spacing.sm};
+`;
+
+export const MeterLabel = styled.span`
+  font-size: ${designTokens.fontSize.xs};
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
+
+export const MeterTrack = styled.div<ThemedElementProps>`
+  position: relative;
+  height: 0.55rem;
+  overflow: hidden;
+  background: ${({ theme }) => getColors(theme).background};
+  border: ${designTokens.borderWidth.thin} solid ${({ theme }) => getColors(theme).border};
+`;
+
+export const MeterFill = styled.span<ThemedElementProps>`
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(
+    90deg,
+    ${({ theme }) => getColors(theme).success} 0%,
+    ${({ theme }) => getColors(theme).brandHighlight} 68%,
+    ${({ theme }) => getColors(theme).primary} 100%
+  );
+`;
+
+export const MeterHold = styled.span<ThemedElementProps>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.125rem;
+  height: 100%;
+  margin-left: -0.0625rem;
+  background: ${({ theme }) => getColors(theme).text};
 `;

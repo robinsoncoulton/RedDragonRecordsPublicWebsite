@@ -1,8 +1,27 @@
 import { Theme } from "../../Utils/Theme/types";
+import { MeterFrame } from "./meter";
+
+export type { MeterFrame };
 
 export type BeforeAfterTrack = {
   src: string;
   label: string;
+};
+
+export type BeforeAfterPlayerHandle = {
+  play: () => Promise<void>;
+  pause: () => void;
+  togglePlay: () => void;
+  seek: (seconds: number) => void;
+  select: (index: number) => void;
+  setLoop: (loop: boolean) => void;
+  setVolume: (volume: number) => void;
+  getCurrentTime: () => number;
+  getDuration: () => number;
+  getActiveIndex: () => number;
+  isPlaying: () => boolean;
+  isReady: () => boolean;
+  getLevels: () => MeterFrame;
 };
 
 export type BeforeAfterPlayerProps = {
@@ -13,4 +32,8 @@ export type BeforeAfterPlayerProps = {
   labelA?: string;
   labelB?: string;
   crossfadeMs?: number;
+  showProgress?: boolean;
+  showWaveform?: boolean;
+  showMeter?: boolean;
+  onLevels?: (levels: MeterFrame) => void;
 };

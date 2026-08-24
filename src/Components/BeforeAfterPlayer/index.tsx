@@ -1,356 +1,299 @@
 import React from "react";
+import { getColors } from "../../Styles/colors";
+import { TrackSelect } from "./TrackSelect";
+import { VuMeter, VuMeterHandle } from "./VuMeter";
 import {
-  ActiveLabel,
-  CarouselNav,
   ControlButton,
-  NavButton,
   Row,
   Shell,
-  SideButton,
-  SideToggle,
-  StepDot,
-  StepDots,
   VolumeLabel,
   VolumeRow,
   VolumeSlider,
   VolumeValue,
+  WaveformCanvas,
+  WaveformLabel,
+  WaveformLabels,
+  WaveformStack,
 } from "./styles";
-import { BeforeAfterPlayerProps, BeforeAfterTrack } from "./types";
-
-const DEFAULT_CROSSFADE_MS = 200;
-const DRIFT_MS = 0.04;
-
-const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
-
-const resolveTracks = ({
-  tracks,
-  srcA,
-  srcB,
-  labelA = "Before",
-  labelB = "After",
-}: Pick<
+import {
+  BeforeAfterPlayerHandle,
   BeforeAfterPlayerProps,
-  "tracks" | "srcA" | "srcB" | "labelA" | "labelB"
->): BeforeAfterTrack[] => {
-  if (tracks && tracks.length >= 2) {
-    return tracks;
-  }
-  if (srcA && srcB) {
-    return [
-      { src: srcA, label: labelA },
-      { src: srcB, label: labelB },
-    ];
-  }
-  return [];
-};
+  BeforeAfterTrack,
+} from "./types";
+import { MeterFrame } from "./meter";
+import { usePlayerEngine } from "./usePlayerEngine";
+import { clamp01, formatTime, resolveTracks } from "./utils";
+import { WAVEFORM_ROW_HEIGHT, drawWaveforms } from "./waveform";
 
-const BeforeAfterPlayer: React.FC<BeforeAfterPlayerProps> = ({
-  theme,
-  tracks: tracksProp,
-  srcA,
-  srcB,
-  labelA = "Before",
-  labelB = "After",
-  crossfadeMs = DEFAULT_CROSSFADE_MS,
-}) => {
-  const tracks = React.useMemo(
-    () => resolveTracks({ tracks: tracksProp, srcA, srcB, labelA, labelB }),
-    [tracksProp, srcA, srcB, labelA, labelB]
-  );
+const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterPlayerProps>(
+  (
+    {
+      theme,
+      tracks: tracksProp,
+      srcA,
+      srcB,
+      labelA = "Before",
+      labelB = "After",
+      crossfadeMs,
+      showProgress = false,
+      showWaveform = false,
+      showMeter = false,
+      onLevels,
+    },
+    ref
+  ) => {
+    const tracks = React.useMemo(
+      () => resolveTracks({ tracks: tracksProp, srcA, srcB, labelA, labelB }),
+      [tracksProp, srcA, srcB, labelA, labelB]
+    );
+    const engine = usePlayerEngine({ tracks, crossfadeMs });
+    const shellRef = React.useRef<HTMLDivElement | null>(null);
+    const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+    const progressSliderRef = React.useRef<HTMLInputElement | null>(null);
+    const currentTimeRef = React.useRef<HTMLSpanElement | null>(null);
+    const vuRef = React.useRef<VuMeterHandle | null>(null);
+    const peaksRef = React.useRef(engine.peaks);
+    const onLevelsRef = React.useRef(onLevels);
+    const paintRef = React.useRef(() => undefined);
 
-  const audiosRef = React.useRef<HTMLAudioElement[]>([]);
-  const mixesRef = React.useRef<number[]>([]);
-  const globalVolumeRef = React.useRef(0.5);
-  const activeIndexRef = React.useRef(0);
-  const loopingRef = React.useRef(false);
-  const playingRef = React.useRef(false);
-  const fadeRafRef = React.useRef<number | null>(null);
+    peaksRef.current = engine.peaks;
+    onLevelsRef.current = onLevels;
 
-  const [playing, setPlaying] = React.useState(false);
-  const [looping, setLooping] = React.useState(false);
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const [globalVolume, setGlobalVolume] = React.useState(0.5);
+    const paint = () => {
+      const total = engine.getDuration();
+      const offset = engine.getCurrentTime();
+      const ratio = total > 0 ? clamp01(offset / total) : 0;
+      if (progressSliderRef.current && !engine.isScrubbing()) {
+        progressSliderRef.current.value = String(Math.round(ratio * 1000));
+      }
+      if (currentTimeRef.current) {
+        currentTimeRef.current.textContent = formatTime(offset);
+      }
+      const canvas = canvasRef.current;
+      if (canvas && peaksRef.current.length > 0) {
+        drawWaveforms(
+          canvas,
+          peaksRef.current,
+          engine.getActiveIndex(),
+          ratio,
+          getColors(theme)
+        );
+      }
+      const frame = engine.readMeterFrame();
+      if (shellRef.current) {
+        shellRef.current.style.setProperty("--pulse", String(frame.pulse));
+        shellRef.current.style.setProperty("--energy", String(frame.energy));
+      }
+      vuRef.current?.setLevels(frame.peakL, frame.peakR, frame.holdL, frame.holdR);
+      onLevelsRef.current?.(frame);
+    };
 
-  const applyVolumes = () => {
-    const master = globalVolumeRef.current;
-    audiosRef.current.forEach((audio, index) => {
-      audio.volume = clamp01(master * (mixesRef.current[index] ?? 0));
-    });
-  };
+    paintRef.current = paint;
 
-  const syncClocks = (prefer = activeIndexRef.current) => {
-    const audios = audiosRef.current;
-    const leader = audios[prefer] ?? audios[0];
-    if (!leader) {
-      return;
-    }
-    audios.forEach((audio) => {
-      if (audio === leader) {
+    React.useEffect(() => {
+      paintRef.current();
+      if (!engine.playing) {
+        let frames = 24;
+        let raf = 0;
+        const tick = () => {
+          paintRef.current();
+          frames -= 1;
+          if (frames > 0) {
+            raf = window.requestAnimationFrame(tick);
+          }
+        };
+        raf = window.requestAnimationFrame(tick);
+        return () => window.cancelAnimationFrame(raf);
+      }
+      let raf = 0;
+      const tick = () => {
+        paintRef.current();
+        raf = window.requestAnimationFrame(tick);
+      };
+      raf = window.requestAnimationFrame(tick);
+      return () => window.cancelAnimationFrame(raf);
+    }, [engine.playing, showProgress, showWaveform, showMeter, engine.peaks, engine.activeIndex, theme, engine.ready]);
+
+    React.useEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas || !showWaveform) {
         return;
       }
-      if (Math.abs(leader.currentTime - audio.currentTime) > DRIFT_MS) {
-        audio.currentTime = leader.currentTime;
+      const observer = new ResizeObserver(() => paintRef.current());
+      observer.observe(canvas);
+      return () => observer.disconnect();
+    }, [showWaveform, engine.peaks]);
+
+    const ratioFromPointer = (event: React.PointerEvent<HTMLElement>) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      if (rect.width <= 0) {
+        return 0;
       }
-    });
-  };
-
-  const cancelFade = () => {
-    if (fadeRafRef.current !== null) {
-      window.cancelAnimationFrame(fadeRafRef.current);
-      fadeRafRef.current = null;
-    }
-  };
-
-  const crossfadeTo = (nextIndex: number) => {
-    cancelFade();
-    const count = mixesRef.current.length;
-    if (count === 0 || nextIndex < 0 || nextIndex >= count) {
-      return;
-    }
-    const from = mixesRef.current.slice();
-    const to = Array.from({ length: count }, (_, index) => (index === nextIndex ? 1 : 0));
-    const started = performance.now();
-    const duration = Math.max(1, crossfadeMs);
-
-    const tick = (now: number) => {
-      const t = clamp01((now - started) / duration);
-      const eased = t * t * (3 - 2 * t);
-      mixesRef.current = from.map((value, index) => value + (to[index] - value) * eased);
-      applyVolumes();
-      if (t < 1) {
-        fadeRafRef.current = window.requestAnimationFrame(tick);
-        return;
-      }
-      mixesRef.current = to;
-      applyVolumes();
-      fadeRafRef.current = null;
+      return clamp01((event.clientX - rect.left) / rect.width);
     };
 
-    fadeRafRef.current = window.requestAnimationFrame(tick);
-  };
-
-  React.useEffect(() => {
-    globalVolumeRef.current = globalVolume;
-    applyVolumes();
-  }, [globalVolume]);
-
-  React.useEffect(() => {
-    loopingRef.current = looping;
-  }, [looping]);
-
-  React.useEffect(() => {
-    playingRef.current = playing;
-  }, [playing]);
-
-  React.useEffect(() => {
-    cancelFade();
-    audiosRef.current.forEach((audio) => {
-      audio.pause();
-    });
-
-    const audios = tracks.map((track) => {
-      const audio = new Audio(track.src);
-      audio.preload = "auto";
-      return audio;
-    });
-    audiosRef.current = audios;
-    mixesRef.current = audios.map((_, index) => (index === 0 ? 1 : 0));
-    activeIndexRef.current = 0;
-    setActiveIndex(0);
-    setPlaying(false);
-    applyVolumes();
-
-    const restartLoop = () => {
-      audios.forEach((audio) => {
-        audio.currentTime = 0;
-      });
-      syncClocks(0);
-      applyVolumes();
-      void Promise.all(audios.map((audio) => audio.play())).catch(() => {
-        setPlaying(false);
-        playingRef.current = false;
-      });
-    };
-
-    const onEnded = (event: Event) => {
-      const ended = event.currentTarget as HTMLAudioElement;
-      const leader = audios[activeIndexRef.current] ?? audios[0];
-      if (ended !== leader) {
-        return;
+    const rowFromPointer = (event: React.PointerEvent<HTMLElement>) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      if (rect.height <= 0 || tracks.length === 0) {
+        return 0;
       }
-      if (loopingRef.current && playingRef.current) {
-        restartLoop();
-        return;
-      }
-      audios.forEach((audio) => {
-        audio.pause();
-        audio.currentTime = 0;
-      });
-      setPlaying(false);
-      playingRef.current = false;
+      const rowHeight = rect.height / tracks.length;
+      return Math.min(
+        tracks.length - 1,
+        Math.max(0, Math.floor((event.clientY - rect.top) / rowHeight))
+      );
     };
 
-    const onTimeUpdate = () => {
-      if (playingRef.current) {
-        syncClocks();
-      }
-    };
+    React.useImperativeHandle(ref, () => ({
+      play: engine.play,
+      pause: engine.pause,
+      togglePlay: engine.togglePlay,
+      seek: engine.seek,
+      select: engine.select,
+      setLoop: engine.setLoop,
+      setVolume: engine.setVolume,
+      getCurrentTime: engine.getCurrentTime,
+      getDuration: engine.getDuration,
+      getActiveIndex: engine.getActiveIndex,
+      isPlaying: engine.isPlaying,
+      isReady: engine.isReady,
+      getLevels: engine.getLevels,
+    }));
 
-    audios.forEach((audio) => {
-      audio.addEventListener("ended", onEnded);
-      audio.addEventListener("timeupdate", onTimeUpdate);
-    });
-
-    return () => {
-      cancelFade();
-      audios.forEach((audio) => {
-        audio.pause();
-        audio.removeEventListener("ended", onEnded);
-        audio.removeEventListener("timeupdate", onTimeUpdate);
-      });
-      audiosRef.current = [];
-      mixesRef.current = [];
-    };
-  }, [tracks]);
-
-  const playAll = async () => {
-    const audios = audiosRef.current;
-    if (audios.length === 0) {
-      return;
+    if (tracks.length < 2) {
+      return null;
     }
-    syncClocks();
-    applyVolumes();
-    await Promise.all(audios.map((audio) => audio.play()));
-    setPlaying(true);
-  };
 
-  const pauseAll = () => {
-    audiosRef.current.forEach((audio) => audio.pause());
-    setPlaying(false);
-  };
+    return (
+      <Shell ref={shellRef} theme={theme}>
+        <Row>
+          <ControlButton
+            theme={theme}
+            type="button"
+            onClick={engine.togglePlay}
+            disabled={!engine.ready}
+          >
+            {!engine.ready ? "Loading" : engine.playing ? "Pause" : "Play"}
+          </ControlButton>
+          <ControlButton
+            theme={theme}
+            type="button"
+            $active={engine.looping}
+            aria-pressed={engine.looping}
+            onClick={() => engine.setLoop(!engine.looping)}
+          >
+            Loop
+          </ControlButton>
+        </Row>
 
-  const togglePlay = () => {
-    if (playing) {
-      pauseAll();
-      return;
-    }
-    void playAll().catch(() => {
-      setPlaying(false);
-    });
-  };
-
-  const selectIndex = (nextIndex: number) => {
-    if (nextIndex === activeIndexRef.current || nextIndex < 0 || nextIndex >= tracks.length) {
-      return;
-    }
-    activeIndexRef.current = nextIndex;
-    setActiveIndex(nextIndex);
-    crossfadeTo(nextIndex);
-  };
-
-  if (tracks.length < 2) {
-    return null;
-  }
-
-  const isPair = tracks.length === 2;
-
-  return (
-    <Shell theme={theme}>
-      <Row>
-        <ControlButton theme={theme} type="button" onClick={togglePlay}>
-          {playing ? "Pause" : "Play"}
-        </ControlButton>
-        <ControlButton
+        <TrackSelect
           theme={theme}
-          type="button"
-          $active={looping}
-          aria-pressed={looping}
-          onClick={() => setLooping((value) => !value)}
-        >
-          Loop
-        </ControlButton>
-      </Row>
+          tracks={tracks}
+          activeIndex={engine.activeIndex}
+          onSelect={engine.select}
+        />
 
-      {isPair ? (
-        <SideToggle theme={theme}>
-          {tracks.map((track, index) => (
-            <SideButton
-              key={`${track.label}-${index}`}
-              theme={theme}
-              type="button"
-              $active={activeIndex === index}
-              onClick={() => selectIndex(index)}
-            >
-              {track.label}
-            </SideButton>
-          ))}
-        </SideToggle>
-      ) : (
-        <>
-          <ActiveLabel>{tracks[activeIndex]?.label}</ActiveLabel>
-          <CarouselNav>
-            <NavButton
-              theme={theme}
-              type="button"
-              disabled={activeIndex === 0}
-              onClick={() => selectIndex(activeIndex - 1)}
-            >
-              Prev
-            </NavButton>
-            <SideToggle theme={theme}>
+        {showWaveform ? (
+          <WaveformStack
+            theme={theme}
+            style={{ minHeight: tracks.length * WAVEFORM_ROW_HEIGHT }}
+            onPointerDown={(event) => {
+              event.currentTarget.setPointerCapture(event.pointerId);
+              engine.beginScrub();
+              engine.select(rowFromPointer(event));
+              engine.setOffsetRatio(ratioFromPointer(event));
+              paintRef.current();
+            }}
+            onPointerMove={(event) => {
+              if (!engine.isScrubbing()) {
+                return;
+              }
+              engine.select(rowFromPointer(event));
+              engine.setOffsetRatio(ratioFromPointer(event));
+              paintRef.current();
+            }}
+            onPointerUp={() => {
+              engine.endScrub();
+              paintRef.current();
+            }}
+            onPointerCancel={() => {
+              engine.endScrub();
+              paintRef.current();
+            }}
+          >
+            <WaveformCanvas ref={canvasRef} />
+            <WaveformLabels $rows={tracks.length}>
               {tracks.map((track, index) => (
-                <SideButton
-                  key={`${track.label}-${index}`}
+                <WaveformLabel
+                  key={`${track.label}-wave-${index}`}
                   theme={theme}
-                  type="button"
-                  $active={activeIndex === index}
-                  onClick={() => selectIndex(index)}
+                  $active={engine.activeIndex === index}
                 >
                   {track.label}
-                </SideButton>
+                </WaveformLabel>
               ))}
-            </SideToggle>
-            <NavButton
+            </WaveformLabels>
+          </WaveformStack>
+        ) : null}
+
+        {showProgress ? (
+          <VolumeRow>
+            <VolumeValue ref={currentTimeRef}>{formatTime(0)}</VolumeValue>
+            <VolumeSlider
+              ref={progressSliderRef}
               theme={theme}
-              type="button"
-              disabled={activeIndex === tracks.length - 1}
-              onClick={() => selectIndex(activeIndex + 1)}
-            >
-              Next
-            </NavButton>
-          </CarouselNav>
-          <StepDots>
-            {tracks.map((track, index) => (
-              <StepDot
-                key={`${track.label}-dot-${index}`}
-                theme={theme}
-                type="button"
-                $active={activeIndex === index}
-                aria-label={track.label}
-                title={track.label}
-                onClick={() => selectIndex(index)}
-              />
-            ))}
-          </StepDots>
-        </>
-      )}
+              type="range"
+              min={0}
+              max={1000}
+              step={1}
+              defaultValue={0}
+              disabled={!engine.ready}
+              aria-label="Seek"
+              onPointerDown={engine.beginScrub}
+              onPointerUp={engine.endScrub}
+              onPointerCancel={engine.endScrub}
+              onInput={(event) => {
+                engine.setOffsetRatio(Number(event.currentTarget.value) / 1000);
+                paintRef.current();
+              }}
+              onChange={(event) => {
+                const ratio = Number(event.currentTarget.value) / 1000;
+                if (engine.isScrubbing()) {
+                  engine.setOffsetRatio(ratio);
+                  paintRef.current();
+                  return;
+                }
+                engine.seek(ratio * engine.getDuration());
+                paintRef.current();
+              }}
+            />
+            <VolumeValue>{formatTime(engine.duration)}</VolumeValue>
+          </VolumeRow>
+        ) : null}
 
-      <VolumeRow>
-        <VolumeLabel>Volume</VolumeLabel>
-        <VolumeSlider
-          theme={theme}
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={Math.round(globalVolume * 100)}
-          onChange={(event) => setGlobalVolume(Number(event.target.value) / 100)}
-          aria-label="Global volume"
-        />
-        <VolumeValue>{Math.round(globalVolume * 100)}%</VolumeValue>
-      </VolumeRow>
-    </Shell>
-  );
-};
+        {showMeter ? <VuMeter ref={vuRef} theme={theme} /> : null}
 
+        <VolumeRow>
+          <VolumeLabel>Volume</VolumeLabel>
+          <VolumeSlider
+            theme={theme}
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={Math.round(engine.volume * 100)}
+            onChange={(event) => engine.setVolume(Number(event.target.value) / 100)}
+            aria-label="Global volume"
+          />
+          <VolumeValue>{Math.round(engine.volume * 100)}%</VolumeValue>
+        </VolumeRow>
+      </Shell>
+    );
+  }
+);
+
+BeforeAfterPlayer.displayName = "BeforeAfterPlayer";
+
+export type { BeforeAfterPlayerHandle, BeforeAfterPlayerProps, BeforeAfterTrack, MeterFrame };
+export { BeforeAfterPlayer };
 export default BeforeAfterPlayer;
