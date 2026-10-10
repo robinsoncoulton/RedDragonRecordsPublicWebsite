@@ -1,6 +1,7 @@
 import React from "react";
 import { METER_FFT_SIZE, MeterFrame, MeterState, createMeterState, emptyMeterFrame, sampleMeter } from "./meter";
 import { BeforeAfterTrack } from "./types";
+import { TempoMap, beatPulse, detectTempo } from "./tempo";
 import { clamp01, stopBufferSources } from "./utils";
 import { WAVEFORM_BARS, normalizePeaks, peaksFromBuffer } from "./waveform";
 
@@ -38,6 +39,8 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
   const timeRRef = React.useRef(new Float32Array(0));
   const freqRef = React.useRef(new Uint8Array(0));
   const lastFrameRef = React.useRef<MeterFrame>(emptyMeterFrame());
+  const tempoRef = React.useRef<TempoMap | null>(null);
+  const pulseSyncRef = React.useRef(false);
 
   const [playing, setPlaying] = React.useState(false);
   const [looping, setLooping] = React.useState(false);
@@ -46,6 +49,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
   const [ready, setReady] = React.useState(false);
   const [duration, setDuration] = React.useState(0);
   const [peaks, setPeaks] = React.useState<Float32Array[]>([]);
+  const [tempo, setTempo] = React.useState<TempoMap | null>(null);
 
   const applyMixes = (mixes: number[]) => {
     mixesRef.current = mixes;
@@ -196,6 +200,8 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     readyRef.current = false;
     setReady(false);
     setPeaks([]);
+    setTempo(null);
+    tempoRef.current = null;
     setDuration(0);
     cancelFade();
     stopSources();
@@ -238,6 +244,18 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
       setPeaks(nextPeaks);
       readyRef.current = true;
       setReady(true);
+      const source = buffers[buffers.length - 1] ?? buffers[0];
+      window.requestAnimationFrame(() => {
+        if (cancelled || !source) {
+          return;
+        }
+        const detected = detectTempo(source);
+        if (cancelled) {
+          return;
+        }
+        tempoRef.current = detected;
+        setTempo(detected);
+      });
     };
 
     void load().catch(() => {
@@ -365,6 +383,16 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
       meterStateRef.current,
       playingRef.current
     );
+    const tempoMap = tempoRef.current;
+    if (tempoMap) {
+      frame.bpm = tempoMap.bpm;
+    }
+    if (pulseSyncRef.current && tempoMap) {
+      const beat = beatPulse(currentOffset(), tempoMap, playingRef.current);
+      frame.pulse = beat.pulse;
+      frame.energy = beat.energy;
+      frame.beat = beat.beat;
+    }
     lastFrameRef.current = frame;
     return frame;
   };
@@ -377,6 +405,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     volume,
     duration,
     peaks,
+    tempo,
     play,
     pause,
     togglePlay,
@@ -395,5 +424,9 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     endScrub,
     readMeterFrame,
     getLevels: () => lastFrameRef.current,
+    getBpm: () => tempoRef.current?.bpm ?? null,
+    setPulseSync: (value: boolean) => {
+      pulseSyncRef.current = value;
+    },
   };
 };

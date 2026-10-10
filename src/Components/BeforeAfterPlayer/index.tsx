@@ -38,6 +38,7 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       showProgress = false,
       showWaveform = false,
       showMeter = false,
+      syncToBpm = false,
       onLevels,
     },
     ref
@@ -47,6 +48,7 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       [tracksProp, srcA, srcB, labelA, labelB]
     );
     const engine = usePlayerEngine({ tracks, crossfadeMs });
+    const [bpmSync, setBpmSync] = React.useState(syncToBpm);
     const shellRef = React.useRef<HTMLDivElement | null>(null);
     const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
     const progressSliderRef = React.useRef<HTMLInputElement | null>(null);
@@ -54,10 +56,15 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
     const vuRef = React.useRef<VuMeterHandle | null>(null);
     const peaksRef = React.useRef(engine.peaks);
     const onLevelsRef = React.useRef(onLevels);
-    const paintRef = React.useRef(() => undefined);
+    const paintRef = React.useRef<() => void>(() => {});
 
     peaksRef.current = engine.peaks;
     onLevelsRef.current = onLevels;
+    engine.setPulseSync(bpmSync);
+
+    React.useEffect(() => {
+      setBpmSync(syncToBpm);
+    }, [syncToBpm]);
 
     const paint = () => {
       const total = engine.getDuration();
@@ -112,7 +119,7 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       };
       raf = window.requestAnimationFrame(tick);
       return () => window.cancelAnimationFrame(raf);
-    }, [engine.playing, showProgress, showWaveform, showMeter, engine.peaks, engine.activeIndex, theme, engine.ready]);
+    }, [engine.playing, showProgress, showWaveform, showMeter, bpmSync, engine.tempo, engine.peaks, engine.activeIndex, theme, engine.ready]);
 
     React.useEffect(() => {
       const canvas = canvasRef.current;
@@ -158,6 +165,7 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       isPlaying: engine.isPlaying,
       isReady: engine.isReady,
       getLevels: engine.getLevels,
+      getBpm: engine.getBpm,
     }));
 
     if (tracks.length < 2) {
@@ -184,6 +192,17 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
           >
             Loop
           </ControlButton>
+          {engine.tempo ? (
+            <ControlButton
+              theme={theme}
+              type="button"
+              $active={bpmSync}
+              aria-pressed={bpmSync}
+              onClick={() => setBpmSync((value) => !value)}
+            >
+              {Math.round(engine.tempo.bpm)} BPM
+            </ControlButton>
+          ) : null}
         </Row>
 
         <TrackSelect

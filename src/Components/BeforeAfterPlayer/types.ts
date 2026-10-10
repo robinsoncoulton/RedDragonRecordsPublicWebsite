@@ -22,6 +22,7 @@ export type BeforeAfterPlayerHandle = {
   isPlaying: () => boolean;
   isReady: () => boolean;
   getLevels: () => MeterFrame;
+  getBpm: () => number | null;
 };
 
 export type BeforeAfterPlayerProps = {
@@ -35,5 +36,6 @@ export type BeforeAfterPlayerProps = {
   showProgress?: boolean;
   showWaveform?: boolean;
   showMeter?: boolean;
+  syncToBpm?: boolean;
   onLevels?: (levels: MeterFrame) => void;
 };

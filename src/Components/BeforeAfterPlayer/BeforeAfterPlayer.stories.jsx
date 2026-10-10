@@ -110,6 +110,7 @@ const meta = {
     showProgress: false,
     showWaveform: false,
     showMeter: false,
+    syncToBpm: false,
   },
   argTypes: {
     srcA: { control: "text" },
@@ -121,6 +122,7 @@ const meta = {
     showProgress: { control: "boolean" },
     showWaveform: { control: "boolean" },
     showMeter: { control: "boolean" },
+    syncToBpm: { control: "boolean" },
     theme: { table: { disable: true } },
     onLevels: { table: { disable: true } },
   },
@@ -162,6 +164,7 @@ export const HighwayToHell = {
     showProgress: true,
     showWaveform: true,
     showMeter: true,
+    syncToBpm: true,
     tracks: [
       { src: highwayOriginal, label: "Original" },
       { src: highwayEdited, label: "Edited" },

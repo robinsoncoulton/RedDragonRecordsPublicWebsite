@@ -10,6 +10,8 @@ export type MeterFrame = {
   energy: number;
   pulse: number;
   bass: number;
+  bpm: number;
+  beat: number;
 };
 
 export type MeterState = {
@@ -49,6 +51,8 @@ const SILENT_FRAME: MeterFrame = {
   energy: 0,
   pulse: 0,
   bass: 0,
+  bpm: 0,
+  beat: 0,
 };
 
 export const METER_FFT_SIZE = FFT_SIZE;
@@ -169,6 +173,8 @@ export const sampleMeter = (
       energy: state.energy,
       pulse: state.pulse,
       bass: 0,
+      bpm: 0,
+      beat: 0,
     };
   }
 
@@ -212,5 +218,7 @@ export const sampleMeter = (
     energy: state.energy,
     pulse: state.pulse,
     bass,
+    bpm: 0,
+    beat: 0,
   };
 };
