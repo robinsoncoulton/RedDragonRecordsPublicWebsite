@@ -22,7 +22,7 @@ export const resolveTracks = ({
   BeforeAfterPlayerProps,
   "tracks" | "srcA" | "srcB" | "labelA" | "labelB"
 >): BeforeAfterTrack[] => {
-  if (tracks && tracks.length >= 2) {
+  if (tracks && tracks.length >= 1) {
     return tracks;
   }
   if (srcA && srcB) {

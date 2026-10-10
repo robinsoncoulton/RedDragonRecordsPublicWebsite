@@ -206,6 +206,16 @@ export const WaveformStack = styled.div<ThemedElementProps>`
   touch-action: none;
 `;
 
+export const WaveformArea = styled.div`
+  position: relative;
+`;
+
+export const WaveformOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+`;
+
 export const WaveformCanvas = styled.canvas`
   display: block;
   width: 100%;

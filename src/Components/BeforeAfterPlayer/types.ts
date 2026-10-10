@@ -1,3 +1,4 @@
+import type React from "react";
 import { Theme } from "../../Utils/Theme/types";
 import { MeterFrame } from "./meter";
 
@@ -6,6 +7,8 @@ export type { MeterFrame };
 export type BeforeAfterTrack = {
   src: string;
   label: string;
+  /** "include" for cross-origin audio behind a session cookie (the portal API). */
+  credentials?: RequestCredentials;
 };
 
 export type BeforeAfterPlayerHandle = {
@@ -38,4 +41,6 @@ export type BeforeAfterPlayerProps = {
   showMeter?: boolean;
   syncToBpm?: boolean;
   onLevels?: (levels: MeterFrame) => void;
+  /** Drawn over the waveform rows (each WAVEFORM_ROW_HEIGHT tall) without clipping, e.g. comment markers. */
+  waveformOverlay?: React.ReactNode;
 };

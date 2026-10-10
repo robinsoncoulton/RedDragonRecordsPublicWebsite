@@ -1,18 +1,22 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { mainNavItems, mainNavLabels } from "../../Utils/routes";
+import { isPortalPath, mainNavItems, portalNavItems } from "../../Utils/routes";
 import { NonEmptyArray } from "../../types";
+import { isStaff, useSession } from "../../Api/session";
 
 export const useRouteNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const options = mainNavLabels as NonEmptyArray<string>;
+  const { user } = useSession();
+  const items = isPortalPath(location.pathname)
+    ? portalNavItems.filter((item) => !item.staffOnly || isStaff(user))
+    : mainNavItems;
+  const options = items.map((item) => item.label) as NonEmptyArray<string>;
   const selectedOption =
-    mainNavItems.find((item) => item.matches(location.pathname))?.label ??
-    mainNavItems[0].label;
+    items.find((item) => item.matches(location.pathname))?.label ?? items[0].label;
 
   const onSelect = (selection: string) => {
-    const item = mainNavItems.find((i) => i.label === selection);
+    const item = items.find((i) => i.label === selection);
     if (!item) return;
     if (item.matches(location.pathname)) return;
     navigate(item.path);

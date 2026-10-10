@@ -10,9 +10,11 @@ import {
   VolumeRow,
   VolumeSlider,
   VolumeValue,
+  WaveformArea,
   WaveformCanvas,
   WaveformLabel,
   WaveformLabels,
+  WaveformOverlay,
   WaveformStack,
 } from "./styles";
 import {
@@ -40,6 +42,7 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       showMeter = false,
       syncToBpm = false,
       onLevels,
+      waveformOverlay,
     },
     ref
   ) => {
@@ -168,7 +171,7 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       getBpm: engine.getBpm,
     }));
 
-    if (tracks.length < 2) {
+    if (tracks.length < 1) {
       return null;
     }
 
@@ -205,54 +208,59 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
           ) : null}
         </Row>
 
-        <TrackSelect
-          theme={theme}
-          tracks={tracks}
-          activeIndex={engine.activeIndex}
-          onSelect={engine.select}
-        />
+        {tracks.length > 1 ? (
+          <TrackSelect
+            theme={theme}
+            tracks={tracks}
+            activeIndex={engine.activeIndex}
+            onSelect={engine.select}
+          />
+        ) : null}
 
         {showWaveform ? (
-          <WaveformStack
-            theme={theme}
-            style={{ minHeight: tracks.length * WAVEFORM_ROW_HEIGHT }}
-            onPointerDown={(event) => {
-              event.currentTarget.setPointerCapture(event.pointerId);
-              engine.beginScrub();
-              engine.select(rowFromPointer(event));
-              engine.setOffsetRatio(ratioFromPointer(event));
-              paintRef.current();
-            }}
-            onPointerMove={(event) => {
-              if (!engine.isScrubbing()) {
-                return;
-              }
-              engine.select(rowFromPointer(event));
-              engine.setOffsetRatio(ratioFromPointer(event));
-              paintRef.current();
-            }}
-            onPointerUp={() => {
-              engine.endScrub();
-              paintRef.current();
-            }}
-            onPointerCancel={() => {
-              engine.endScrub();
-              paintRef.current();
-            }}
-          >
-            <WaveformCanvas ref={canvasRef} />
-            <WaveformLabels $rows={tracks.length}>
-              {tracks.map((track, index) => (
-                <WaveformLabel
-                  key={`${track.label}-wave-${index}`}
-                  theme={theme}
-                  $active={engine.activeIndex === index}
-                >
-                  {track.label}
-                </WaveformLabel>
-              ))}
-            </WaveformLabels>
-          </WaveformStack>
+          <WaveformArea>
+            <WaveformStack
+              theme={theme}
+              style={{ minHeight: tracks.length * WAVEFORM_ROW_HEIGHT }}
+              onPointerDown={(event) => {
+                event.currentTarget.setPointerCapture(event.pointerId);
+                engine.beginScrub();
+                engine.select(rowFromPointer(event));
+                engine.setOffsetRatio(ratioFromPointer(event));
+                paintRef.current();
+              }}
+              onPointerMove={(event) => {
+                if (!engine.isScrubbing()) {
+                  return;
+                }
+                engine.select(rowFromPointer(event));
+                engine.setOffsetRatio(ratioFromPointer(event));
+                paintRef.current();
+              }}
+              onPointerUp={() => {
+                engine.endScrub();
+                paintRef.current();
+              }}
+              onPointerCancel={() => {
+                engine.endScrub();
+                paintRef.current();
+              }}
+            >
+              <WaveformCanvas ref={canvasRef} />
+              <WaveformLabels $rows={tracks.length}>
+                {tracks.map((track, index) => (
+                  <WaveformLabel
+                    key={`${track.label}-wave-${index}`}
+                    theme={theme}
+                    $active={engine.activeIndex === index}
+                  >
+                    {track.label}
+                  </WaveformLabel>
+                ))}
+              </WaveformLabels>
+            </WaveformStack>
+            {waveformOverlay ? <WaveformOverlay>{waveformOverlay}</WaveformOverlay> : null}
+          </WaveformArea>
         ) : null}
 
         {showProgress ? (

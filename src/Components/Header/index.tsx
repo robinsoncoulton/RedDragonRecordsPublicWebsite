@@ -22,6 +22,7 @@ import Navbar from "../Navbar";
 import { useTheme } from "../../Utils/Theme";
 import TitleBadge from "../TitleBadge";
 import LanguageSelect from "../Language";
+import AccountButton from "../AccountButton";
 import ThemeToggle from "../ThemeToggle";
 import { designTokens } from "../../DesignSystem";
 import { useRouteNavigation } from "../Navbar/useRouteNavigation";
@@ -222,6 +223,10 @@ const Header: React.FC = () => {
             <LanguageSelect theme={theme} />
           </div>
           <div>
+            <OptionsMenuLabel theme={theme}>Account</OptionsMenuLabel>
+            <AccountButton theme={theme} onNavigate={() => setOptionsOpen(false)} />
+          </div>
+          <div>
             <OptionsMenuLabel theme={theme}>Theme</OptionsMenuLabel>
             <ThemeToggle handleClick={toggleTheme} theme={theme} />
           </div>
@@ -273,6 +278,7 @@ const Header: React.FC = () => {
           </MobileOnly>
           <DesktopOnly>
             <LanguageThemeContainer>
+              <AccountButton theme={theme} />
               <LanguageSelect theme={theme} />
               <ThemeToggle handleClick={toggleTheme} theme={theme} />
             </LanguageThemeContainer>

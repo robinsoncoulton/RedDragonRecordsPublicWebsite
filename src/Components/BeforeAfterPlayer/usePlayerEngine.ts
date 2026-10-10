@@ -90,7 +90,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     const buffers = buffersRef.current;
     const gains = gainsRef.current;
     const total = durationRef.current;
-    if (!ctx || buffers.length < 2 || gains.length !== buffers.length || total <= 0) {
+    if (!ctx || buffers.length < 1 || gains.length !== buffers.length || total <= 0) {
       return;
     }
     await ctx.resume();
@@ -213,12 +213,12 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     meterStateRef.current = createMeterState();
 
     const load = async () => {
-      if (tracks.length < 2) {
+      if (tracks.length < 1) {
         return;
       }
       const buffers = await Promise.all(
         tracks.map(async (track) => {
-          const response = await fetch(track.src);
+          const response = await fetch(track.src, { credentials: track.credentials });
           const data = await response.arrayBuffer();
           return ctx.decodeAudioData(data);
         })
