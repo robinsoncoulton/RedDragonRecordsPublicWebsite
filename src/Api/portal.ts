@@ -1,6 +1,8 @@
 // Auth slice of Server/examples/frontend/portal-api.ts. The session lives in an
 // HttpOnly cookie set by the API, so every request uses `credentials: "include"`.
 
+import { clearAudioCache } from "../Components/BeforeAfterPlayer/audioCache";
+
 export const API_URL =
   process.env.REACT_APP_API_URL ||
   (process.env.NODE_ENV === "development"
@@ -61,7 +63,8 @@ export const auth = {
     api<{ data: { message: string } }>("/auth/register", { name, email, password }),
   login: async (email: string, password: string) =>
     (await api<{ data: { user: AuthUser } }>("/auth/login", { email, password })).data.user,
-  logout: () => api("/auth/logout", {}),
+  // Cached audio is per browser, not per account, so it goes with the session.
+  logout: () => api("/auth/logout", {}).finally(clearAudioCache),
   /** Null when not signed in. */
   me: async () => {
     try {

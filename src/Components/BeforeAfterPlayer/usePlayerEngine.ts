@@ -4,6 +4,7 @@ import { BeforeAfterTrack } from "./types";
 import { TempoMap, beatPulse, detectTempo } from "./tempo";
 import { clamp01, stopBufferSources } from "./utils";
 import { WAVEFORM_BARS, normalizePeaks, peaksFromBuffer } from "./waveform";
+import { fetchAudio } from "./audioCache";
 
 const DEFAULT_CROSSFADE_MS = 200;
 
@@ -218,9 +219,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
       }
       const buffers = await Promise.all(
         tracks.map(async (track) => {
-          const response = await fetch(track.src, { credentials: track.credentials });
-          const data = await response.arrayBuffer();
-          return ctx.decodeAudioData(data);
+          return ctx.decodeAudioData(await fetchAudio(track.src, track.credentials));
         })
       );
       if (cancelled) {
