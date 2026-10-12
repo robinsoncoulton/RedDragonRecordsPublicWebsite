@@ -113,6 +113,7 @@ export interface AudioVersion {
   label: string;
   approvalStatus: "pending" | "changes_requested" | "approved" | "superseded";
   durationMs: number | null;
+  visibility: "client" | "internal";
 }
 
 export type LibrarySong = Song & { projectTitle: string };
@@ -138,6 +139,9 @@ export const library = {
   },
   versions: async (songId: string) =>
     (await api<{ data: AudioVersion[] }>(`/songs/${songId}/versions`)).data,
+  /** Staff only. "internal" hides the version (and its file) from the client. */
+  setVisibility: async (versionId: string, visibility: AudioVersion["visibility"]) =>
+    (await api<{ data: AudioVersion }>(`/versions/${versionId}`, { visibility }, "PATCH")).data,
 };
 
 /** <audio> src. The session cookie is sent because the API is same-site. */

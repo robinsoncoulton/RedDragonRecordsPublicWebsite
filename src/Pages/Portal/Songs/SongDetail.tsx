@@ -21,6 +21,7 @@ import {
   songPage,
   streamUrl,
 } from "../../../Api/portal";
+import { isStaff, useSession } from "../../../Api/session";
 import { FormStatus, TextArea } from "../../Join/styles";
 import { LinkButton, Shell } from "../../Login/styles";
 import { BackState, SlideIn } from "../IndexList";
@@ -119,6 +120,7 @@ const SongDetail: React.FC = () => {
   const [posting, setPosting] = React.useState(false);
   const [activeNote, setActiveNote] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const staff = isStaff(useSession().user);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -176,6 +178,16 @@ const SongDetail: React.FC = () => {
       .comments(version.id)
       .then((t) => setThreads((all) => ({ ...all, [version.id]: t })), (e: Error) => setError(e.message));
   }, [version, threads]);
+
+  const toggleHidden = async () => {
+    if (!version) return;
+    try {
+      const updated = await library.setVisibility(version.id, version.visibility === "internal" ? "client" : "internal");
+      setVersions((all) => all?.map((v) => (v.id === updated.id ? { ...v, visibility: updated.visibility } : v)) ?? null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
 
   const seek = (ms: number) => playerRef.current?.seek(ms / 1000);
 
@@ -243,6 +255,11 @@ const SongDetail: React.FC = () => {
                   .filter(Boolean)
                   .join(" · ")}
               </Muted>
+              {staff && version ? (
+                <LinkButton theme={theme} type="button" onClick={toggleHidden}>
+                  {version.visibility === "internal" ? "Hidden from client · Show" : "Hide from client"}
+                </LinkButton>
+              ) : null}
             </TitleBlock>
           ) : null}
 
