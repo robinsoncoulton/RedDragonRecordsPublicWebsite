@@ -15,6 +15,7 @@ import { useTheme } from "../../../Utils/Theme";
 import { ThemedElementProps } from "../../../Utils/Theme/types";
 import {
   AudioVersion,
+  Comment,
   CommentThread,
   library,
   Song,
@@ -92,6 +93,13 @@ const NoteBody = styled.div`
   }
 `;
 
+const NoteActions = styled.div`
+  display: flex;
+  gap: ${designTokens.spacing.md};
+  margin-top: ${designTokens.spacing.xs};
+  font-size: ${designTokens.fontSize.sm};
+`;
+
 const Reply = styled.div<ThemedElementProps>`
   margin-top: ${designTokens.spacing.sm};
   padding-left: ${designTokens.spacing.md};
@@ -120,7 +128,11 @@ const SongDetail: React.FC = () => {
   const [posting, setPosting] = React.useState(false);
   const [activeNote, setActiveNote] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const staff = isStaff(useSession().user);
+  const me = useSession().user;
+  const staff = isStaff(me);
+  // One open editor at a time: editing a comment, or replying to a thread.
+  const [editing, setEditing] = React.useState<{ id: string; draft: string } | null>(null);
+  const [replyTo, setReplyTo] = React.useState<{ id: string; draft: string } | null>(null);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -220,6 +232,109 @@ const SongDetail: React.FC = () => {
       setPosting(false);
     }
   };
+
+  const refreshThreads = async (versionId: string) => {
+    const fresh = await songPage.comments(versionId);
+    setThreads((all) => ({ ...all, [versionId]: fresh }));
+  };
+
+  const act = async (action: () => Promise<unknown>) => {
+    if (!version) return;
+    setPosting(true);
+    try {
+      await action();
+      await refreshThreads(version.id);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  const startEdit = (c: Comment) => {
+    setReplyTo(null);
+    setEditing({ id: c.id, draft: c.content ?? "" });
+  };
+
+  const startReply = (threadId: string) => {
+    setEditing(null);
+    setReplyTo({ id: threadId, draft: "" });
+  };
+
+  const saveEdit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (!editing?.draft.trim()) return;
+    act(async () => {
+      await songPage.editComment(editing.id, editing.draft.trim());
+      setEditing(null);
+    });
+  };
+
+  const sendReply = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (!version || !replyTo?.draft.trim()) return;
+    act(async () => {
+      await songPage.reply(version.id, replyTo.id, replyTo.draft.trim());
+      setReplyTo(null);
+    });
+  };
+
+  const remove = (c: Comment, isThread: boolean) => {
+    if (!window.confirm(isThread ? "Delete this note and all its replies?" : "Delete this reply?")) return;
+    act(() => songPage.deleteComment(c.id));
+  };
+
+  // Same rules as the API: authors edit their own; authors and staff delete.
+  const mine = (c: Comment) => c.content !== null && c.author?.id === me?.id;
+
+  const editor = (value: string, onChange: (v: string) => void, onSubmit: (e: React.SyntheticEvent) => void, onCancel: () => void, label: string) => (
+    <Composer onSubmit={onSubmit}>
+      <TextArea
+        theme={theme}
+        autoFocus
+        rows={2}
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onSubmit(e);
+          if (e.key === "Escape") onCancel();
+        }}
+      />
+      <ComposerActions>
+        <LinkButton theme={theme} type="button" onClick={onCancel}>
+          Cancel
+        </LinkButton>
+        <LinkButton theme={theme} type="submit" disabled={posting || !value.trim()}>
+          {posting ? "Saving…" : label}
+        </LinkButton>
+      </ComposerActions>
+    </Composer>
+  );
+
+  const commentBody = (c: Comment, isThread: boolean) =>
+    editing?.id === c.id ? (
+      editor(editing.draft, (draft) => setEditing({ id: c.id, draft }), saveEdit, () => setEditing(null), "Save")
+    ) : (
+      <>
+        <p>
+          {c.content ?? <em>Deleted</em>}
+          {c.edited && c.content !== null ? <Muted theme={theme} as="span"> (edited)</Muted> : null}
+        </p>
+        {c.content !== null && (mine(c) || staff) ? (
+          <NoteActions>
+            {mine(c) ? (
+              <LinkButton theme={theme} type="button" onClick={() => startEdit(c)}>
+                Edit
+              </LinkButton>
+            ) : null}
+            <LinkButton theme={theme} type="button" disabled={posting} onClick={() => remove(c, isThread)}>
+              Delete
+            </LinkButton>
+          </NoteActions>
+        ) : null}
+      </>
+    );
 
   const timed = (version ? threads[version.id] ?? [] : [])
     .filter((t) => t.timestampMs !== null)
@@ -352,13 +467,24 @@ const SongDetail: React.FC = () => {
                       {formatTime(t.timestampMs! / 1000)}
                     </LinkButton>{" "}
                     <strong>{t.author?.name ?? "Someone"}</strong>
-                    <p>{t.content ?? <em>Deleted</em>}</p>
+                    {commentBody(t, true)}
                     {t.replies.map((r) => (
                       <Reply key={r.id} theme={theme}>
                         <strong>{r.author?.name ?? "Someone"}</strong>
-                        <p>{r.content ?? <em>Deleted</em>}</p>
+                        {commentBody(r, false)}
                       </Reply>
                     ))}
+                    {t.content === null ? null : replyTo?.id === t.id ? (
+                      <Reply theme={theme}>
+                        {editor(replyTo.draft, (draft) => setReplyTo({ id: t.id, draft }), sendReply, () => setReplyTo(null), "Reply")}
+                      </Reply>
+                    ) : (
+                      <NoteActions>
+                        <LinkButton theme={theme} type="button" onClick={() => startReply(t.id)}>
+                          {t.replies.length ? `Reply · ${t.replies.length} ${t.replies.length === 1 ? "reply" : "replies"}` : "Reply"}
+                        </LinkButton>
+                      </NoteActions>
+                    )}
                   </NoteBody>
                 </Note>
               ))}

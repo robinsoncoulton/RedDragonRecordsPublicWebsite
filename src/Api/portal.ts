@@ -156,6 +156,7 @@ export interface Comment {
   timestampMs: number | null;
   /** Null when the comment was deleted. */
   content: string | null;
+  edited: boolean;
   createdAt: string;
 }
 
@@ -169,6 +170,13 @@ export const songPage = {
     (await api<{ data: CommentThread[] }>(`/versions/${versionId}/comments`)).data,
   addComment: async (versionId: string, content: string, timestampMs: number) =>
     (await api<{ data: Comment }>(`/versions/${versionId}/comments`, { content, timestampMs })).data,
+  reply: async (versionId: string, parentId: string, content: string) =>
+    (await api<{ data: Comment }>(`/versions/${versionId}/comments`, { content, parentId })).data,
+  /** Author only. */
+  editComment: async (id: string, content: string) =>
+    (await api<{ data: Comment }>(`/comments/${id}`, { content }, "PATCH")).data,
+  /** Author or staff. Deleting a thread's first comment deletes the whole thread. */
+  deleteComment: (id: string) => api<null>(`/comments/${id}`, undefined, "DELETE"),
 };
 
 export type MemberRole = "owner" | "manager" | "member" | "viewer";
