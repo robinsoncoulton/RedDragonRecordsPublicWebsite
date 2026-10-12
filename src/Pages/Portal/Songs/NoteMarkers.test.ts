@@ -2,6 +2,7 @@ import { noteAtPlayhead, NoteMarker } from "./NoteMarkers";
 
 const note = (id: string, timestampMs: number): NoteMarker => ({
   id,
+  row: 0,
   timestampMs,
   author: "A",
   image: null,

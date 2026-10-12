@@ -12,6 +12,8 @@ export const BUBBLE_MS = 3000;
 
 export type NoteMarker = {
   id: string;
+  /** Waveform row (version index) the note belongs to. */
+  row: number;
   timestampMs: number;
   author: string;
   image: string | null;
@@ -33,7 +35,7 @@ const pop = keyframes`
   to { opacity: 1; transform: translate(var(--bubble-x), 0) scale(1); }
 `;
 
-const Marker = styled.button<ThemedElementProps & { $active: boolean }>`
+const Marker = styled.button<ThemedElementProps & { $active: boolean; $dimmed: boolean }>`
   position: absolute;
   width: ${MARKER_PX}px;
   height: ${MARKER_PX}px;
@@ -44,7 +46,17 @@ const Marker = styled.button<ThemedElementProps & { $active: boolean }>`
   cursor: pointer;
   pointer-events: auto;
   border-radius: ${designTokens.radius.round};
-  z-index: ${({ $active }) => ($active ? 2 : 1)};
+  z-index: ${({ $active, $dimmed }) => ($active ? 3 : $dimmed ? 1 : 2)};
+  /* Notes on versions not playing are greyed out like their waveform. */
+  opacity: ${({ $dimmed }) => ($dimmed ? 0.45 : 1)};
+  filter: ${({ $dimmed }) => ($dimmed ? "grayscale(1)" : "none")};
+  transition: opacity ${designTokens.duration.fast} ${designTokens.easing.standard};
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    filter: none;
+  }
 
   /* Avatar's own border is 1px outside the circle, so it sat off-centre here. */
   & > span:first-child {
@@ -98,22 +110,23 @@ const Bubble = styled.span<ThemedElementProps & { $align: "left" | "center" | "r
 `;
 
 /**
- * Avatars centred on the active waveform row, one per timestamped note.
+ * Avatars centred on each version's waveform row, one per timestamped note;
+ * rows other than `activeRow` are dimmed and never pop a bubble at the playhead.
  * Rendered in the player's waveformOverlay, so coordinates are relative to the waveform.
  */
 const NoteMarkers: React.FC<{
   theme: Theme;
   durationMs: number;
   currentMs: number;
-  rowTop: number;
+  activeRow: number;
   rowHeight: number;
   markers: NoteMarker[];
   activeId: string | null;
   onOpen: (marker: NoteMarker) => void;
-}> = ({ theme, durationMs, currentMs, rowTop, rowHeight, markers, activeId, onOpen }) => {
+}> = ({ theme, durationMs, currentMs, activeRow, rowHeight, markers, activeId, onOpen }) => {
   const [hovered, setHovered] = React.useState<string | null>(null);
   if (!durationMs) return null;
-  const atPlayhead = noteAtPlayhead(markers, currentMs);
+  const atPlayhead = noteAtPlayhead(markers.filter((m) => m.row === activeRow), currentMs);
   const shown = hovered ?? atPlayhead?.id ?? null;
   return (
     <>
@@ -125,7 +138,8 @@ const NoteMarkers: React.FC<{
             theme={theme}
             type="button"
             $active={m.id === activeId || m.id === atPlayhead?.id}
-            style={{ left: `${pct}%`, top: rowTop + (rowHeight - MARKER_PX) / 2 }}
+            $dimmed={m.row !== activeRow}
+            style={{ left: `${pct}%`, top: m.row * rowHeight + (rowHeight - MARKER_PX) / 2 }}
             aria-label={`Note by ${m.author} at ${formatTime(m.timestampMs / 1000)}: ${m.content}`}
             onMouseEnter={() => setHovered(m.id)}
             onMouseLeave={() => setHovered(null)}

@@ -184,12 +184,23 @@ const SongDetail: React.FC = () => {
 
   const version = versions?.[activeIndex];
 
+  // Every version's notes, so each waveform row can show its own avatars.
   React.useEffect(() => {
-    if (!version || threads[version.id]) return;
-    songPage
-      .comments(version.id)
-      .then((t) => setThreads((all) => ({ ...all, [version.id]: t })), (e: Error) => setError(e.message));
-  }, [version, threads]);
+    if (!versions) return;
+    let cancelled = false;
+    Promise.all(versions.map(async (v) => [v.id, await songPage.comments(v.id)] as const)).then(
+      (entries) => !cancelled && setThreads(Object.fromEntries(entries)),
+      (e: Error) => !cancelled && setError(e.message)
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [versions]);
+
+  // After the list re-renders (possibly for another version), bring the note into view.
+  React.useEffect(() => {
+    if (activeNote) noteRefs.current.get(activeNote)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [activeNote, activeIndex]);
 
   const toggleHidden = async () => {
     if (!version) return;
@@ -209,10 +220,14 @@ const SongDetail: React.FC = () => {
     setActiveNote(null);
   };
 
-  const focusNote = (id: string, ms: number) => {
+  // A note on another version switches the player (and the feed below) to that version.
+  const focusNote = (id: string, ms: number, row = activeIndex) => {
+    if (row !== activeIndex) {
+      playerRef.current?.select(row);
+      setActiveIndex(row);
+    }
     seek(ms);
     setActiveNote(id);
-    noteRefs.current.get(id)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
   const postNote = async (e: React.SyntheticEvent) => {
@@ -339,15 +354,18 @@ const SongDetail: React.FC = () => {
   const timed = (version ? threads[version.id] ?? [] : [])
     .filter((t) => t.timestampMs !== null)
     .sort((a, b) => a.timestampMs! - b.timestampMs!);
-  const markers: NoteMarker[] = timed
-    .filter((t) => t.content !== null)
-    .map((t) => ({
-      id: t.id,
-      timestampMs: t.timestampMs!,
-      author: t.author?.name ?? "Someone",
-      image: t.author?.image ?? null,
-      content: t.content!,
-    }));
+  const markers: NoteMarker[] = (versions ?? []).flatMap((v, row) =>
+    (threads[v.id] ?? [])
+      .filter((t) => t.timestampMs !== null && t.content !== null)
+      .map((t) => ({
+        id: t.id,
+        row,
+        timestampMs: t.timestampMs!,
+        author: t.author?.name ?? "Someone",
+        image: t.author?.image ?? null,
+        content: t.content!,
+      }))
+  );
 
   return (
     <Page>
@@ -399,11 +417,11 @@ const SongDetail: React.FC = () => {
                   theme={theme}
                   durationMs={durationMs}
                   currentMs={currentMs}
-                  rowTop={activeIndex * WAVEFORM_ROW_HEIGHT}
+                  activeRow={activeIndex}
                   rowHeight={WAVEFORM_ROW_HEIGHT}
                   markers={markers}
                   activeId={activeNote}
-                  onOpen={(m) => focusNote(m.id, m.timestampMs)}
+                  onOpen={(m) => focusNote(m.id, m.timestampMs, m.row)}
                 />
               }
             />
