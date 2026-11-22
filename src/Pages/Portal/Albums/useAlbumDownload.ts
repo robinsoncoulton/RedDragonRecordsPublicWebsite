@@ -12,8 +12,6 @@ const REASONS: Record<string, string> = {
   file_not_ready: "file still processing",
 };
 
-const GAP_MS = 1000; // browsers drop downloads started in the same instant
-
 /**
  * Downloads each song's newest version as its own file, named like the bounces. The server checks
  * every song; ones it leaves out are listed. Browsers may ask once to allow multiple downloads.
@@ -31,14 +29,18 @@ export function useAlbumDownload(albumId: string) {
       const { files, skipped } = await library.albumDownload(albumId);
       for (const [i, file] of Array.from(files.entries())) {
         setProgress(`Downloading ${i + 1} of ${files.length}…`);
-        // The response is an attachment, so following the link saves it without leaving the page.
+        // Fetched, then saved from memory: following several attachment links from one page
+        // cancels each pending download in turn, leaving only the last.
+        const res = await fetch(file.url);
+        if (!res.ok) throw new Error(`${file.filename} failed to download (${res.status})`);
+        const href = URL.createObjectURL(await res.blob());
         const a = document.createElement("a");
-        a.href = file.url;
-        a.rel = "noopener";
+        a.href = href;
+        a.download = file.filename;
         document.body.appendChild(a);
         a.click();
         a.remove();
-        await new Promise((resolve) => setTimeout(resolve, GAP_MS));
+        setTimeout(() => URL.revokeObjectURL(href), 10_000);
       }
       const left = skipped.map((s) => `${s.title} (${REASONS[s.reason] ?? s.reason.replace(/_/g, " ")})`);
       setMessage(
