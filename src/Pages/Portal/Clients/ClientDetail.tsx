@@ -157,7 +157,7 @@ const ClientDetail: React.FC = () => {
               <SongsByAlbum
                 songs={songs}
                 empty="No songs for this client yet."
-                onPlayAlbum={(id) => go(`/portal/albums/${id}?play`, backState)}
+                onPlayAlbum={(id, song) => go(`/portal/albums/${id}?${song ? `track=${song}` : "play"}`, backState)}
                 onOpen={(item) => go(`/portal/songs/${item.id}`, backState)}
               />
 

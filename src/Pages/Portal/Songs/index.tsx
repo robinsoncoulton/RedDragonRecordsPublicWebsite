@@ -7,7 +7,7 @@ import { library, LibrarySong } from "../../../Api/portal";
 import { FormStatus } from "../../Join/styles";
 import { Shell } from "../../Login/styles";
 import { IndexItem, IndexList, Meta, PortalTitle, Sweep, useSweep } from "../IndexList";
-import { formatLength, groupByAlbum, totalDurationMs } from "./groupByAlbum";
+import { NO_ALBUM, formatLength, groupByAlbum, totalDurationMs } from "./groupByAlbum";
 import { useAlbumDownload } from "../Albums/useAlbumDownload";
 import { formatTime } from "../../../Components/BeforeAfterPlayer/utils";
 
@@ -51,7 +51,6 @@ const songItems = (songs: LibrarySong[]): IndexItem[] =>
     id: song.id,
     title: song.title,
     marker: song.trackNumber !== null ? String(song.trackNumber).padStart(2, "0") : "",
-    meta: song.status.replace(/_/g, " "),
     aside: song.durationMs !== null ? formatTime(song.durationMs / 1000) : undefined,
   }));
 
@@ -60,7 +59,7 @@ const AlbumRow: React.FC<{
   title: string;
   songs: LibrarySong[];
   onOpen: (item: IndexItem) => void;
-  onPlayAlbum: (albumId: string) => void;
+  onPlayAlbum: (albumId: string, songId?: string) => void;
 }> = ({ id, title, songs, onOpen, onPlayAlbum }) => {
   const { theme } = useTheme();
   const download = useAlbumDownload(id);
@@ -85,7 +84,12 @@ const AlbumRow: React.FC<{
         </AlbumActions>
       </AlbumHeader>
       {download.message ? <Meta theme={theme}>{download.message}</Meta> : null}
-      <IndexList items={songItems(songs)} empty="" onOpen={onOpen} />
+      <IndexList
+        items={songItems(songs)}
+        empty=""
+        // Album songs open in the album player at that song; loose songs keep their own page.
+        onOpen={title === NO_ALBUM ? onOpen : (item) => onPlayAlbum(id, item.id)}
+      />
     </section>
   );
 };
@@ -94,7 +98,8 @@ export const SongsByAlbum: React.FC<{
   songs: LibrarySong[] | null;
   empty: string;
   onOpen: (item: IndexItem) => void;
-  onPlayAlbum: (albumId: string) => void;
+  /** Without songId: play from the start. With it: open the album at that song. */
+  onPlayAlbum: (albumId: string, songId?: string) => void;
 }> = ({ songs, empty, onOpen, onPlayAlbum }) =>
   !songs || songs.length === 0 ? (
     <IndexList items={songs} empty={empty} onOpen={onOpen} />
@@ -129,7 +134,7 @@ const Songs: React.FC = () => {
             <SongsByAlbum
               songs={songs}
               empty="No songs yet."
-              onPlayAlbum={(id) => go(`/portal/albums/${id}?play`)}
+              onPlayAlbum={(id, song) => go(`/portal/albums/${id}?${song ? `track=${song}` : "play"}`)}
               onOpen={(item) => go(`/portal/songs/${item.id}`)}
             />
           )}

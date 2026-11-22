@@ -28,6 +28,10 @@ import { LinkButton, Shell } from "../../Login/styles";
 import { BackState, SlideIn } from "../IndexList";
 import NoteMarkers, { NoteMarker } from "./NoteMarkers";
 
+/** Hazel labels already start "v1 · WAV 48k", so don't prefix the number twice. */
+const versionName = (v: AudioVersion) =>
+  /^v\d+\b/i.test(v.label) ? v.label : `v${v.versionNumber} · ${v.label}`;
+
 const TitleBlock = styled.div`
   min-width: 0;
 
@@ -176,12 +180,22 @@ export const SongReview: React.FC<SongReviewProps> = ({
     };
   }, [songId]);
 
+  const rename = async () => {
+    const title = window.prompt("New song name (its files are renamed too)", song?.title)?.trim();
+    if (!title || title === song?.title) return;
+    try {
+      setSong(await songPage.renameSong(songId, title));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
   // Oldest first, so the player reads top to bottom as the song's history.
   const tracks = React.useMemo<BeforeAfterTrack[]>(
     () =>
       (versions ?? []).map((v) => ({
         src: streamUrl(v.id),
-        label: `v${v.versionNumber} · ${v.label}`,
+        label: versionName(v),
         credentials: "include",
       })),
     [versions],
@@ -571,11 +585,16 @@ export const SongReview: React.FC<SongReviewProps> = ({
           <Muted theme={theme}>
             {[
               projectTitle,
-              version && `v${version.versionNumber} · ${version.label}`,
+              version && versionName(version),
             ]
               .filter(Boolean)
               .join(" · ")}
           </Muted>
+          {song.canRename ? (
+            <LinkButton theme={theme} type="button" onClick={rename}>
+              Rename song
+            </LinkButton>
+          ) : null}
           {staff && version ? (
             <LinkButton theme={theme} type="button" onClick={toggleHidden}>
               {version.visibility === "internal"

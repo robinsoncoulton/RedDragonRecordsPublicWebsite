@@ -1,7 +1,7 @@
 import { formatLength, groupByAlbum, totalDurationMs } from "./groupByAlbum";
 
 const song = (id: string, projectId: string, projectTitle: string, trackNumber: number | null) => ({
-  id, projectId, projectTitle, trackNumber, title: id, durationMs: null, status: "mixing",
+  id, projectId, projectTitle, trackNumber, title: id, durationMs: null, status: "mixing", canRename: false,
 });
 
 it("puts No Album last and orders each album by track number", () => {

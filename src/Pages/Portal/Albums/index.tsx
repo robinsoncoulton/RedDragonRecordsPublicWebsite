@@ -8,7 +8,7 @@ import { getColors } from "../../../Styles/colors";
 import { useTheme } from "../../../Utils/Theme";
 import { ThemedElementProps } from "../../../Utils/Theme/types";
 import { BeforeAfterPlayerHandle } from "../../../Components/BeforeAfterPlayer";
-import { library, songPage } from "../../../Api/portal";
+import { Album as AlbumInfo, library, songPage } from "../../../Api/portal";
 import { FormStatus } from "../../Join/styles";
 import { LinkButton, Shell } from "../../Login/styles";
 import { Meta, PortalTitle } from "../IndexList";
@@ -143,10 +143,12 @@ const RESTART_THRESHOLD_S = 3; // "previous" restarts the song if it's past this
 const AlbumPlayer: React.FC = () => {
   const { albumId = "" } = useParams();
   // "Play album" links add ?play: start track 1 as soon as it has loaded.
-  const autoplay = new URLSearchParams(useLocation().search).has("play");
+  const search = new URLSearchParams(useLocation().search);
+  const autoplay = search.has("play");
+  const startSong = search.get("track"); // a song clicked in an album list opens here
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const [title, setTitle] = React.useState<string | null>(null);
+  const [album, setAlbum] = React.useState<AlbumInfo | null>(null);
   const [tracks, setTracks] = React.useState<AlbumTrack[] | null>(null);
   const [skipped, setSkipped] = React.useState(0);
   const [error, setError] = React.useState<string | null>(null);
@@ -162,7 +164,7 @@ const AlbumPlayer: React.FC = () => {
         songs.map((s) => library.versions(s.id).then((v) => v.length)),
       );
       const playable = songs.filter((_, i) => counts[i] > 0);
-      setTitle(project.title);
+      setAlbum(project);
       setSkipped(songs.length - playable.length);
       setTracks(
         playable.map((s) => ({
@@ -190,7 +192,23 @@ const AlbumPlayer: React.FC = () => {
         >
           ← Back
         </LinkButton>
-        <PortalTitle>{title ?? "\u00a0"}</PortalTitle>
+        <PortalTitle>{album?.title ?? "\u00a0"}</PortalTitle>
+        {album?.canRename ? (
+          <LinkButton
+            theme={theme}
+            type="button"
+            style={{ alignSelf: "flex-start" }}
+            onClick={() => {
+              const title = window
+                .prompt("New album name (its files are renamed too)", album.title)
+                ?.trim();
+              if (!title || title === album.title) return;
+              songPage.renameAlbum(albumId, title).then(setAlbum, (e: Error) => setError(e.message));
+            }}
+          >
+            Rename album
+          </LinkButton>
+        ) : null}
         {error ? (
           <FormStatus theme={theme} $tone="error">
             {error}
@@ -208,7 +226,12 @@ const AlbumPlayer: React.FC = () => {
         ) : null}
       </Shell>
       {tracks?.length ? (
-        <Album albumId={albumId} tracks={tracks} autoplay={autoplay} />
+        <Album
+          albumId={albumId}
+          tracks={tracks}
+          autoplay={autoplay}
+          start={Math.max(0, tracks.findIndex((t) => t.songId === startSong))}
+        />
       ) : null}
     </Page>
   );
@@ -223,9 +246,10 @@ const Album: React.FC<{
   albumId: string;
   tracks: AlbumTrack[];
   autoplay?: boolean;
-}> = ({ albumId, tracks, autoplay = false }) => {
+  start?: number;
+}> = ({ albumId, tracks, autoplay = false, start = 0 }) => {
   const { theme } = useTheme();
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = React.useState(start);
   const [autoNext, setAutoNext] = React.useState(true);
   const [ctx] = React.useState(() => new AudioContext());
   const [hovered, setHovered] = React.useState<number | null>(null);

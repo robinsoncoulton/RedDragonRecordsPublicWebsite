@@ -108,6 +108,8 @@ export interface Song {
   trackNumber: number | null;
   durationMs: number | null;
   status: string;
+  /** Admins and client owners. */
+  canRename: boolean;
 }
 
 export interface AudioVersion {
@@ -169,10 +171,17 @@ export interface Comment {
 
 export type CommentThread = Comment & { replies: Comment[] };
 
+export type Album = { id: string; title: string; canRename: boolean };
+
 export const songPage = {
   song: async (id: string) => (await api<{ data: Song }>(`/songs/${id}`)).data,
   project: async (id: string) =>
-    (await api<{ data: { id: string; title: string } }>(`/projects/${id}`)).data,
+    (await api<{ data: Album }>(`/projects/${id}`)).data,
+  /** Also renames every version's file to match. */
+  renameSong: async (id: string, title: string) =>
+    (await api<{ data: Song }>(`/songs/${id}`, { title }, "PATCH")).data,
+  renameAlbum: async (id: string, title: string) =>
+    (await api<{ data: Album }>(`/projects/${id}`, { title }, "PATCH")).data,
   /** In track order. */
   albumSongs: async (projectId: string) => (await api<{ data: Song[] }>(`/projects/${projectId}/songs`)).data,
   comments: async (versionId: string) =>
