@@ -142,6 +142,13 @@ export const library = {
   },
   versions: async (songId: string) =>
     (await api<{ data: AudioVersion[] }>(`/songs/${songId}/versions`)).data,
+  /** The album as one zip of each song's newest downloadable version; the signed URL lasts 5 minutes. */
+  albumDownload: async (projectId: string) =>
+    (
+      await api<{
+        data: { url: string; filename: string; fileCount: number; skipped: { title: string; reason: string }[] };
+      }>(`/projects/${projectId}/download`, {})
+    ).data,
   /** Staff only. "internal" hides the version (and its file) from the client. */
   setVisibility: async (versionId: string, visibility: AudioVersion["visibility"]) =>
     (await api<{ data: AudioVersion }>(`/versions/${versionId}`, { visibility }, "PATCH")).data,
@@ -166,6 +173,8 @@ export const songPage = {
   song: async (id: string) => (await api<{ data: Song }>(`/songs/${id}`)).data,
   project: async (id: string) =>
     (await api<{ data: { id: string; title: string } }>(`/projects/${id}`)).data,
+  /** In track order. */
+  albumSongs: async (projectId: string) => (await api<{ data: Song[] }>(`/projects/${projectId}/songs`)).data,
   comments: async (versionId: string) =>
     (await api<{ data: CommentThread[] }>(`/versions/${versionId}/comments`)).data,
   addComment: async (versionId: string, content: string, timestampMs: number) =>

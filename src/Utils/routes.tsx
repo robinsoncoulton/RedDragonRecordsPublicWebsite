@@ -13,6 +13,7 @@ const Login = React.lazy(() => import("../Pages/Login"));
 const Profile = React.lazy(() => import("../Pages/Profile"));
 const Songs = React.lazy(() => import("../Pages/Portal/Songs"));
 const SongDetail = React.lazy(() => import("../Pages/Portal/Songs/SongDetail"));
+const AlbumPlayer = React.lazy(() => import("../Pages/Portal/Albums"));
 const Clients = React.lazy(() => import("../Pages/Portal/Clients"));
 const ClientDetail = React.lazy(() => import("../Pages/Portal/Clients/ClientDetail"));
 const Invitation = React.lazy(() => import("../Pages/Invitation"));
@@ -85,5 +86,6 @@ export const appRoutes: { path: string; element: React.ReactNode }[] = [
   { path: "/portal/clients/:clientId", element: <RequireSession staff><ClientDetail /></RequireSession> },
   { path: "/portal/songs", element: <RequireSession><Songs /></RequireSession> },
   { path: "/portal/songs/:songId", element: <RequireSession><SongDetail /></RequireSession> },
+  { path: "/portal/albums/:albumId", element: <RequireSession><AlbumPlayer /></RequireSession> },
   { path: "/portal/profile", element: <RequireSession><Profile /></RequireSession> },
 ];

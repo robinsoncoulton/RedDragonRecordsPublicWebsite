@@ -13,6 +13,10 @@ export type BeforeAfterTrack = {
 
 export type BeforeAfterPlayerHandle = {
   play: () => Promise<void>;
+  /** Starts at `when` on the AudioContext clock, e.g. another player's getEndTime(). */
+  playAt: (when: number, offset?: number) => Promise<void>;
+  /** When playback reaches the end on the AudioContext clock; null if paused or looping. */
+  getEndTime: () => number | null;
   pause: () => void;
   togglePlay: () => void;
   seek: (seconds: number) => void;
@@ -43,4 +47,8 @@ export type BeforeAfterPlayerProps = {
   onLevels?: (levels: MeterFrame) => void;
   /** Drawn over the waveform rows (each WAVEFORM_ROW_HEIGHT tall) without clipping, e.g. comment markers. */
   waveformOverlay?: React.ReactNode;
+  /** Share one clock between players so one can start exactly when another ends. */
+  audioContext?: AudioContext;
+  /** Playback reached the end (not on pause, seek or loop). */
+  onEnded?: () => void;
 };

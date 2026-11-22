@@ -7,7 +7,6 @@ export const Shell = styled.div<ThemedElementProps>`
   display: grid;
   gap: ${designTokens.spacing.md};
   width: 100%;
-  max-width: 36rem;
   padding: ${designTokens.spacing.lg};
   box-sizing: border-box;
   color: ${({ theme }) => getColors(theme).text};

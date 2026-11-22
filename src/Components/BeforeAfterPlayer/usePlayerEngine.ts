@@ -5,15 +5,22 @@ import { TempoMap, beatPulse, detectTempo } from "./tempo";
 import { clamp01, stopBufferSources } from "./utils";
 import { WAVEFORM_BARS, normalizePeaks, peaksFromBuffer } from "./waveform";
 import { fetchAudio } from "./audioCache";
+import { getSharedVolume, setSharedVolume, useSharedVolume } from "./sharedVolume";
 
 const DEFAULT_CROSSFADE_MS = 200;
 
 type EngineOptions = {
   tracks: BeforeAfterTrack[];
   crossfadeMs?: number;
+  /** Share one clock between players so one can start exactly when another ends. Not closed here. */
+  context?: AudioContext;
+  /** Playback reached the end (not on pause, seek or loop). */
+  onEnded?: () => void;
 };
 
-export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: EngineOptions) => {
+export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS, context, onEnded }: EngineOptions) => {
+  const onEndedRef = React.useRef(onEnded);
+  onEndedRef.current = onEnded;
   const ctxRef = React.useRef<AudioContext | null>(null);
   const masterRef = React.useRef<GainNode | null>(null);
   const splitterRef = React.useRef<ChannelSplitterNode | null>(null);
@@ -29,7 +36,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
   const playingRef = React.useRef(false);
   const loopingRef = React.useRef(false);
   const activeIndexRef = React.useRef(0);
-  const volumeRef = React.useRef(0.5);
+  const volumeRef = React.useRef(getSharedVolume());
   const generationRef = React.useRef(0);
   const fadeRafRef = React.useRef<number | null>(null);
   const readyRef = React.useRef(false);
@@ -46,7 +53,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
   const [playing, setPlaying] = React.useState(false);
   const [looping, setLooping] = React.useState(false);
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const [volume, setVolumeState] = React.useState(0.5);
+  const volume = useSharedVolume();
   const [ready, setReady] = React.useState(false);
   const [duration, setDuration] = React.useState(0);
   const [peaks, setPeaks] = React.useState<Float32Array[]>([]);
@@ -86,7 +93,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     return Math.min(position, total);
   };
 
-  const startSourcesAt = async (offset: number) => {
+  const startSourcesAt = async (offset: number, at?: number) => {
     const ctx = ctxRef.current;
     const buffers = buffersRef.current;
     const gains = gainsRef.current;
@@ -98,7 +105,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     stopSources();
     const gen = generationRef.current;
     const startOffset = Math.min(Math.max(0, offset), Math.max(0, total - 0.0001));
-    const when = ctx.currentTime;
+    const when = Math.max(at ?? 0, ctx.currentTime);
     const loop = loopingRef.current;
     const sources = buffers.map((buffer, index) => {
       const source = ctx.createBufferSource();
@@ -123,6 +130,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
       playingRef.current = false;
       setPlaying(false);
       stopSources();
+      onEndedRef.current?.();
     };
     sourcesRef.current = sources;
     startedAtRef.current = when;
@@ -173,7 +181,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
 
   React.useEffect(() => {
     let cancelled = false;
-    const ctx = new AudioContext();
+    const ctx = context ?? new AudioContext();
     const master = ctx.createGain();
     master.gain.value = clamp01(volumeRef.current);
     const tap = ctx.createGain();
@@ -276,7 +284,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
       analyserR.disconnect();
       tap.disconnect();
       master.disconnect();
-      void ctx.close();
+      if (!context) void ctx.close();
       ctxRef.current = null;
       masterRef.current = null;
       splitterRef.current = null;
@@ -285,7 +293,7 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
       readyRef.current = false;
       setReady(false);
     };
-  }, [tracks]);
+  }, [tracks, context]);
 
   const pause = () => {
     offsetRef.current = currentOffset();
@@ -303,6 +311,23 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
       setPlaying(false);
     });
   };
+
+  /** Starts at `when` on the AudioContext clock (e.g. another player's getEndTime()). */
+  const playAt = (when: number, offset = 0) => {
+    if (!readyRef.current) {
+      return Promise.resolve();
+    }
+    return startSourcesAt(offset, when).catch(() => {
+      playingRef.current = false;
+      setPlaying(false);
+    });
+  };
+
+  /** When playback will reach the end on the AudioContext clock; null if paused or looping. */
+  const getEndTime = () =>
+    playingRef.current && !loopingRef.current
+      ? startedAtRef.current + durationRef.current - offsetRef.current
+      : null;
 
   const togglePlay = () => {
     if (!readyRef.current) {
@@ -406,12 +431,14 @@ export const usePlayerEngine = ({ tracks, crossfadeMs = DEFAULT_CROSSFADE_MS }: 
     peaks,
     tempo,
     play,
+    playAt,
+    getEndTime,
     pause,
     togglePlay,
     seek,
     select,
     setLoop,
-    setVolume: (next: number) => setVolumeState(clamp01(next)),
+    setVolume: (next: number) => setSharedVolume(clamp01(next)),
     getCurrentTime: currentOffset,
     getDuration: () => durationRef.current,
     getActiveIndex: () => activeIndexRef.current,

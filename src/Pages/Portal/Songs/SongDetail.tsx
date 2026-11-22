@@ -81,7 +81,8 @@ const Note = styled.li<ThemedElementProps & { $active: boolean }>`
   border-left: ${designTokens.borderWidth.strong} solid
     ${({ theme, $active }) => ($active ? getColors(theme).accent : "transparent")};
   background: ${({ theme, $active }) => ($active ? getColors(theme).surfaceMuted : "transparent")};
-  transition: background ${designTokens.duration.fast} ${designTokens.easing.standard};
+  transition: background ${designTokens.duration.fast}
+    ${designTokens.easing.standard};
 `;
 
 const NoteBody = styled.div`
@@ -107,12 +108,24 @@ const Reply = styled.div<ThemedElementProps>`
     ${({ theme }) => getColors(theme).border};
 `;
 
-const SongDetail: React.FC = () => {
+type SongReviewProps = {
+  songId: string;
+  /** Pass to drive the player from outside (the album page). */
+  playerRef?: React.RefObject<BeforeAfterPlayerHandle>;
+  audioContext?: AudioContext;
+  onEnded?: () => void;
+};
+
+/** A song's versions, waveform, notes and replies. Used by the song page and the album page. */
+export const SongReview: React.FC<SongReviewProps> = ({
+  songId,
+  playerRef: outerRef,
+  audioContext,
+  onEnded,
+}) => {
   const { theme } = useTheme();
-  const { songId = "" } = useParams();
-  const navigate = useNavigate();
-  const back = (useLocation().state as BackState | null) ?? {};
-  const playerRef = React.useRef<BeforeAfterPlayerHandle>(null);
+  const ownRef = React.useRef<BeforeAfterPlayerHandle>(null);
+  const playerRef = outerRef ?? ownRef;
   const noteRefs = React.useRef(new Map<string, HTMLLIElement>());
 
   const [song, setSong] = React.useState<Song | null>(null);
@@ -122,7 +135,9 @@ const SongDetail: React.FC = () => {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [currentMs, setCurrentMs] = React.useState(0);
   const [durationMs, setDurationMs] = React.useState(0);
-  const [threads, setThreads] = React.useState<Record<string, CommentThread[]>>({});
+  const [threads, setThreads] = React.useState<Record<string, CommentThread[]>>(
+    {},
+  );
   const [noteAt, setNoteAt] = React.useState<number | null>(null);
   const [draft, setDraft] = React.useState("");
   const [posting, setPosting] = React.useState(false);
@@ -131,8 +146,14 @@ const SongDetail: React.FC = () => {
   const me = useSession().user;
   const staff = isStaff(me);
   // One open editor at a time: editing a comment, or replying to a thread.
-  const [editing, setEditing] = React.useState<{ id: string; draft: string } | null>(null);
-  const [replyTo, setReplyTo] = React.useState<{ id: string; draft: string } | null>(null);
+  const [editing, setEditing] = React.useState<{
+    id: string;
+    draft: string;
+  } | null>(null);
+  const [replyTo, setReplyTo] = React.useState<{
+    id: string;
+    draft: string;
+  } | null>(null);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -140,9 +161,15 @@ const SongDetail: React.FC = () => {
       const s = await songPage.song(songId);
       if (cancelled) return;
       setSong(s);
-      songPage.project(s.projectId).then((p) => !cancelled && setProjectTitle(p.title), () => {});
+      songPage.project(s.projectId).then(
+        (p) => !cancelled && setProjectTitle(p.title),
+        () => {},
+      );
       const list = await library.versions(songId);
-      if (!cancelled) setVersions([...list].sort((a, b) => a.versionNumber - b.versionNumber));
+      if (!cancelled)
+        setVersions(
+          [...list].sort((a, b) => a.versionNumber - b.versionNumber),
+        );
     })().catch((e: Error) => !cancelled && setError(e.message));
     return () => {
       cancelled = true;
@@ -157,7 +184,7 @@ const SongDetail: React.FC = () => {
         label: `v${v.versionNumber} · ${v.label}`,
         credentials: "include",
       })),
-    [versions]
+    [versions],
   );
 
   React.useEffect(() => {
@@ -180,7 +207,7 @@ const SongDetail: React.FC = () => {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [versions]);
+  }, [versions, playerRef]);
 
   const version = versions?.[activeIndex];
 
@@ -188,9 +215,11 @@ const SongDetail: React.FC = () => {
   React.useEffect(() => {
     if (!versions) return;
     let cancelled = false;
-    Promise.all(versions.map(async (v) => [v.id, await songPage.comments(v.id)] as const)).then(
+    Promise.all(
+      versions.map(async (v) => [v.id, await songPage.comments(v.id)] as const),
+    ).then(
       (entries) => !cancelled && setThreads(Object.fromEntries(entries)),
-      (e: Error) => !cancelled && setError(e.message)
+      (e: Error) => !cancelled && setError(e.message),
     );
     return () => {
       cancelled = true;
@@ -199,14 +228,25 @@ const SongDetail: React.FC = () => {
 
   // After the list re-renders (possibly for another version), bring the note into view.
   React.useEffect(() => {
-    if (activeNote) noteRefs.current.get(activeNote)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (activeNote)
+      noteRefs.current
+        .get(activeNote)
+        ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [activeNote, activeIndex]);
 
   const toggleHidden = async () => {
     if (!version) return;
     try {
-      const updated = await library.setVisibility(version.id, version.visibility === "internal" ? "client" : "internal");
-      setVersions((all) => all?.map((v) => (v.id === updated.id ? { ...v, visibility: updated.visibility } : v)) ?? null);
+      const updated = await library.setVisibility(
+        version.id,
+        version.visibility === "internal" ? "client" : "internal",
+      );
+      setVersions(
+        (all) =>
+          all?.map((v) =>
+            v.id === updated.id ? { ...v, visibility: updated.visibility } : v,
+          ) ?? null,
+      );
     } catch (e) {
       setError((e as Error).message);
     }
@@ -235,7 +275,11 @@ const SongDetail: React.FC = () => {
     if (!version || noteAt === null || !draft.trim()) return;
     setPosting(true);
     try {
-      const created = await songPage.addComment(version.id, draft.trim(), noteAt);
+      const created = await songPage.addComment(
+        version.id,
+        draft.trim(),
+        noteAt,
+      );
       const fresh = await songPage.comments(version.id);
       setThreads((all) => ({ ...all, [version.id]: fresh }));
       setDraft("");
@@ -295,14 +339,27 @@ const SongDetail: React.FC = () => {
   };
 
   const remove = (c: Comment, isThread: boolean) => {
-    if (!window.confirm(isThread ? "Delete this note and all its replies?" : "Delete this reply?")) return;
+    if (
+      !window.confirm(
+        isThread
+          ? "Delete this note and all its replies?"
+          : "Delete this reply?",
+      )
+    )
+      return;
     act(() => songPage.deleteComment(c.id));
   };
 
   // Same rules as the API: authors edit their own; authors and staff delete.
   const mine = (c: Comment) => c.content !== null && c.author?.id === me?.id;
 
-  const editor = (value: string, onChange: (v: string) => void, onSubmit: (e: React.SyntheticEvent) => void, onCancel: () => void, label: string) => (
+  const editor = (
+    value: string,
+    onChange: (v: string) => void,
+    onSubmit: (e: React.SyntheticEvent) => void,
+    onCancel: () => void,
+    label: string,
+  ) => (
     <Composer onSubmit={onSubmit}>
       <TextArea
         theme={theme}
@@ -320,7 +377,11 @@ const SongDetail: React.FC = () => {
         <LinkButton theme={theme} type="button" onClick={onCancel}>
           Cancel
         </LinkButton>
-        <LinkButton theme={theme} type="submit" disabled={posting || !value.trim()}>
+        <LinkButton
+          theme={theme}
+          type="submit"
+          disabled={posting || !value.trim()}
+        >
           {posting ? "Saving…" : label}
         </LinkButton>
       </ComposerActions>
@@ -329,21 +390,41 @@ const SongDetail: React.FC = () => {
 
   const commentBody = (c: Comment, isThread: boolean) =>
     editing?.id === c.id ? (
-      editor(editing.draft, (draft) => setEditing({ id: c.id, draft }), saveEdit, () => setEditing(null), "Save")
+      editor(
+        editing.draft,
+        (draft) => setEditing({ id: c.id, draft }),
+        saveEdit,
+        () => setEditing(null),
+        "Save",
+      )
     ) : (
       <>
         <p>
           {c.content ?? <em>Deleted</em>}
-          {c.edited && c.content !== null ? <Muted theme={theme} as="span"> (edited)</Muted> : null}
+          {c.edited && c.content !== null ? (
+            <Muted theme={theme} as="span">
+              {" "}
+              (edited)
+            </Muted>
+          ) : null}
         </p>
         {c.content !== null && (mine(c) || staff) ? (
           <NoteActions>
             {mine(c) ? (
-              <LinkButton theme={theme} type="button" onClick={() => startEdit(c)}>
+              <LinkButton
+                theme={theme}
+                type="button"
+                onClick={() => startEdit(c)}
+              >
                 Edit
               </LinkButton>
             ) : null}
-            <LinkButton theme={theme} type="button" disabled={posting} onClick={() => remove(c, isThread)}>
+            <LinkButton
+              theme={theme}
+              type="button"
+              disabled={posting}
+              onClick={() => remove(c, isThread)}
+            >
               Delete
             </LinkButton>
           </NoteActions>
@@ -351,7 +432,7 @@ const SongDetail: React.FC = () => {
       </>
     );
 
-  const timed = (version ? threads[version.id] ?? [] : [])
+  const timed = (version ? (threads[version.id] ?? []) : [])
     .filter((t) => t.timestampMs !== null)
     .sort((a, b) => a.timestampMs! - b.timestampMs!);
   const markers: NoteMarker[] = (versions ?? []).flatMap((v, row) =>
@@ -364,9 +445,190 @@ const SongDetail: React.FC = () => {
         author: t.author?.name ?? "Someone",
         image: t.author?.image ?? null,
         content: t.content!,
-      }))
+      })),
   );
 
+  const notes = (
+    <>
+      {version && durationMs ? (
+        noteAt === null ? (
+          <NoteBar>
+            <Muted theme={theme}>
+              Notes are left on {version.label}. Switch versions above to see
+              theirs.
+            </Muted>
+            <LinkButton theme={theme} type="button" onClick={startNote}>
+              + Note at {formatTime(currentMs / 1000)}
+            </LinkButton>
+          </NoteBar>
+        ) : (
+          <Composer onSubmit={postNote}>
+            <label htmlFor="note">
+              Note on {version.label} at {formatTime(noteAt / 1000)}
+            </label>
+            <TextArea
+              id="note"
+              theme={theme}
+              autoFocus
+              rows={3}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) postNote(e);
+                if (e.key === "Escape") setNoteAt(null);
+              }}
+              placeholder="What should change here?"
+            />
+            <ComposerActions>
+              <LinkButton
+                theme={theme}
+                type="button"
+                onClick={() => setNoteAt(null)}
+              >
+                Cancel
+              </LinkButton>
+              <LinkButton
+                theme={theme}
+                type="submit"
+                disabled={posting || !draft.trim()}
+              >
+                {posting ? "Posting…" : "Post note"}
+              </LinkButton>
+            </ComposerActions>
+          </Composer>
+        )
+      ) : null}
+
+      {timed.length ? (
+        <Notes>
+          {timed.map((t) => (
+            <Note
+              key={t.id}
+              theme={theme}
+              $active={t.id === activeNote}
+              ref={(el) => {
+                if (el) noteRefs.current.set(t.id, el);
+                else noteRefs.current.delete(t.id);
+              }}
+            >
+              <Avatar
+                theme={theme}
+                name={t.author?.name ?? "?"}
+                image={t.author?.image ?? null}
+              />
+              <NoteBody>
+                <LinkButton
+                  theme={theme}
+                  type="button"
+                  onClick={() => focusNote(t.id, t.timestampMs!)}
+                >
+                  {formatTime(t.timestampMs! / 1000)}
+                </LinkButton>{" "}
+                <strong>{t.author?.name ?? "Someone"}</strong>
+                {commentBody(t, true)}
+                {t.replies.map((r) => (
+                  <Reply key={r.id} theme={theme}>
+                    <strong>{r.author?.name ?? "Someone"}</strong>
+                    {commentBody(r, false)}
+                  </Reply>
+                ))}
+                {t.content === null ? null : replyTo?.id === t.id ? (
+                  <Reply theme={theme}>
+                    {editor(
+                      replyTo.draft,
+                      (draft) => setReplyTo({ id: t.id, draft }),
+                      sendReply,
+                      () => setReplyTo(null),
+                      "Reply",
+                    )}
+                  </Reply>
+                ) : (
+                  <NoteActions>
+                    <LinkButton
+                      theme={theme}
+                      type="button"
+                      onClick={() => startReply(t.id)}
+                    >
+                      {t.replies.length
+                        ? `Reply · ${t.replies.length} ${t.replies.length === 1 ? "reply" : "replies"}`
+                        : "Reply"}
+                    </LinkButton>
+                  </NoteActions>
+                )}
+              </NoteBody>
+            </Note>
+          ))}
+        </Notes>
+      ) : null}
+    </>
+  );
+
+  return (
+    <>
+      {song ? (
+        <TitleBlock>
+          <h1>{song.title}</h1>
+          <Muted theme={theme}>
+            {[
+              projectTitle,
+              version && `v${version.versionNumber} · ${version.label}`,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </Muted>
+          {staff && version ? (
+            <LinkButton theme={theme} type="button" onClick={toggleHidden}>
+              {version.visibility === "internal"
+                ? "Hidden from client · Show"
+                : "Hide from client"}
+            </LinkButton>
+          ) : null}
+        </TitleBlock>
+      ) : null}
+
+      {error ? (
+        <FormStatus theme={theme} $tone="error">
+          {error}
+        </FormStatus>
+      ) : null}
+      {versions?.length === 0 ? (
+        <Muted theme={theme}>No audio uploaded for this song yet.</Muted>
+      ) : null}
+
+      {tracks.length ? (
+        <BeforeAfterPlayer
+          ref={playerRef}
+          theme={theme}
+          tracks={tracks}
+          audioContext={audioContext}
+          onEnded={onEnded}
+          showWaveform
+          showProgress
+          waveformOverlay={
+            <NoteMarkers
+              theme={theme}
+              durationMs={durationMs}
+              currentMs={currentMs}
+              activeRow={activeIndex}
+              rowHeight={WAVEFORM_ROW_HEIGHT}
+              markers={markers}
+              activeId={activeNote}
+              onOpen={(m) => focusNote(m.id, m.timestampMs, m.row)}
+            />
+          }
+        />
+      ) : null}
+
+      {notes}
+    </>
+  );
+};
+
+const SongDetail: React.FC = () => {
+  const { theme } = useTheme();
+  const { songId = "" } = useParams();
+  const navigate = useNavigate();
+  const back = (useLocation().state as BackState | null) ?? {};
   return (
     <Page>
       <Shell theme={theme} $wide style={{ maxWidth: "960px" }}>
@@ -379,135 +641,7 @@ const SongDetail: React.FC = () => {
           >
             ← {back.backLabel ?? "All songs"}
           </LinkButton>
-
-          {song ? (
-            <TitleBlock>
-              <h1>{song.title}</h1>
-              <Muted theme={theme}>
-                {[projectTitle, version && `v${version.versionNumber} · ${version.label}`]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </Muted>
-              {staff && version ? (
-                <LinkButton theme={theme} type="button" onClick={toggleHidden}>
-                  {version.visibility === "internal" ? "Hidden from client · Show" : "Hide from client"}
-                </LinkButton>
-              ) : null}
-            </TitleBlock>
-          ) : null}
-
-          {error ? (
-            <FormStatus theme={theme} $tone="error">
-              {error}
-            </FormStatus>
-          ) : null}
-          {versions?.length === 0 ? (
-            <Muted theme={theme}>No audio uploaded for this song yet.</Muted>
-          ) : null}
-
-          {tracks.length ? (
-            <BeforeAfterPlayer
-              ref={playerRef}
-              theme={theme}
-              tracks={tracks}
-              showWaveform
-              showProgress
-              waveformOverlay={
-                <NoteMarkers
-                  theme={theme}
-                  durationMs={durationMs}
-                  currentMs={currentMs}
-                  activeRow={activeIndex}
-                  rowHeight={WAVEFORM_ROW_HEIGHT}
-                  markers={markers}
-                  activeId={activeNote}
-                  onOpen={(m) => focusNote(m.id, m.timestampMs, m.row)}
-                />
-              }
-            />
-          ) : null}
-
-          {version && durationMs ? (
-            noteAt === null ? (
-              <NoteBar>
-                <Muted theme={theme}>
-                  Notes are left on {version.label}. Switch versions above to see theirs.
-                </Muted>
-                <LinkButton theme={theme} type="button" onClick={startNote}>
-                  + Note at {formatTime(currentMs / 1000)}
-                </LinkButton>
-              </NoteBar>
-            ) : (
-              <Composer onSubmit={postNote}>
-                <label htmlFor="note">
-                  Note on {version.label} at {formatTime(noteAt / 1000)}
-                </label>
-                <TextArea
-                  id="note"
-                  theme={theme}
-                  autoFocus
-                  rows={3}
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) postNote(e);
-                    if (e.key === "Escape") setNoteAt(null);
-                  }}
-                  placeholder="What should change here?"
-                />
-                <ComposerActions>
-                  <LinkButton theme={theme} type="button" onClick={() => setNoteAt(null)}>
-                    Cancel
-                  </LinkButton>
-                  <LinkButton theme={theme} type="submit" disabled={posting || !draft.trim()}>
-                    {posting ? "Posting…" : "Post note"}
-                  </LinkButton>
-                </ComposerActions>
-              </Composer>
-            )
-          ) : null}
-
-          {timed.length ? (
-            <Notes>
-              {timed.map((t) => (
-                <Note
-                  key={t.id}
-                  theme={theme}
-                  $active={t.id === activeNote}
-                  ref={(el) => {
-                    if (el) noteRefs.current.set(t.id, el);
-                    else noteRefs.current.delete(t.id);
-                  }}
-                >
-                  <Avatar theme={theme} name={t.author?.name ?? "?"} image={t.author?.image ?? null} />
-                  <NoteBody>
-                    <LinkButton theme={theme} type="button" onClick={() => focusNote(t.id, t.timestampMs!)}>
-                      {formatTime(t.timestampMs! / 1000)}
-                    </LinkButton>{" "}
-                    <strong>{t.author?.name ?? "Someone"}</strong>
-                    {commentBody(t, true)}
-                    {t.replies.map((r) => (
-                      <Reply key={r.id} theme={theme}>
-                        <strong>{r.author?.name ?? "Someone"}</strong>
-                        {commentBody(r, false)}
-                      </Reply>
-                    ))}
-                    {t.content === null ? null : replyTo?.id === t.id ? (
-                      <Reply theme={theme}>
-                        {editor(replyTo.draft, (draft) => setReplyTo({ id: t.id, draft }), sendReply, () => setReplyTo(null), "Reply")}
-                      </Reply>
-                    ) : (
-                      <NoteActions>
-                        <LinkButton theme={theme} type="button" onClick={() => startReply(t.id)}>
-                          {t.replies.length ? `Reply · ${t.replies.length} ${t.replies.length === 1 ? "reply" : "replies"}` : "Reply"}
-                        </LinkButton>
-                      </NoteActions>
-                    )}
-                  </NoteBody>
-                </Note>
-              ))}
-            </Notes>
-          ) : null}
+          <SongReview songId={songId} />
         </SlideIn>
       </Shell>
     </Page>

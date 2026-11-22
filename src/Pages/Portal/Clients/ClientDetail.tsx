@@ -18,8 +18,8 @@ import {
 } from "../../../Api/portal";
 import { FormStatus, TextInput } from "../../Join/styles";
 import { LinkButton, Shell } from "../../Login/styles";
-import { IndexList, Meta, PortalTitle, SectionTitle, SlideIn, Sweep, useSweep } from "../IndexList";
-import { songItems } from "../Songs";
+import { Meta, PortalTitle, SectionTitle, SlideIn, Sweep, useSweep } from "../IndexList";
+import { SongsByAlbum } from "../Songs";
 
 const People = styled.ul`
   list-style: none;
@@ -154,9 +154,10 @@ const ClientDetail: React.FC = () => {
               <PortalTitle>{client?.displayName ?? " "}</PortalTitle>
 
               <SectionTitle>Songs</SectionTitle>
-              <IndexList
-                items={songs && songItems(songs)}
+              <SongsByAlbum
+                songs={songs}
                 empty="No songs for this client yet."
+                onPlayAlbum={(id) => go(`/portal/albums/${id}?play`, backState)}
                 onOpen={(item) => go(`/portal/songs/${item.id}`, backState)}
               />
 

@@ -43,6 +43,8 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       syncToBpm = false,
       onLevels,
       waveformOverlay,
+      audioContext,
+      onEnded,
     },
     ref
   ) => {
@@ -50,7 +52,7 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
       () => resolveTracks({ tracks: tracksProp, srcA, srcB, labelA, labelB }),
       [tracksProp, srcA, srcB, labelA, labelB]
     );
-    const engine = usePlayerEngine({ tracks, crossfadeMs });
+    const engine = usePlayerEngine({ tracks, crossfadeMs, context: audioContext, onEnded });
     const [bpmSync, setBpmSync] = React.useState(syncToBpm);
     const shellRef = React.useRef<HTMLDivElement | null>(null);
     const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
@@ -156,6 +158,8 @@ const BeforeAfterPlayer = React.forwardRef<BeforeAfterPlayerHandle, BeforeAfterP
 
     React.useImperativeHandle(ref, () => ({
       play: engine.play,
+      playAt: engine.playAt,
+      getEndTime: engine.getEndTime,
       pause: engine.pause,
       togglePlay: engine.togglePlay,
       seek: engine.seek,

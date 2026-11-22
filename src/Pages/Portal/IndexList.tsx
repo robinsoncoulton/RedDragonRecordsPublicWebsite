@@ -140,7 +140,8 @@ const Name = styled.span`
   overflow-wrap: anywhere;
 `;
 
-export type IndexItem = { id: string; title: string; meta?: string; aside?: string };
+/** marker replaces the A–Z initial, e.g. a track number. */
+export type IndexItem = { id: string; title: string; meta?: string; aside?: string; marker?: string };
 
 /** A–Z index whose rows fade in one after another. Items must already be sorted. */
 export const IndexList: React.FC<{
@@ -160,8 +161,8 @@ export const IndexList: React.FC<{
         return (
           <Row key={item.id} theme={theme} $index={i}>
             <RowButton theme={theme} type="button" onClick={() => onOpen(item)}>
-              <Letter theme={theme} aria-hidden>
-                {showLetter ? letter : ""}
+              <Letter theme={theme} aria-hidden={item.marker === undefined}>
+                {item.marker ?? (showLetter ? letter : "")}
               </Letter>
               <Name>
                 {item.title}
