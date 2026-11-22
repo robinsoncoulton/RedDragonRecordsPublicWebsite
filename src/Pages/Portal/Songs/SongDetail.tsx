@@ -190,6 +190,17 @@ export const SongReview: React.FC<SongReviewProps> = ({
     }
   };
 
+  // One switch per song: every version carries the same setting.
+  const downloadsOn = versions?.[versions.length - 1]?.downloadEnabled ?? true;
+  const toggleDownloads = async () => {
+    try {
+      await songPage.setDownloads(songId, !downloadsOn);
+      setVersions((list) => list && list.map((v) => ({ ...v, downloadEnabled: !downloadsOn })));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
   // Oldest first, so the player reads top to bottom as the song's history.
   const tracks = React.useMemo<BeforeAfterTrack[]>(
     () =>
@@ -593,6 +604,11 @@ export const SongReview: React.FC<SongReviewProps> = ({
           {song.canRename ? (
             <LinkButton theme={theme} type="button" onClick={rename}>
               Rename song
+            </LinkButton>
+          ) : null}
+          {me?.role === "admin" && versions?.length ? (
+            <LinkButton theme={theme} type="button" onClick={toggleDownloads}>
+              {downloadsOn ? "Downloads on · Turn off" : "Stream only · Allow downloads"}
             </LinkButton>
           ) : null}
           {staff && version ? (

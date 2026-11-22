@@ -119,6 +119,7 @@ export interface AudioVersion {
   approvalStatus: "pending" | "changes_requested" | "approved" | "superseded";
   durationMs: number | null;
   visibility: "client" | "internal";
+  downloadEnabled: boolean;
 }
 
 export type LibrarySong = Song & { projectTitle: string };
@@ -180,6 +181,9 @@ export const songPage = {
   /** Also renames every version's file to match. */
   renameSong: async (id: string, title: string) =>
     (await api<{ data: Song }>(`/songs/${id}`, { title }, "PATCH")).data,
+  /** Admins only. Switches downloads for every version of the song; new versions follow. */
+  setDownloads: async (id: string, downloadEnabled: boolean) =>
+    (await api<{ data: Song }>(`/songs/${id}`, { downloadEnabled }, "PATCH")).data,
   renameAlbum: async (id: string, title: string) =>
     (await api<{ data: Album }>(`/projects/${id}`, { title }, "PATCH")).data,
   /** In track order. */
