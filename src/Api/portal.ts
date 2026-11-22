@@ -144,11 +144,11 @@ export const library = {
   },
   versions: async (songId: string) =>
     (await api<{ data: AudioVersion[] }>(`/songs/${songId}/versions`)).data,
-  /** The album as one zip of each song's newest downloadable version; the signed URL lasts 5 minutes. */
+  /** A signed link (valid 5 minutes) per song: each one's newest downloadable version. */
   albumDownload: async (projectId: string) =>
     (
       await api<{
-        data: { url: string; filename: string; fileCount: number; skipped: { title: string; reason: string }[] };
+        data: { files: { url: string; filename: string }[]; skipped: { title: string; reason: string }[] };
       }>(`/projects/${projectId}/download`, {})
     ).data,
   /** Staff only. "internal" hides the version (and its file) from the client. */
