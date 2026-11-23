@@ -17,6 +17,7 @@ import { handoverTime } from "./handover";
 import { cardWidthFor, deckLayout } from "./deckLayout";
 import { useAlbumDownload } from "./useAlbumDownload";
 import { formatLength } from "../Songs/groupByAlbum";
+import { rememberedThenFresh } from "../../../Api/remembered";
 
 const EASE = "420ms cubic-bezier(0.22, 1, 0.36, 1)"; // close to the Artists deck slide
 
@@ -154,27 +155,40 @@ const AlbumPlayer: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    (async () => {
-      const [project, songs] = await Promise.all([
-        songPage.project(albumId),
-        songPage.albumSongs(albumId),
-      ]);
-      // Songs with no audio the viewer can see are left out of the running order.
-      const counts = await Promise.all(
-        songs.map((s) => library.versions(s.id).then((v) => v.length)),
-      );
-      const playable = songs.filter((_, i) => counts[i] > 0);
-      setAlbum(project);
-      setSkipped(songs.length - playable.length);
-      setTracks(
-        playable.map((s) => ({
-          songId: s.id,
-          title: s.title,
-          trackNumber: s.trackNumber,
-          durationMs: s.durationMs,
-        })),
-      );
-    })().catch((e: Error) => setError(e.message));
+    let cancelled = false;
+    rememberedThenFresh(
+      `album:${albumId}`,
+      async () => {
+        const [project, songs] = await Promise.all([
+          songPage.project(albumId),
+          songPage.albumSongs(albumId),
+        ]);
+        // Songs with no audio the viewer can see are left out of the running order.
+        const counts = await Promise.all(
+          songs.map((s) => library.versions(s.id).then((v) => v.length)),
+        );
+        const playable = songs.filter((_, i) => counts[i] > 0);
+        return {
+          project,
+          skipped: songs.length - playable.length,
+          tracks: playable.map((s) => ({
+            songId: s.id,
+            title: s.title,
+            trackNumber: s.trackNumber,
+            durationMs: s.durationMs,
+          })),
+        };
+      },
+      (r) => {
+        if (cancelled) return;
+        setAlbum(r.project);
+        setSkipped(r.skipped);
+        setTracks(r.tracks);
+      },
+    ).catch((e: Error) => !cancelled && setError(e.message));
+    return () => {
+      cancelled = true;
+    };
   }, [albumId]);
 
   return (

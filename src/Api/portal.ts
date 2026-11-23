@@ -2,6 +2,7 @@
 // HttpOnly cookie set by the API, so every request uses `credentials: "include"`.
 
 import { clearAudioCache } from "../Components/BeforeAfterPlayer/audioCache";
+import { forgetRemembered } from "./remembered";
 
 export const API_URL =
   process.env.REACT_APP_API_URL ||
@@ -61,10 +62,16 @@ export interface AuthUser {
 export const auth = {
   register: (name: string, email: string, password: string) =>
     api<{ data: { message: string } }>("/auth/register", { name, email, password }),
-  login: async (email: string, password: string) =>
-    (await api<{ data: { user: AuthUser } }>("/auth/login", { email, password })).data.user,
+  login: async (email: string, password: string) => {
+    forgetRemembered();
+    return (await api<{ data: { user: AuthUser } }>("/auth/login", { email, password })).data.user;
+  },
   // Cached audio is per browser, not per account, so it goes with the session.
-  logout: () => api("/auth/logout", {}).finally(clearAudioCache),
+  logout: () =>
+    api("/auth/logout", {}).finally(() => {
+      forgetRemembered();
+      return clearAudioCache();
+    }),
   /** Null when not signed in. */
   me: async () => {
     try {

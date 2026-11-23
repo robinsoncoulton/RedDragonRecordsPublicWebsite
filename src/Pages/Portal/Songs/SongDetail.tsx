@@ -27,6 +27,7 @@ import { FormStatus, TextArea } from "../../Join/styles";
 import { LinkButton, Shell } from "../../Login/styles";
 import { BackState, SlideIn } from "../IndexList";
 import NoteMarkers, { NoteMarker } from "./NoteMarkers";
+import { rememberedThenFresh } from "../../../Api/remembered";
 
 /** Hazel labels already start "v1 · WAV 48k", so don't prefix the number twice. */
 const versionName = (v: AudioVersion) =>
@@ -161,20 +162,23 @@ export const SongReview: React.FC<SongReviewProps> = ({
 
   React.useEffect(() => {
     let cancelled = false;
-    (async () => {
-      const s = await songPage.song(songId);
-      if (cancelled) return;
-      setSong(s);
-      songPage.project(s.projectId).then(
-        (p) => !cancelled && setProjectTitle(p.title),
-        () => {},
-      );
-      const list = await library.versions(songId);
-      if (!cancelled)
-        setVersions(
-          [...list].sort((a, b) => a.versionNumber - b.versionNumber),
-        );
-    })().catch((e: Error) => !cancelled && setError(e.message));
+    rememberedThenFresh(
+      `song:${songId}`,
+      async () => {
+        const s = await songPage.song(songId);
+        const [p, list] = await Promise.all([
+          songPage.project(s.projectId).catch(() => null),
+          library.versions(songId),
+        ]);
+        return { song: s, projectTitle: p?.title ?? null, versions: list };
+      },
+      (r) => {
+        if (cancelled) return;
+        setSong(r.song);
+        if (r.projectTitle) setProjectTitle(r.projectTitle);
+        setVersions([...r.versions].sort((a, b) => a.versionNumber - b.versionNumber));
+      },
+    ).catch((e: Error) => !cancelled && setError(e.message));
     return () => {
       cancelled = true;
     };
